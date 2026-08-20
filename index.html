@@ -3,303 +3,264 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nishita & Nishant — Save the Date · 20 October 2026</title>
-  <meta name="description" content="Nishita & Nishant are getting engaged! Join us on 20 October 2026 at Noor Us Sabah, Bhopal. #NishKiNishaani">
-  <meta property="og:title" content="Nishita & Nishant — Getting Engaged!">
-  <meta property="og:description" content="20 October 2026 · Noor Us Sabah, Bhopal · #NishKiNishaani">
-  <meta property="og:type" content="website">
+  <title>Nishita & Nishant · 20 October 2026</title>
+  <meta name="description" content="Nishita & Nishant are getting engaged — 20 October 2026 · Noor Us Sabah, Bhopal">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Pinyon+Script&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Pinyon+Script&family=DM+Sans:wght@200;300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- ═══════════════════════════════
-       HERO — Digital invitation card
-  ══════════════════════════════════ -->
-  <section id="hero">
+<!-- ══════════════════════════════════════════════
+   CARD 1  You are invited
+══════════════════════════════════════════════════ -->
+<div class="card" id="c0" data-theme="invite" data-pos="0">
 
-    <!-- Stars scattered across sky -->
-    <div class="stars-layer"></div>
+  <!-- Decorative inset frame with corner brackets -->
+  <div class="ci-frame" aria-hidden="true"></div>
 
-    <!-- Ambient bokeh glow spots -->
-    <div class="bokeh b1"></div>
-    <div class="bokeh b2"></div>
-    <div class="bokeh b3"></div>
-    <div class="bokeh b4"></div>
+  <div class="c-body ci-body">
 
-    <!-- Diya — lights the scene before card appears -->
-    <div class="diya-wrapper" aria-hidden="true">
-      <div class="flame-outer"></div>
-      <div class="flame-inner"></div>
-      <div class="glow-ring glow-1"></div>
-      <div class="glow-ring glow-2"></div>
-      <div class="glow-ring glow-3"></div>
+    <img src="monogram.png"
+         class="ci-monogram"
+         data-r="sc" data-d="0"
+         alt="N — Nishant & Nishita monogram">
+
+    <!-- Thin gold rule divider -->
+    <div class="ci-rule" data-r="wipe" data-d="500" aria-hidden="true"></div>
+
+    <p class="ci-hero" data-r="fu" data-d="750">You are invited!</p>
+
+  </div>
+
+  <p class="ci-tag" data-r="fu" data-d="1050">#NishKiNishaani</p>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+   CARD 2  Nishant and Nishita are getting engaged
+══════════════════════════════════════════════════ -->
+<div class="card" id="c1" data-theme="names" data-pos="1">
+  <!-- Floral corners — top-left + bottom-right -->
+  <img src="floral-corner.png" class="cn-corner cn-corner--tl" alt="" aria-hidden="true">
+  <img src="floral-corner.png" class="cn-corner cn-corner--br" alt="" aria-hidden="true">
+
+  <!-- Clean vintage half-rules at floral corners — longer, lightly decorated -->
+  <div class="cn-flourishes" aria-hidden="true">
+    <span class="cn-fl cn-fl--tl-h">
+      <i class="cn-fl__tick cn-fl__tick--a"></i>
+      <i class="cn-fl__tick cn-fl__tick--b"></i>
+    </span>
+    <span class="cn-fl cn-fl--tl-v">
+      <i class="cn-fl__tick cn-fl__tick--a"></i>
+      <i class="cn-fl__tick cn-fl__tick--b"></i>
+    </span>
+    <span class="cn-fl cn-fl--br-h">
+      <i class="cn-fl__tick cn-fl__tick--a"></i>
+      <i class="cn-fl__tick cn-fl__tick--b"></i>
+    </span>
+    <span class="cn-fl cn-fl--br-v">
+      <i class="cn-fl__tick cn-fl__tick--a"></i>
+      <i class="cn-fl__tick cn-fl__tick--b"></i>
+    </span>
+  </div>
+
+  <div class="cn-petals" id="cn-petals" aria-hidden="true"></div>
+
+  <div class="c-body cn-body">
+
+    <div class="cn-names" aria-label="Nishant and Nishita">
+      <span class="cn-name" data-r="fu" data-d="280">
+        <span class="cn-name__txt">Nishant</span>
+        <i class="cn-dot" style="--dx:12%;--dy:18%"></i>
+        <i class="cn-dot" style="--dx:58%;--dy:8%"></i>
+        <i class="cn-dot" style="--dx:88%;--dy:42%"></i>
+      </span>
+      <span class="cn-and"  data-r="sc" data-d="480">and</span>
+      <span class="cn-name" data-r="fu" data-d="280">
+        <span class="cn-name__txt">Nishita</span>
+        <i class="cn-dot" style="--dx:22%;--dy:12%"></i>
+        <i class="cn-dot" style="--dx:72%;--dy:28%"></i>
+        <i class="cn-dot" style="--dx:95%;--dy:55%"></i>
+      </span>
     </div>
 
-    <!-- ══ THE INVITATION CARD ══ -->
-    <div class="invite-card">
-      <!-- Inner ruled border -->
-      <div class="card-inner">
-        <!-- Corner L-marks -->
-        <span class="cc cc-tl" aria-hidden="true"></span>
-        <span class="cc cc-tr" aria-hidden="true"></span>
-        <span class="cc cc-bl" aria-hidden="true"></span>
-        <span class="cc cc-br" aria-hidden="true"></span>
-
-        <!-- Content -->
-        <header class="card-header">
-          <p class="c-eyebrow">Save the Date</p>
-          <div class="c-rule" aria-hidden="true">
-            <span class="cr-line"></span><span class="cr-gem">◆</span><span class="cr-line"></span>
-          </div>
-          <p class="c-sub">for our engagement</p>
-        </header>
-
-        <!-- Names — the centrepiece -->
-        <div class="c-names">
-          <span class="c-name">Nishita</span>
-          <div class="c-amp" aria-hidden="true">
-            <span class="ca-line"></span>
-            <span class="ca-heart">♡</span>
-            <span class="ca-line"></span>
-          </div>
-          <span class="c-name">Nishant</span>
-        </div>
-
-        <p class="c-tagline">are getting engaged</p>
-
-        <div class="c-rule" aria-hidden="true">
-          <span class="cr-line"></span><span class="cr-gem">✦</span><span class="cr-line"></span>
-        </div>
-
-        <!-- Date -->
-        <p class="c-date">
-          <span class="cd-n">20</span>
-          <span class="cd-s">·</span>
-          <span class="cd-m">October</span>
-          <span class="cd-s">·</span>
-          <span class="cd-y">2026</span>
-        </p>
-
-        <!-- Venue -->
-        <p class="c-venue">Noor Us Sabah &nbsp;·&nbsp; Bhopal</p>
-
-        <div class="c-rule" aria-hidden="true">
-          <span class="cr-line"></span><span class="cr-gem">◆</span><span class="cr-line"></span>
-        </div>
-
-        <!-- Hashtag -->
-        <p class="c-hash">#NishKiNishaani</p>
-
-      </div><!-- /card-inner -->
-    </div><!-- /invite-card -->
-
-    <!-- Scroll cue -->
-    <div class="scroll-cue" aria-hidden="true">
-      <span class="scroll-label">scroll</span>
-      <span class="scroll-arrow">↓</span>
+    <div class="cn-post" data-r="fu" data-d="700">
+      <span class="cn-post__rule" aria-hidden="true">
+        <i class="cn-post__arm"></i>
+        <i class="cn-post__gem"></i>
+        <i class="cn-post__arm"></i>
+      </span>
+      <p class="cn-post__txt">are getting engaged!</p>
     </div>
 
-  </section>
+  </div>
+</div>
 
 
-  <!-- ═══════════════════════════════
-       COUNTDOWN
-  ══════════════════════════════════ -->
-  <section id="countdown">
-    <div class="section-wrap reveal">
-      <p class="section-eyebrow">The Moment Approaches</p>
-      <h2 class="section-heading">Counting Down</h2>
-      <div class="ornament-row muted">
-        <span class="orn-line"></span>
-        <span class="orn-gem">◆</span>
-        <span class="orn-line"></span>
+<!-- ══════════════════════════════════════════════
+   CARD 3  Save the Date  ·  Dark + dramatic reveal
+══════════════════════════════════════════════════ -->
+<div class="card" id="c2" data-theme="date" data-pos="2">
+  <div class="c-body cs-body">
+    <p class="cs-label" data-r="fd" data-d="0">Save the Date</p>
+
+    <div class="cs-date" aria-label="20 October 2026">
+      <span class="cs-day"   data-r="stamp" data-d="300">20</span>
+      <span class="cs-month" data-r="wipe"  data-d="850">October</span>
+      <span class="cs-year"  data-r="fu"    data-d="1300">2026</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+   CARD 4  Countdown  ·  Midnight blue
+══════════════════════════════════════════════════ -->
+<div class="card" id="c3" data-theme="count" data-pos="3">
+  <div class="cc-glow" aria-hidden="true"></div>
+
+  <div class="c-body">
+    <p class="cc-pre" data-r="fd" data-d="0">The big day is in</p>
+
+    <div class="cc-units" aria-live="polite" aria-label="Countdown timer">
+      <div class="cc-unit" data-r="fu" data-d="200">
+        <span class="cc-num" id="cd-days">--</span>
+        <span class="cc-uname">Days</span>
+      </div>
+      <span class="cc-sep" data-r="sc" data-d="450" aria-hidden="true">:</span>
+      <div class="cc-unit" data-r="fu" data-d="350">
+        <span class="cc-num" id="cd-hours">--</span>
+        <span class="cc-uname">Hours</span>
+      </div>
+      <span class="cc-sep" data-r="sc" data-d="600" aria-hidden="true">:</span>
+      <div class="cc-unit" data-r="fu" data-d="500">
+        <span class="cc-num" id="cd-mins">--</span>
+        <span class="cc-uname">Minutes</span>
+      </div>
+    </div>
+
+    <p class="cc-post" data-r="fu" data-d="750">until we celebrate together.</p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+   CARD 5  Events  ·  Warm amber parchment
+══════════════════════════════════════════════════ -->
+<div class="card" id="c4" data-theme="events" data-pos="4">
+  <div class="c-body">
+    <p class="ce-label" data-r="fd" data-d="0">The Evening</p>
+    <p class="ce-date"  data-r="fd" data-d="120">20 October 2026 &nbsp;·&nbsp; Bhopal</p>
+
+    <div class="ce-list">
+
+      <div class="ce-item" data-r="sr" data-d="250">
+        <span class="ce-time">5:00 <em>pm</em></span>
+        <div class="ce-dot-line" aria-hidden="true"><span></span></div>
+        <span class="ce-evt">Guest Arrival &amp; Welcome</span>
       </div>
 
-      <div class="countdown-grid">
-        <div class="cd-unit">
-          <div class="cd-number" id="days">--</div>
-          <div class="cd-label">Days</div>
-        </div>
-        <div class="cd-dot">·</div>
-        <div class="cd-unit">
-          <div class="cd-number" id="hours">--</div>
-          <div class="cd-label">Hours</div>
-        </div>
-        <div class="cd-dot">·</div>
-        <div class="cd-unit">
-          <div class="cd-number" id="minutes">--</div>
-          <div class="cd-label">Minutes</div>
-        </div>
-        <div class="cd-dot">·</div>
-        <div class="cd-unit">
-          <div class="cd-number" id="seconds">--</div>
-          <div class="cd-label">Seconds</div>
-        </div>
+      <div class="ce-sep" data-r="dh" data-d="500" aria-hidden="true"></div>
+
+      <div class="ce-item" data-r="sr" data-d="560">
+        <span class="ce-time">6:30 <em>pm</em></span>
+        <div class="ce-dot-line" aria-hidden="true"><span></span></div>
+        <span class="ce-evt">Engagement Ceremony</span>
       </div>
 
-      <p class="cd-tagline">Bhopal · Tuesday, 20 October 2026</p>
-    </div>
-  </section>
+      <div class="ce-sep" data-r="dh" data-d="800" aria-hidden="true"></div>
 
-
-  <!-- ═══════════════════════════════
-       VENUE
-  ══════════════════════════════════ -->
-  <section id="venue">
-
-    <div class="venue-arch-top" aria-hidden="true">
-      <svg viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <!-- parchment shape with curved bottom edge bowing up — masks countdown-to-venue transition -->
-        <path d="M0,0 L1200,0 L1200,80 Q600,28 0,80 Z" fill="#faf0e6"/>
-      </svg>
-    </div>
-
-    <div class="section-wrap reveal">
-      <p class="section-eyebrow light">The Celebration</p>
-
-      <h2 class="venue-name">Noor Us Sabah</h2>
-      <p class="venue-subtitle">Palace Hotel · Bhopal</p>
-
-      <div class="ornament-row gold">
-        <span class="orn-line"></span>
-        <span class="orn-gem">◆</span>
-        <span class="orn-line"></span>
+      <div class="ce-item" data-r="sr" data-d="860">
+        <span class="ce-time">8:00 <em>pm</em></span>
+        <div class="ce-dot-line" aria-hidden="true"><span></span></div>
+        <span class="ce-evt">Reception &amp; Dinner</span>
       </div>
 
-      <p class="venue-prose">
-        Perched on the shores of the Upper Lake, <em>Noor Us Sabah</em> — 
-        Light of the Morning — stands as Bhopal's most beloved heritage palace.
-        On an evening washed in amber and gold, we invite you to witness 
-        the beginning of our forever.
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+   CARD 6  Venue  ·  Forest night
+══════════════════════════════════════════════════ -->
+<div class="card" id="c5" data-theme="venue" data-pos="5">
+  <div class="cv-shimmer" aria-hidden="true"></div>
+
+  <div class="c-body">
+    <p  class="cv-label"  data-r="fd" data-d="0">Where</p>
+    <p  class="cv-name"   data-r="fu" data-d="180">Noor Us Sabah</p>
+    <p  class="cv-sub"    data-r="fu" data-d="380">Bhopal</p>
+    <div class="cv-rule"  data-r="dh" data-d="560" aria-hidden="true"></div>
+    <a  class="cv-map"    data-r="fu" data-d="680"
+        href="https://maps.google.com/?q=Noor+Us+Sabah+Palace+Hotel+Bhopal"
+        target="_blank" rel="noopener">
+      Get Directions &nbsp;→
+    </a>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+   CARD 7  Send a message  ·  Blush rose
+══════════════════════════════════════════════════ -->
+<div class="card" id="c6" data-theme="msg" data-pos="6">
+  <div class="c-body cmsg-body">
+    <p  class="cmsg-label"  data-r="fd" data-d="0">Say something</p>
+    <p  class="cmsg-title"  data-r="fu" data-d="150">Send us a message</p>
+    <p  class="cmsg-by"     data-r="fu" data-d="250">
+      Kindly respond by <em>10 October 2026</em>
+    </p>
+
+    <form id="rsvp-form" novalidate data-r="fu" data-d="360">
+
+      <div class="rf-field">
+        <input type="text" name="name" id="f-name"
+               placeholder="Your name" autocomplete="name" required>
+      </div>
+
+      <div class="rf-radios">
+        <label class="rf-opt">
+          <input type="radio" name="attending" value="Yes" required>
+          <span class="rfr-pip"></span>
+          Joyfully attending
+        </label>
+        <label class="rf-opt">
+          <input type="radio" name="attending" value="No">
+          <span class="rfr-pip"></span>
+          Regretfully can't make it
+        </label>
+      </div>
+
+      <div class="rf-field" id="guests-wrap" hidden>
+        <input type="number" name="guests" id="f-guests"
+               placeholder="How many guests?" min="1" max="10">
+      </div>
+
+      <div class="rf-field">
+        <input type="text" name="note" id="f-note"
+               placeholder="A note for the couple (optional)">
+      </div>
+
+      <button type="submit" id="rf-btn" class="rf-btn">Send with love</button>
+
+      <p class="rf-ok" id="rf-ok" hidden>
+        Thank you &mdash; we cannot wait to celebrate with you ♡
+      </p>
+      <p class="rf-err" id="rf-err" hidden>
+        Something went wrong. Please try again.
       </p>
 
-      <div class="detail-list">
-        <div class="detail-item">
-          <span class="detail-icon">◈</span>
-          <div class="detail-body">
-            <span class="detail-label">DATE</span>
-            <span class="detail-value">Tuesday, 20 October 2026</span>
-          </div>
-        </div>
-        <div class="detail-item">
-          <span class="detail-icon">◈</span>
-          <div class="detail-body">
-            <span class="detail-label">TIME</span>
-            <!-- TODO: Update with confirmed event time -->
-            <span class="detail-value">Evening Onwards</span>
-          </div>
-        </div>
-        <div class="detail-item">
-          <span class="detail-icon">◈</span>
-          <div class="detail-body">
-            <span class="detail-label">VENUE</span>
-            <span class="detail-value">
-              Noor Us Sabah Palace Hotel<br>
-              VIP Road, Shamla Hills<br>
-              Bhopal, Madhya Pradesh — 462013
-            </span>
-          </div>
-        </div>
-      </div>
+    </form>
 
-      <a href="https://maps.google.com/?q=Noor+Us+Sabah+Palace+Hotel+Bhopal" target="_blank" rel="noopener" class="directions-link">
-        Get Directions &nbsp;→
-      </a>
-
-    </div>
-
-    <div class="venue-arch-bot" aria-hidden="true">
-      <svg viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-        <!-- parchment shape with curved top edge bowing down — masks venue-to-rsvp transition -->
-        <path d="M0,80 L1200,80 L1200,0 Q600,52 0,0 Z" fill="#faf0e6"/>
-      </svg>
-    </div>
-
-  </section>
+    <p class="cmsg-hash" data-r="fu" data-d="500">#NishKiNishaani</p>
+  </div>
+</div>
 
 
-  <!-- ═══════════════════════════════
-       RSVP
-  ══════════════════════════════════ -->
-  <section id="rsvp">
-    <div class="section-wrap reveal">
 
-      <p class="section-eyebrow">You're Invited</p>
-      <h2 class="section-heading">Join the Celebration</h2>
-      <div class="ornament-row muted">
-        <span class="orn-line"></span>
-        <span class="orn-gem">◆</span>
-        <span class="orn-line"></span>
-      </div>
-
-      <p class="rsvp-note">
-        Kindly respond by <strong>10 October 2026</strong> so we can make every moment perfect.
-      </p>
-
-      <form id="rsvp-form" class="rsvp-form" novalidate>
-
-        <div class="form-field">
-          <label for="f-name">Full Name</label>
-          <input type="text" id="f-name" name="name" placeholder="Your name" autocomplete="name" required>
-        </div>
-
-        <div class="form-field">
-          <label>Will you be joining us?</label>
-          <div class="radio-row">
-            <label class="radio-opt">
-              <input type="radio" name="attending" value="Yes" required>
-              <span class="radio-pip"></span>
-              Joyfully Attending
-            </label>
-            <label class="radio-opt">
-              <input type="radio" name="attending" value="No">
-              <span class="radio-pip"></span>
-              Regretfully Declining
-            </label>
-          </div>
-        </div>
-
-        <div class="form-field" id="guests-field" style="display:none">
-          <label for="f-guests">Number of Guests <span class="opt-note">(including yourself)</span></label>
-          <input type="number" id="f-guests" name="guests" min="1" max="10" placeholder="e.g. 2">
-        </div>
-
-        <div class="form-field">
-          <label for="f-msg">A Note for Us <span class="opt-note">(optional)</span></label>
-          <textarea id="f-msg" name="message" rows="3" placeholder="Share your wishes…"></textarea>
-        </div>
-
-        <button type="submit" class="rsvp-btn" id="rsvp-btn">
-          <span class="btn-text">Send RSVP</span>
-          <span class="btn-arrow">→</span>
-        </button>
-
-        <div class="form-feedback success" id="msg-success" hidden>
-          <p>🌸 Thank you! We cannot wait to celebrate with you.</p>
-        </div>
-        <div class="form-feedback error" id="msg-error" hidden>
-          <p>Something went wrong. Please try again or contact us directly.</p>
-        </div>
-
-      </form>
-
-    </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════
-       FOOTER
-  ══════════════════════════════════ -->
-  <footer id="footer">
-    <p class="footer-hash">#NishKiNishaani</p>
-    <p class="footer-names">Nishita &amp; Nishant · 20.10.2026</p>
-    <p class="footer-city">Bhopal · The City of Lakes</p>
-    <p class="footer-made">Made with love ♡</p>
-  </footer>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
