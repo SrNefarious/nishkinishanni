@@ -43,10 +43,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   justify-content: center;
   border-radius: 0;
 
-  /* Transform only — no opacity fade on stack moves */
-  transition:
-    transform 0.65s cubic-bezier(0.4, 0, 0.2, 1),
-    border-radius 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transform only — no border-radius transition on the stack
+     (rounding is animation-only on the departing card) */
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card[data-pos="0"] {
@@ -58,47 +57,47 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .card[data-pos="1"] {
   z-index: 9;
-  transform: scale(0.96) translateY(12px);
+  /* Full-size under the front card — no shrink, no round */
+  transform: none;
   opacity: 1;
   pointer-events: none;
-  border-radius: 22px;
+  border-radius: 0 !important;
 }
 .card[data-pos="2"] {
   z-index: 8;
-  transform: scale(0.92) translateY(22px);
+  transform: none;
   opacity: 1;
   pointer-events: none;
-  border-radius: 26px;
+  border-radius: 0 !important;
 }
 .card:not([data-pos="0"]):not([data-pos="1"]):not([data-pos="2"]) {
-  /* Instant hide — no fade animation */
   opacity: 0;
   pointer-events: none;
   z-index: 1;
   transition: none;
+  border-radius: 0 !important;
 }
 
-/* Fly-out: solid card slides away with rounded corners — never fades */
+/* Scrubbing: instant transform follow, no CSS transition fighting the gesture */
+.card.is-scrubbing {
+  transition: none !important;
+  will-change: transform, border-radius, opacity;
+}
+
+/* Departing card only (legacy keyframes unused by scrub — kept as fallback) */
 .card.is-flying-out {
   z-index: 11 !important;
   pointer-events: none;
-  animation: flyOut 0.62s cubic-bezier(0.55, 0, 0.85, 0.2) forwards;
+  animation: flyOut 0.58s cubic-bezier(0.4, 0, 0.7, 0.2) forwards;
 }
 @keyframes flyOut {
-  0%   {
-    transform: none;
+  0% {
+    transform: translateX(0) rotate(0deg);
     border-radius: 0;
-    opacity: 1;
-  }
-  15%  {
-    transform: scale(1.02) translateY(-8px);
-    border-radius: 18px;
-    opacity: 1;
   }
   100% {
-    transform: translateX(112%) rotate(6deg) scale(0.92);
+    transform: translateX(105%) rotate(14deg);
     border-radius: 28px;
-    opacity: 1;
   }
 }
 .card.no-transition { transition: none !important; }
