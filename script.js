@@ -140,7 +140,8 @@ function hardResetChrome() {
   cards.forEach(card => {
     card.classList.remove('is-scrubbing', 'no-transition');
     card.style.transform = '';
-    card.style.borderRadius = '';
+    card.style.transformOrigin = '';
+    card.style.removeProperty('border-radius');
     card.style.opacity = '';
     card.style.zIndex = '';
     card.style.pointerEvents = '';
@@ -293,6 +294,19 @@ function armPrevCard(prev) {
   prev.style.zIndex = '12';
 }
 
+/* Ease-out scale: shrink reads early, then softens */
+function rollScale(p) {
+  const t = 1 - Math.pow(1 - p, 1.55);
+  return 1 - t * 0.30; /* → ~0.70 at full roll */
+}
+
+const ROLL_RADIUS = 42; /* constant for the whole roll — not ramped from 0 */
+
+function applyRollRadius(el) {
+  /* Must beat .card[data-pos] { border-radius: 0 !important } on buried cards */
+  el.style.setProperty('border-radius', `${ROLL_RADIUS}px`, 'important');
+}
+
 function applyScrubVisual() {
   const p = progress;
 
@@ -309,21 +323,26 @@ function applyScrubVisual() {
       return;
     }
     const f = frontCard();
+    const s = rollScale(p);
     f.classList.add('is-scrubbing');
     f.style.zIndex = '11';
-    f.style.transform = `translateX(${p * 105}%) rotate(${p * 14}deg)`;
-    f.style.borderRadius = `${p * 28}px`;
+    f.style.transformOrigin = 'center center';
+    f.style.transform =
+      `translateX(${p * 105}%) rotate(${p * 14}deg) scale(${s})`;
+    applyRollRadius(f);
     return;
   }
 
   if (mode === 'retreat') {
-    /* Every retreat (including 2→1) rolls the previous card in from the left.
-       Scatter-on-retreat was flashing the wrong under-card (page 3). */
+    /* Previous page rolls IN from the left (same scale + roundness as exit) */
     const prev = prevCard();
     armPrevCard(prev);
-    const t = 1 - p;
-    prev.style.transform = `translateX(${-105 * t}%) rotate(${-14 * t}deg)`;
-    prev.style.borderRadius = `${28 * t}px`;
+    const t = 1 - p; /* 1 = off-screen left, 0 = settled */
+    const s = rollScale(t);
+    prev.style.transformOrigin = 'center center';
+    prev.style.transform =
+      `translateX(${-105 * t}%) rotate(${-14 * t}deg) scale(${s})`;
+    applyRollRadius(prev);
 
     if (!revealTarget) {
       revealTarget = prev;
