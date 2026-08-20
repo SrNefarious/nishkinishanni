@@ -16,31 +16,20 @@
 <body>
 
   <!-- ═══════════════════════════════
-       HERO — Cinematic dusk reveal
+       HERO — Digital invitation card
   ══════════════════════════════════ -->
   <section id="hero">
 
-    <!-- Sky gradient -->
-    <div class="sky-layer" data-parallax="0.22"></div>
+    <!-- Stars scattered across sky -->
+    <div class="stars-layer"></div>
 
-    <!-- Stars -->
-    <div class="stars-layer" data-parallax="0.38"></div>
+    <!-- Ambient bokeh glow spots -->
+    <div class="bokeh b1"></div>
+    <div class="bokeh b2"></div>
+    <div class="bokeh b3"></div>
+    <div class="bokeh b4"></div>
 
-    <!-- Warm atmospheric glow near horizon -->
-    <div class="horizon-glow" data-parallax="0.1"></div>
-
-    <!-- Dark vignette at very bottom (ground/water feel) -->
-    <div class="ground-shadow"></div>
-
-    <!-- Ornate double-border frame with corner marks -->
-    <div class="hero-frame" aria-hidden="true">
-      <span class="cm cm-tl">✦</span>
-      <span class="cm cm-tr">✦</span>
-      <span class="cm cm-bl">✦</span>
-      <span class="cm cm-br">✦</span>
-    </div>
-
-    <!-- Diya lighting animation -->
+    <!-- Diya — lights the scene before card appears -->
     <div class="diya-wrapper" aria-hidden="true">
       <div class="flame-outer"></div>
       <div class="flame-inner"></div>
@@ -49,44 +38,63 @@
       <div class="glow-ring glow-3"></div>
     </div>
 
-    <!-- Hero text content -->
-    <div class="hero-content">
-      <div class="content-card">
+    <!-- ══ THE INVITATION CARD ══ -->
+    <div class="invite-card">
+      <!-- Inner ruled border -->
+      <div class="card-inner">
+        <!-- Corner L-marks -->
+        <span class="cc cc-tl" aria-hidden="true"></span>
+        <span class="cc cc-tr" aria-hidden="true"></span>
+        <span class="cc cc-bl" aria-hidden="true"></span>
+        <span class="cc cc-br" aria-hidden="true"></span>
 
-        <p class="eyebrow-label">— SAVE THE DATE —</p>
-        <p class="hero-subline">for our engagement</p>
-
-        <!-- Stacked names — the centrepiece -->
-        <div class="names-stack">
-          <span class="name-script">Nishita</span>
-          <div class="names-join" aria-hidden="true">
-            <span class="join-line"></span>
-            <span class="join-heart">♡</span>
-            <span class="join-line"></span>
+        <!-- Content -->
+        <header class="card-header">
+          <p class="c-eyebrow">Save the Date</p>
+          <div class="c-rule" aria-hidden="true">
+            <span class="cr-line"></span><span class="cr-gem">◆</span><span class="cr-line"></span>
           </div>
-          <span class="name-script">Nishant</span>
+          <p class="c-sub">for our engagement</p>
+        </header>
+
+        <!-- Names — the centrepiece -->
+        <div class="c-names">
+          <span class="c-name">Nishita</span>
+          <div class="c-amp" aria-hidden="true">
+            <span class="ca-line"></span>
+            <span class="ca-heart">♡</span>
+            <span class="ca-line"></span>
+          </div>
+          <span class="c-name">Nishant</span>
         </div>
 
-        <p class="getting-engaged">ARE GETTING ENGAGED</p>
+        <p class="c-tagline">are getting engaged</p>
 
-        <div class="date-line">
-          <span class="date-num">20</span>
-          <span class="date-sep">|</span>
-          <span class="date-month">OCTOBER</span>
-          <span class="date-sep">|</span>
-          <span class="date-year">2026</span>
+        <div class="c-rule" aria-hidden="true">
+          <span class="cr-line"></span><span class="cr-gem">✦</span><span class="cr-line"></span>
         </div>
 
-        <div class="ornament-row" aria-hidden="true">
-          <span class="orn-line"></span>
-          <span class="orn-gem">◆</span>
-          <span class="orn-line"></span>
+        <!-- Date -->
+        <p class="c-date">
+          <span class="cd-n">20</span>
+          <span class="cd-s">·</span>
+          <span class="cd-m">October</span>
+          <span class="cd-s">·</span>
+          <span class="cd-y">2026</span>
+        </p>
+
+        <!-- Venue -->
+        <p class="c-venue">Noor Us Sabah &nbsp;·&nbsp; Bhopal</p>
+
+        <div class="c-rule" aria-hidden="true">
+          <span class="cr-line"></span><span class="cr-gem">◆</span><span class="cr-line"></span>
         </div>
 
-        <p class="hashtag">#NishKiNishaani</p>
+        <!-- Hashtag -->
+        <p class="c-hash">#NishKiNishaani</p>
 
-      </div>
-    </div>
+      </div><!-- /card-inner -->
+    </div><!-- /invite-card -->
 
     <!-- Scroll cue -->
     <div class="scroll-cue" aria-hidden="true">

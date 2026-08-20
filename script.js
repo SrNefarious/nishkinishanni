@@ -97,28 +97,7 @@ const EVENT_DATE = new Date('2026-10-20T18:00:00+05:30');
 /* ════════════════════════════════════════════════
    PARALLAX  (hero layers on scroll)
    ════════════════════════════════════════════════ */
-(function initParallax() {
-  const hero   = document.getElementById('hero');
-  const layers = hero ? Array.from(hero.querySelectorAll('[data-parallax]')) : [];
-
-  if (!layers.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  let ticking = false;
-
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        layers.forEach(el => {
-          const speed = parseFloat(el.dataset.parallax) || 0;
-          el.style.transform = `translateY(${scrollY * speed}px)`;
-        });
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
-})();
+/* No parallax layers in current hero design */
 
 
 /* ════════════════════════════════════════════════
