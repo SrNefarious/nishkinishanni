@@ -222,42 +222,49 @@ function ensureDissolve(sourceCard) {
   /* Rasterize WHILE still visible, then cover with tiles, then hide */
   const { canvas, W, H } = rasterizeCard(departing);
   const url = canvas.toDataURL('image/jpeg', 0.72);
-  const TILE = 64;
+  const TILE = 80;
   const cols = Math.ceil(W / TILE) + 1;
   const rows = Math.ceil(H / TILE) + 1;
   const cx = W / 2;
   const cy = H / 2;
   const tiles = [];
   const frag = document.createDocumentFragment();
+  const diamond = 'polygon(50% 0%,100% 50%,50% 100%,0% 50%)';
 
+  function addTile(tx, ty) {
+    const el = document.createElement('div');
+    const midX = tx + TILE / 2;
+    const midY = ty + TILE / 2;
+    const dx = midX - cx;
+    const dy = midY - cy;
+    const dist = Math.hypot(dx, dy) || 1;
+    const speed = 100 + Math.random() * 160;
+    el.className = 'scrub-tile scrub-tile--diamond';
+    el.style.cssText =
+      `position:fixed;left:${tx}px;top:${ty}px;` +
+      `width:${TILE}px;height:${TILE}px;` +
+      `background-image:url(${url});` +
+      `background-size:${W}px ${H}px;` +
+      `background-position:-${tx}px -${ty}px;` +
+      `clip-path:${diamond};` +
+      `-webkit-clip-path:${diamond};` +
+      `z-index:1000;pointer-events:none;` +
+      `will-change:transform,opacity;` +
+      `transform:translate(0px,0px) rotate(0deg) scale(1);opacity:1;`;
+    frag.appendChild(el);
+    tiles.push({
+      el,
+      bx: (dx / dist) * speed,
+      by: (dy / dist) * speed,
+      br: (Math.random() - 0.5) * 140,
+    });
+  }
+
+  /* Dual grid: base diamonds + offset diamonds → full cover, no square look */
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      const el = document.createElement('div');
-      const tx = c * TILE;
-      const ty = r * TILE;
-      const midX = tx + TILE / 2;
-      const midY = ty + TILE / 2;
-      const dx = midX - cx;
-      const dy = midY - cy;
-      const dist = Math.hypot(dx, dy) || 1;
-      const speed = 100 + Math.random() * 160;
-      el.className = 'scrub-tile';
-      el.style.cssText =
-        `position:fixed;left:${tx}px;top:${ty}px;` +
-        `width:${TILE + 1}px;height:${TILE + 1}px;` +
-        `background-image:url(${url});` +
-        `background-size:${W}px ${H}px;` +
-        `background-position:-${tx}px -${ty}px;` +
-        `z-index:1000;pointer-events:none;` +
-        `will-change:transform,opacity;` +
-        `transform:translate(0px,0px) rotate(0deg) scale(1);opacity:1;`;
-      frag.appendChild(el);
-      tiles.push({
-        el,
-        bx: (dx / dist) * speed,
-        by: (dy / dist) * speed,
-        br: (Math.random() - 0.5) * 100,
-      });
+      addTile(c * TILE, r * TILE);
+      addTile(c * TILE + TILE / 2, r * TILE + TILE / 2);
     }
   }
   document.body.appendChild(frag);
