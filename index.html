@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nishita & Nishant — Save the Date · 20 October 2026</title>
+  <meta name="description" content="Nishita & Nishant are getting engaged! Join us on 20 October 2026 at Noor Us Sabah, Bhopal. #NishKiNishaani">
+  <meta property="og:title" content="Nishita & Nishant — Getting Engaged!">
+  <meta property="og:description" content="20 October 2026 · Noor Us Sabah, Bhopal · #NishKiNishaani">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Pinyon+Script&family=Jost:wght@200;300;400&family=Noto+Sans+Devanagari:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════
+       HERO — Cinematic dusk reveal
+  ══════════════════════════════════ -->
+  <section id="hero">
+
+    <!-- Sky gradient (fades in as diya lights it up) -->
+    <div class="sky-layer" data-parallax="0.25"></div>
+
+    <!-- Stars (top 60% of hero) -->
+    <div class="stars-layer" data-parallax="0.4"></div>
+
+    <!-- Palace SVG silhouette -->
+    <div class="palace-layer" data-parallax="-0.08">
+      <svg class="palace-svg" viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax slice">
+        <defs>
+          <linearGradient id="palaceGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1a0a0e"/>
+            <stop offset="100%" stop-color="#0a0305"/>
+          </linearGradient>
+          <linearGradient id="rimLight" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="transparent"/>
+            <stop offset="100%" stop-color="rgba(201,150,80,0.15)"/>
+          </linearGradient>
+          <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#d4885e" stop-opacity="0.55"/>
+            <stop offset="30%"  stop-color="#9a5a3a" stop-opacity="0.4"/>
+            <stop offset="70%"  stop-color="#4a2510" stop-opacity="0.65"/>
+            <stop offset="100%" stop-color="#0f0408" stop-opacity="0.95"/>
+          </linearGradient>
+          <linearGradient id="reflectFade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="rgba(200,130,80,0.3)"/>
+            <stop offset="60%"  stop-color="rgba(100,50,20,0.1)"/>
+            <stop offset="100%" stop-color="rgba(10,3,5,0)"/>
+          </linearGradient>
+          <clipPath id="waterClip">
+            <rect x="0" y="420" width="1200" height="80"/>
+          </clipPath>
+        </defs>
+
+        <!-- Palace silhouette -->
+        <path fill="url(#palaceGrad)" d="
+          M 0,500 L 0,420
+          L 45,420 L 45,390 L 65,390 L 65,420 L 82,420
+
+          L 82,138
+          Q 127,88 172,138
+          L 172,420 L 190,420
+
+          L 190,272
+          L 200,272 L 200,250 L 222,250 L 222,272
+          L 258,272 L 258,250 L 280,250 L 280,272
+          L 316,272 L 316,250 L 338,250 L 338,272
+          L 374,272 L 374,250 L 396,250 L 396,272
+          L 408,272 L 408,248
+          Q 420,224 432,248
+          L 432,272
+          L 450,272 L 450,198 L 462,198 L 462,172
+
+          C 468,98 534,42 600,32
+          C 666,42 732,98 738,172
+
+          L 738,198 L 750,198 L 750,272
+          L 768,272 L 768,248
+          Q 780,224 792,248
+          L 792,272
+          L 804,272 L 804,250 L 826,250 L 826,272
+          L 862,272 L 862,250 L 884,250 L 884,272
+          L 920,272 L 920,250 L 942,250 L 942,272
+          L 978,272 L 978,250 L 1000,250 L 1000,272
+          L 1010,272 L 1010,420 L 1028,420
+
+          L 1028,138
+          Q 1073,88 1118,138
+          L 1118,420 L 1135,420 L 1135,390 L 1155,390 L 1155,420
+
+          L 1200,420 L 1200,500 Z
+        "/>
+
+        <!-- Rim light overlay on palace edges -->
+        <path fill="url(#rimLight)" d="
+          M 0,500 L 0,420
+          L 45,420 L 45,390 L 65,390 L 65,420 L 82,420
+          L 82,138 Q 127,88 172,138
+          L 172,420 L 190,420 L 190,272
+          L 200,272 L 200,250 L 222,250 L 222,272
+          L 258,272 L 258,250 L 280,250 L 280,272
+          L 316,272 L 316,250 L 338,250 L 338,272
+          L 374,272 L 374,250 L 396,250 L 396,272
+          L 408,272 L 408,248 Q 420,224 432,248 L 432,272
+          L 450,272 L 450,198 L 462,198 L 462,172
+          C 468,98 534,42 600,32
+          C 666,42 732,98 738,172
+          L 738,198 L 750,198 L 750,272
+          L 768,272 L 768,248 Q 780,224 792,248 L 792,272
+          L 804,272 L 804,250 L 826,250 L 826,272
+          L 862,272 L 862,250 L 884,250 L 884,272
+          L 920,272 L 920,250 L 942,250 L 942,272
+          L 978,272 L 978,250 L 1000,250 L 1000,272
+          L 1010,272 L 1010,420 L 1028,420
+          L 1028,138 Q 1073,88 1118,138
+          L 1118,420 L 1135,420 L 1135,390 L 1155,390 L 1155,420
+          L 1200,420 L 1200,500 Z
+        " opacity="0.6"/>
+
+        <!-- Arched windows (warm glow) -->
+        <g class="windows" opacity="0.55">
+          <ellipse cx="232" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="215" y="334" width="34" height="56" fill="#d4805a"/>
+          <ellipse cx="292" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="275" y="334" width="34" height="56" fill="#d4805a"/>
+          <ellipse cx="352" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="335" y="334" width="34" height="56" fill="#d4805a"/>
+          <ellipse cx="852" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="835" y="334" width="34" height="56" fill="#d4805a"/>
+          <ellipse cx="912" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="895" y="334" width="34" height="56" fill="#d4805a"/>
+          <ellipse cx="972" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="955" y="334" width="34" height="56" fill="#d4805a"/>
+        </g>
+
+        <!-- Reflection in water -->
+        <g clip-path="url(#waterClip)">
+          <rect x="0" y="420" width="1200" height="80" fill="url(#waterGrad)"/>
+          <g transform="translate(0,840) scale(1,-1)" opacity="0.18">
+            <path fill="#c87040" d="
+              M 0,500 L 0,420 L 45,420 L 45,390 L 65,390 L 65,420 L 82,420
+              L 82,138 Q 127,88 172,138 L 172,420 L 190,420 L 190,272
+              L 396,272 L 396,250 L 374,250 L 374,272
+              L 450,272 L 450,198 L 462,198 L 462,172
+              C 468,98 534,42 600,32 C 666,42 732,98 738,172
+              L 738,198 L 750,198 L 750,272
+              L 804,272 L 804,250 L 826,250 L 826,272 L 1010,272
+              L 1010,420 L 1028,420
+              L 1028,138 Q 1073,88 1118,138 L 1118,420 L 1135,420 L 1135,390 L 1155,390 L 1155,420
+              L 1200,420 L 1200,500 Z
+            "/>
+          </g>
+          <!-- Water shimmer lines -->
+          <line x1="0" y1="428" x2="1200" y2="428" stroke="rgba(220,160,90,0.15)" stroke-width="1"/>
+          <line x1="0" y1="438" x2="1200" y2="438" stroke="rgba(220,160,90,0.10)" stroke-width="1"/>
+          <line x1="0" y1="450" x2="1200" y2="450" stroke="rgba(220,160,90,0.07)" stroke-width="1"/>
+          <line x1="0" y1="465" x2="1200" y2="465" stroke="rgba(220,160,90,0.05)" stroke-width="1"/>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Corner floral decorations (SVG injected via JS) -->
+    <div class="floral-corner floral-tl" aria-hidden="true"></div>
+    <div class="floral-corner floral-tr" aria-hidden="true"></div>
+    <div class="floral-corner floral-bl" aria-hidden="true"></div>
+    <div class="floral-corner floral-br" aria-hidden="true"></div>
+
+    <!-- Ornate border frame -->
+    <div class="hero-frame" aria-hidden="true">
+      <span class="frame-corner fc-tl">✦</span>
+      <span class="frame-corner fc-tr">✦</span>
+      <span class="frame-corner fc-bl">✦</span>
+      <span class="frame-corner fc-br">✦</span>
+    </div>
+
+    <!-- Diya lighting animation -->
+    <div class="diya-wrapper" aria-hidden="true">
+      <div class="flame-outer"></div>
+      <div class="flame-inner"></div>
+      <div class="glow-ring glow-1"></div>
+      <div class="glow-ring glow-2"></div>
+      <div class="glow-ring glow-3"></div>
+    </div>
+
+    <!-- Hero text content -->
+    <div class="hero-content">
+      <div class="content-card">
+
+        <p class="eyebrow-label">— SAVE THE DATE —</p>
+        <p class="hero-subline">for our engagement</p>
+
+        <div class="monogram" aria-label="Ni and N monogram">
+          <span class="mono-deva">नि</span>
+          <span class="mono-heart">♡</span>
+          <span class="mono-n">N</span>
+        </div>
+
+        <div class="names-row">
+          <div class="name-unit">
+            <span class="name-deva">निशिता</span>
+            <span class="name-script">Nishita</span>
+          </div>
+          <div class="names-divider" aria-hidden="true">⬡</div>
+          <div class="name-unit">
+            <span class="name-deva">निशांत</span>
+            <span class="name-script">Nishant</span>
+          </div>
+        </div>
+
+        <p class="getting-engaged">ARE GETTING ENGAGED</p>
+
+        <div class="date-line">
+          <span class="date-num">20</span>
+          <span class="date-sep">|</span>
+          <span class="date-month">OCTOBER</span>
+          <span class="date-sep">|</span>
+          <span class="date-year">2026</span>
+        </div>
+
+        <div class="ornament-row" aria-hidden="true">
+          <span class="orn-line"></span>
+          <span class="orn-gem">◆</span>
+          <span class="orn-line"></span>
+        </div>
+
+        <p class="hashtag">#NishKiNishaani</p>
+
+      </div>
+    </div>
+
+    <!-- Scroll cue -->
+    <div class="scroll-cue" aria-hidden="true">
+      <span class="scroll-label">scroll</span>
+      <span class="scroll-arrow">↓</span>
+    </div>
+
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       COUNTDOWN
+  ══════════════════════════════════ -->
+  <section id="countdown">
+    <div class="section-wrap reveal">
+      <p class="section-eyebrow">The Moment Approaches</p>
+      <h2 class="section-heading">Counting Down</h2>
+      <div class="ornament-row muted">
+        <span class="orn-line"></span>
+        <span class="orn-gem">◆</span>
+        <span class="orn-line"></span>
+      </div>
+
+      <div class="countdown-grid">
+        <div class="cd-unit">
+          <div class="cd-number" id="days">--</div>
+          <div class="cd-label">Days</div>
+        </div>
+        <div class="cd-dot">·</div>
+        <div class="cd-unit">
+          <div class="cd-number" id="hours">--</div>
+          <div class="cd-label">Hours</div>
+        </div>
+        <div class="cd-dot">·</div>
+        <div class="cd-unit">
+          <div class="cd-number" id="minutes">--</div>
+          <div class="cd-label">Minutes</div>
+        </div>
+        <div class="cd-dot">·</div>
+        <div class="cd-unit">
+          <div class="cd-number" id="seconds">--</div>
+          <div class="cd-label">Seconds</div>
+        </div>
+      </div>
+
+      <p class="cd-tagline">Bhopal · Tuesday, 20 October 2026</p>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       VENUE
+  ══════════════════════════════════ -->
+  <section id="venue">
+
+    <div class="venue-arch-top" aria-hidden="true">
+      <svg viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <!-- parchment shape with curved bottom edge bowing up — masks countdown-to-venue transition -->
+        <path d="M0,0 L1200,0 L1200,80 Q600,28 0,80 Z" fill="#faf0e6"/>
+      </svg>
+    </div>
+
+    <div class="section-wrap reveal">
+      <p class="section-eyebrow light">The Celebration</p>
+
+      <h2 class="venue-name">Noor Us Sabah</h2>
+      <p class="venue-subtitle">Palace Hotel · Bhopal</p>
+
+      <div class="ornament-row gold">
+        <span class="orn-line"></span>
+        <span class="orn-gem">◆</span>
+        <span class="orn-line"></span>
+      </div>
+
+      <p class="venue-prose">
+        Perched on the shores of the Upper Lake, <em>Noor Us Sabah</em> — 
+        Light of the Morning — stands as Bhopal's most beloved heritage palace.
+        On an evening washed in amber and gold, we invite you to witness 
+        the beginning of our forever.
+      </p>
+
+      <div class="detail-list">
+        <div class="detail-item">
+          <span class="detail-icon">◈</span>
+          <div class="detail-body">
+            <span class="detail-label">DATE</span>
+            <span class="detail-value">Tuesday, 20 October 2026</span>
+          </div>
+        </div>
+        <div class="detail-item">
+          <span class="detail-icon">◈</span>
+          <div class="detail-body">
+            <span class="detail-label">TIME</span>
+            <!-- TODO: Update with confirmed event time -->
+            <span class="detail-value">Evening Onwards</span>
+          </div>
+        </div>
+        <div class="detail-item">
+          <span class="detail-icon">◈</span>
+          <div class="detail-body">
+            <span class="detail-label">VENUE</span>
+            <span class="detail-value">
+              Noor Us Sabah Palace Hotel<br>
+              VIP Road, Shamla Hills<br>
+              Bhopal, Madhya Pradesh — 462013
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <a href="https://maps.google.com/?q=Noor+Us+Sabah+Palace+Hotel+Bhopal" target="_blank" rel="noopener" class="directions-link">
+        Get Directions &nbsp;→
+      </a>
+
+    </div>
+
+    <div class="venue-arch-bot" aria-hidden="true">
+      <svg viewBox="0 0 1200 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <!-- parchment shape with curved top edge bowing down — masks venue-to-rsvp transition -->
+        <path d="M0,80 L1200,80 L1200,0 Q600,52 0,0 Z" fill="#faf0e6"/>
+      </svg>
+    </div>
+
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       RSVP
+  ══════════════════════════════════ -->
+  <section id="rsvp">
+    <div class="section-wrap reveal">
+
+      <p class="section-eyebrow">You're Invited</p>
+      <h2 class="section-heading">Join the Celebration</h2>
+      <div class="ornament-row muted">
+        <span class="orn-line"></span>
+        <span class="orn-gem">◆</span>
+        <span class="orn-line"></span>
+      </div>
+
+      <p class="rsvp-note">
+        Kindly respond by <strong>10 October 2026</strong> so we can make every moment perfect.
+      </p>
+
+      <form id="rsvp-form" class="rsvp-form" novalidate>
+
+        <div class="form-field">
+          <label for="f-name">Full Name</label>
+          <input type="text" id="f-name" name="name" placeholder="Your name" autocomplete="name" required>
+        </div>
+
+        <div class="form-field">
+          <label>Will you be joining us?</label>
+          <div class="radio-row">
+            <label class="radio-opt">
+              <input type="radio" name="attending" value="Yes" required>
+              <span class="radio-pip"></span>
+              Joyfully Attending
+            </label>
+            <label class="radio-opt">
+              <input type="radio" name="attending" value="No">
+              <span class="radio-pip"></span>
+              Regretfully Declining
+            </label>
+          </div>
+        </div>
+
+        <div class="form-field" id="guests-field" style="display:none">
+          <label for="f-guests">Number of Guests <span class="opt-note">(including yourself)</span></label>
+          <input type="number" id="f-guests" name="guests" min="1" max="10" placeholder="e.g. 2">
+        </div>
+
+        <div class="form-field">
+          <label for="f-msg">A Note for Us <span class="opt-note">(optional)</span></label>
+          <textarea id="f-msg" name="message" rows="3" placeholder="Share your wishes…"></textarea>
+        </div>
+
+        <button type="submit" class="rsvp-btn" id="rsvp-btn">
+          <span class="btn-text">Send RSVP</span>
+          <span class="btn-arrow">→</span>
+        </button>
+
+        <div class="form-feedback success" id="msg-success" hidden>
+          <p>🌸 Thank you! We cannot wait to celebrate with you.</p>
+        </div>
+        <div class="form-feedback error" id="msg-error" hidden>
+          <p>Something went wrong. Please try again or contact us directly.</p>
+        </div>
+
+      </form>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  <footer id="footer">
+    <p class="footer-hash">#NishKiNishaani</p>
+    <p class="footer-names">Nishita &amp; Nishant · 20.10.2026</p>
+    <p class="footer-city">Bhopal · The City of Lakes</p>
+    <p class="footer-made">Made with love ♡</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
