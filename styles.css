@@ -449,7 +449,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   right: clamp(30px, 5.5vmin, 50px);
 }
 
-/* Names: single line — inner text carries the shimmer so flourishes aren't clipped */
+/* Names row: baseline keeps “and” locked to first names;
+   each name is a column so surname sits underneath in normal flow */
 .cn-names {
   display: flex;
   flex-direction: row;
@@ -459,25 +460,27 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   gap: clamp(8px, 2vw, 18px);
   white-space: nowrap;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   overflow: visible;
 }
 .cn-name {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
   flex-shrink: 0;
   overflow: visible;
-  /* Generous box so Pinyon Script ascenders (the "t") never clip */
-  padding: 0.55em 0.2em 0.25em;
+  padding: 0.15em 0.15em 0.2em;
   line-height: 1;
+  gap: 0;
 }
 .cn-name__txt {
-  display: inline-block;
+  display: block;
   font-family: var(--ff-script);
   font-size: clamp(2.2rem, 8.5vw, 5.4rem);
-  /* Normal line-height + solid gold — background-clip / filter both cropped the "t" */
   line-height: normal;
-  padding: 0.2em 0.1em 0.1em;
+  padding: 0.4em 0.1em 0;
+  margin: 0 0 -0.06em;
   overflow: visible;
   color: #e8d090;
   -webkit-text-fill-color: #e8d090;
@@ -486,6 +489,27 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     0 0 18px rgba(201, 168, 76, 0.35),
     0 1px 0 rgba(90, 50, 10, 0.25);
   animation: nameGleam 5s ease-in-out infinite;
+}
+.cn-surname {
+  display: block;
+  position: relative;
+  width: auto;
+  margin: -0.22em 0 0;
+  padding: 0 0 0.2em;
+  font-family: var(--ff-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.05rem, 2.8vw, 1.45rem);
+  line-height: 1.3;
+  color: rgba(240, 210, 160, 0.85);
+  -webkit-text-fill-color: rgba(240, 210, 160, 0.85);
+  background: none;
+  text-shadow: none;
+  white-space: nowrap;
+  text-align: center;
+  pointer-events: none;
+  letter-spacing: 0;
+  overflow: visible;
 }
 @keyframes nameGleam {
   0%, 100% { text-shadow: 0 0 14px rgba(201,168,76,0.28), 0 1px 0 rgba(90,50,10,0.25); }
@@ -1186,6 +1210,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cn-name__txt  { font-size: clamp(1.75rem, 10vw, 2.6rem); }
   .cn-and   { font-size: 0.85rem; }
   .cn-post__txt  { font-size: clamp(0.95rem, 4vw, 1.2rem); letter-spacing: 0.06em; }
+  .cn-surname    { font-size: clamp(0.95rem, 4vw, 1.2rem); }
   .cn-corner { width: min(180px, 52vw); }
   .cn-fl--tl-h, .cn-fl--br-h { width: min(210px, 58vw); }
   .cn-fl--tl-v, .cn-fl--br-v { height: min(190px, 32vh); }

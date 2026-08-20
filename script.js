@@ -192,7 +192,7 @@ function rasterizeCard(card) {
     catch (e) { /* tainted */ }
   });
 
-  const textSel = 'p, .ci-hero, .ci-tag, .cn-name__txt, .cn-and, .cn-post__txt, .cs-label, .cs-day, .cs-month, .cs-year, .cc-num, .cc-uname, .ce-time, .ce-name, .cv-name, .cv-place, .cm-title';
+  const textSel = 'p, .ci-hero, .ci-tag, .cn-name__txt, .cn-surname, .cn-and, .cn-post__txt, .cs-label, .cs-day, .cs-month, .cs-year, .cc-num, .cc-uname, .ce-time, .ce-name, .cv-name, .cv-place, .cm-title';
   card.querySelectorAll(textSel).forEach(el => {
     const style = getComputedStyle(el);
     if (style.display === 'none' || style.visibility === 'hidden') return;
@@ -354,6 +354,10 @@ function finishAdvanceCommit() {
   markAllRevealed(frontCard());
   goIdle();
   lockAfterPage(1);
+  requestAnimationFrame(() => {
+    fitNameSurnames();
+    setTimeout(fitNameSurnames, 350);
+  });
 }
 
 function finishAdvanceCancel() {
@@ -373,6 +377,10 @@ function finishRetreatCommit() {
   markAllRevealed(frontCard());
   goIdle();
   lockAfterPage(-1);
+  requestAnimationFrame(() => {
+    fitNameSurnames();
+    setTimeout(fitNameSurnames, 350);
+  });
 }
 
 function finishRetreatCancel() {
@@ -503,6 +511,41 @@ function nudge(dir) {
 /* ── Bootstrap ───────────────────────────────────── */
 applyPositions();
 setTimeout(() => triggerReveals(cards[order[0]]), 400);
+
+/* Stretch each surname end-to-end under its first name via letter-spacing */
+function fitNameSurnames() {
+  document.querySelectorAll('.cn-name').forEach(wrap => {
+    const name = wrap.querySelector('.cn-name__txt');
+    const sur  = wrap.querySelector('.cn-surname');
+    if (!name || !sur) return;
+
+    /* Natural width first — never measure while width:100% */
+    sur.style.letterSpacing = '0px';
+    sur.style.width = 'auto';
+
+    const target = name.getBoundingClientRect().width;
+    const letters = Array.from(sur.textContent.trim());
+    if (letters.length < 2 || target < 4) return;
+
+    const base = sur.getBoundingClientRect().width;
+    if (base < 1) return;
+
+    /* ~40% of full end-to-end stretch — was too airy */
+    const full = Math.max(0, (target - base) / (letters.length - 1));
+    const spacing = full * 0.22;
+    sur.style.width = `${base + spacing * (letters.length - 1)}px`;
+    sur.style.textAlign = 'center';
+    sur.style.letterSpacing = `${spacing}px`;
+  });
+}
+fitNameSurnames();
+window.addEventListener('resize', fitNameSurnames);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(fitNameSurnames);
+}
+setTimeout(fitNameSurnames, 400);
+setTimeout(fitNameSurnames, 1000);
+setTimeout(fitNameSurnames, 1800);
 
 (function spawnPetals() {
   const layer = document.getElementById('cn-petals');
