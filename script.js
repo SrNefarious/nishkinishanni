@@ -49,12 +49,15 @@ let order = cards.map((_, i) => i);
 
 /* ════════════════════════════════════════════════════
    SCRUB MOTION ENGINE
-   progress 0→1 follows the gesture; reverse undoes it.
-   Settle: light momentum + 30% commit. Reverse = instant snap.
+   One gesture = one mode (advance OR retreat). Opposite
+   scroll only reduces progress; cancel snaps instantly.
+   Scatter only on leaving card 1. All retreats roll in.
    ════════════════════════════════════════════════════ */
-const COMMIT      = 0.30;
-const WHEEL_SCALE = 1 / 520;
-const SETTLE_MS   = 140;
+const COMMIT      = 0.28;
+const WHEEL_SCALE = 1 / 420;
+const SETTLE_MS   = 180;
+/* Pause between wheel events that means “new scroll”, not leftover flick */
+const NEW_GESTURE_MS = 160;
 
 let mode        = 'idle'; /* idle | advance | retreat */
 let progress    = 0;
@@ -62,17 +65,36 @@ let velocity    = 0;
 let lastT       = 0;
 let settling    = false;
 let settleTimer = null;
-let dissolve    = null;   /* live scatter of the REAL page (canvas slices) */
-let revealTarget = null;  /* card whose reveals scrub with progress */
+let animFrame   = null;
+let dissolve    = null;
+let revealTarget = null;
+let pageLocked  = false; /* this scroll stream already turned a page */
+let lockDir     = 0;     /* +1 advance lock, -1 retreat lock */
+let lastInputAt = 0;     /* for detecting a fresh scroll vs same flick */
+let touchX0     = null;
+
+function lockAfterPage(dir) {
+  pageLocked = true;
+  lockDir = dir;
+  /* Restart gesture clock so settle-time gaps don't look like a new scroll */
+  lastInputAt = performance.now();
+}
+
+function releasePageLock() {
+  pageLocked = false;
+  lockDir = 0;
+}
 
 function pad(n) { return String(n).padStart(2, '0'); }
 function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
 function frontCard() { return cards[order[0]]; }
 function prevCard()  { return cards[order[order.length - 1]]; }
 function nextCard()  { return cards[order[1]]; }
+function canRetreat() { return order[0] > 0; }
+function canAdvance() { return order[0] < TOTAL - 1; }
 
 function applyPositions() {
-  order.forEach((cardIdx, pos) => { cards[cardIdx].dataset.pos = pos; });
+  order.forEach((cardIdx, pos) => { cards[cardIdx].dataset.pos = String(pos); });
 }
 
 function resetReveals(cardEl) {
@@ -86,41 +108,64 @@ function triggerReveals(cardEl) {
   });
 }
 
-/* Map progress → next-page reveals (play WITH the motion, not after) */
 function scrubReveals(cardEl, p) {
   if (!cardEl) return;
   cardEl.querySelectorAll('[data-r]').forEach(el => {
     const delay = parseInt(el.dataset.d, 10) || 0;
-    /* delay 0 → ~15% progress; delay 1000 → ~75% */
     const threshold = 0.12 + Math.min(1, delay / 1200) * 0.65;
     if (p >= threshold) el.classList.add('revealed');
     else el.classList.remove('revealed');
   });
 }
 
-function clearScrubReveals() {
-  if (!revealTarget) return;
-  resetReveals(revealTarget);
-  revealTarget = null;
+function markAllRevealed(cardEl) {
+  cardEl.querySelectorAll('[data-r]').forEach(el => el.classList.add('revealed'));
 }
 
-/* ── Rasterize a card to canvas, then slice into tiles ─ */
+/* Strip every scrub-related inline style so nothing can stick mid-way */
+function hardResetChrome() {
+  if (animFrame) {
+    cancelAnimationFrame(animFrame);
+    animFrame = null;
+  }
+  clearTimeout(settleTimer);
+  settleTimer = null;
+
+  if (dissolve) {
+    dissolve.tiles.forEach(({ el }) => el.parentNode && el.parentNode.removeChild(el));
+    dissolve = null;
+  }
+  document.querySelectorAll('.scrub-tile').forEach(el => el.remove());
+
+  cards.forEach(card => {
+    card.classList.remove('is-scrubbing', 'no-transition');
+    card.style.transform = '';
+    card.style.borderRadius = '';
+    card.style.opacity = '';
+    card.style.zIndex = '';
+    card.style.pointerEvents = '';
+    card.style.visibility = '';
+  });
+
+  revealTarget = null;
+  applyPositions();
+}
+
+/* ── Rasterize (advance from card 1 only) ─────────── */
 function rasterizeCard(card) {
   const W = window.innerWidth;
   const H = window.innerHeight;
-  const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+  const dpr = Math.min(1, window.devicePixelRatio || 1);
   const canvas = document.createElement('canvas');
   canvas.width  = Math.floor(W * dpr);
   canvas.height = Math.floor(H * dpr);
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  /* Paint background from theme */
   const theme = card.dataset.theme;
   if (theme === 'invite') {
     ctx.fillStyle = '#f4e8d4';
     ctx.fillRect(0, 0, W, H);
-    /* subtle dots */
     ctx.fillStyle = 'rgba(155,110,50,0.09)';
     for (let y = 0; y < H; y += 22)
       for (let x = 0; x < W; x += 22) {
@@ -140,7 +185,6 @@ function rasterizeCard(card) {
     ctx.fillRect(0, 0, W, H);
   }
 
-  /* Images (monogram, florals, etc.) */
   card.querySelectorAll('img').forEach(img => {
     if (!img.naturalWidth) return;
     const r = img.getBoundingClientRect();
@@ -148,7 +192,6 @@ function rasterizeCard(card) {
     catch (e) { /* tainted */ }
   });
 
-  /* Text */
   const textSel = 'p, .ci-hero, .ci-tag, .cn-name__txt, .cn-and, .cn-post__txt, .cs-label, .cs-day, .cs-month, .cs-year, .cc-num, .cc-uname, .ce-time, .ce-name, .cv-name, .cv-place, .cm-title';
   card.querySelectorAll(textSel).forEach(el => {
     const style = getComputedStyle(el);
@@ -176,9 +219,10 @@ function rasterizeCard(card) {
 function ensureDissolve(sourceCard) {
   if (dissolve) return;
   const departing = sourceCard || frontCard();
+  /* Rasterize WHILE still visible, then cover with tiles, then hide */
   const { canvas, W, H } = rasterizeCard(departing);
-  const url = canvas.toDataURL('image/jpeg', 0.82);
-  const TILE = 52;
+  const url = canvas.toDataURL('image/jpeg', 0.72);
+  const TILE = 64;
   const cols = Math.ceil(W / TILE) + 1;
   const rows = Math.ceil(H / TILE) + 1;
   const cx = W / 2;
@@ -218,7 +262,6 @@ function ensureDissolve(sourceCard) {
   }
   document.body.appendChild(frag);
 
-  /* Hide original only after tiles are in the DOM covering it */
   departing.classList.add('is-scrubbing');
   departing.style.visibility = 'hidden';
   departing.style.pointerEvents = 'none';
@@ -235,51 +278,18 @@ function applyDissolveProgress(p) {
   });
 }
 
-function teardownDissolve() {
-  if (!dissolve) return;
-  dissolve.tiles.forEach(({ el }) => el.parentNode && el.parentNode.removeChild(el));
-  const d = dissolve.departing;
-  d.classList.remove('is-scrubbing');
-  d.style.visibility = '';
-  d.style.pointerEvents = '';
-  d.style.opacity = '';
-  d.style.zIndex = '';
-  dissolve = null;
-}
-
-function clearFrontInline() {
-  const f = frontCard();
-  f.classList.remove('is-scrubbing');
-  f.style.transform = '';
-  f.style.borderRadius = '';
-  f.style.opacity = '';
-  f.style.zIndex = '';
-  f.style.pointerEvents = '';
-  f.style.visibility = '';
-}
-
-function clearPrevInline() {
-  if (order[0] <= 0) return;
-  const p = prevCard();
-  p.classList.remove('is-scrubbing');
-  p.style.transform = '';
-  p.style.borderRadius = '';
-  p.style.opacity = '';
-  p.style.zIndex = '';
-  p.style.pointerEvents = '';
-  p.style.visibility = '';
-}
-
-/* Retreat to page 1 uses scatter (not roll) */
-function isScatterRetreat() {
-  return mode === 'retreat' && order[0] === 1;
+function armPrevCard(prev) {
+  prev.classList.add('is-scrubbing');
+  prev.style.visibility = 'visible';
+  prev.style.opacity = '1';
+  prev.style.pointerEvents = 'none';
+  prev.style.zIndex = '12';
 }
 
 function applyScrubVisual() {
   const p = progress;
 
   if (mode === 'advance') {
-    /* Incoming page reveals scrub with motion */
     if (!revealTarget && order[1] !== undefined) {
       revealTarget = nextCard();
       resetReveals(revealTarget);
@@ -300,30 +310,10 @@ function applyScrubVisual() {
   }
 
   if (mode === 'retreat') {
-    if (isScatterRetreat()) {
-      /* Page 2 → 1: scatter the names page, invite waits underneath */
-      const prev = prevCard(); /* card 0 */
-      prev.style.zIndex = '9';
-      prev.style.opacity = '1';
-      prev.dataset.pos = '1'; /* keep under, visible through scatter */
-
-      if (!dissolve) ensureDissolve(frontCard()); /* scatter page 2 */
-      applyDissolveProgress(p);
-
-      if (!revealTarget) {
-        revealTarget = prev;
-        resetReveals(revealTarget);
-      }
-      scrubReveals(revealTarget, p);
-      return;
-    }
-
-    /* Normal retreat roll for other pages */
+    /* Every retreat (including 2→1) rolls the previous card in from the left.
+       Scatter-on-retreat was flashing the wrong under-card (page 3). */
     const prev = prevCard();
-    prev.classList.add('is-scrubbing');
-    prev.style.zIndex = '12';
-    prev.style.opacity = '1';
-    prev.style.pointerEvents = 'none';
+    armPrevCard(prev);
     const t = 1 - p;
     prev.style.transform = `translateX(${-105 * t}%) rotate(${-14 * t}deg)`;
     prev.style.borderRadius = `${28 * t}px`;
@@ -341,110 +331,80 @@ function setProgress(p) {
   applyScrubVisual();
 }
 
-function finishAdvanceCommit() {
-  clearScrubReveals();
-  if (order[0] === 0) {
-    const departed = dissolve ? dissolve.departing : frontCard();
-    teardownDissolve();
-    order.push(order.shift());
-    applyPositions();
-    resetReveals(departed);
-    departed.classList.add('no-transition');
-    departed.style.transform = '';
-    departed.style.borderRadius = '';
-    departed.style.opacity = '';
-    departed.style.visibility = '';
-    departed.getBoundingClientRect();
-    departed.classList.remove('no-transition');
-  } else {
-    const departed = frontCard();
-    clearFrontInline();
-    order.push(order.shift());
-    applyPositions();
-    resetReveals(departed);
-  }
-  /* Reveals already scrubbed in — ensure all on */
-  frontCard().querySelectorAll('[data-r]').forEach(el => el.classList.add('revealed'));
+function goIdle() {
   mode = 'idle';
   progress = 0;
   velocity = 0;
   settling = false;
 }
 
-function finishAdvanceCancel() {
-  /* Instant — no spring animation */
-  clearScrubReveals();
-  if (order[0] === 0 || dissolve) teardownDissolve();
-  else clearFrontInline();
-  mode = 'idle';
-  progress = 0;
-  velocity = 0;
-  settling = false;
+function finishAdvanceCommit() {
+  const departed = order[0] === 0 && dissolve ? dissolve.departing : frontCard();
+  hardResetChrome();
+  order.push(order.shift());
+  applyPositions();
+  resetReveals(departed);
+  markAllRevealed(frontCard());
+  goIdle();
+  lockAfterPage(1);
+}
+  const incoming = order[1] !== undefined ? cards[order[1]] : null;
+  hardResetChrome();
+  if (incoming) resetReveals(incoming);
+  markAllRevealed(frontCard());
+  goIdle();
 }
 
 function finishRetreatCommit() {
-  const usedScatter = mode === 'retreat' && order[0] === 1;
-  clearScrubReveals();
-  if (usedScatter || dissolve) {
-    const departed = dissolve ? dissolve.departing : frontCard();
-    teardownDissolve();
-    clearFrontInline();
-    order.unshift(order.pop());
-    applyPositions();
-    resetReveals(departed);
-    departed.style.visibility = '';
-  } else {
-    clearPrevInline();
-    order.unshift(order.pop());
-    applyPositions();
-  }
-  frontCard().querySelectorAll('[data-r]').forEach(el => el.classList.add('revealed'));
-  mode = 'idle';
-  progress = 0;
-  velocity = 0;
-  settling = false;
+  const departed = frontCard();
+  hardResetChrome();
+  order.unshift(order.pop());
+  applyPositions();
+  resetReveals(departed);
+  markAllRevealed(frontCard());
+  goIdle();
+  lockAfterPage(-1);
 }
 
 function finishRetreatCancel() {
-  /* Instant — no spring animation */
-  clearScrubReveals();
-  if (dissolve) teardownDissolve();
-  clearPrevInline();
-  clearFrontInline();
-  applyPositions();
-  mode = 'idle';
-  progress = 0;
-  velocity = 0;
-  settling = false;
+  const incoming = canRetreat() ? prevCard() : null;
+  hardResetChrome();
+  if (incoming) resetReveals(incoming);
+  markAllRevealed(frontCard());
+  goIdle();
 }
 
 function animateTo(target, onDone) {
-  /* Only used for forward commit settle — reverse cancels are instant */
   settling = true;
+  clearTimeout(settleTimer);
+  if (animFrame) cancelAnimationFrame(animFrame);
   const start = progress;
-  const dur = 340;
+  const dur = target >= 1 ? 320 : 1; /* cancel path unused — kept instant via onDone */
   const t0 = performance.now();
   function frame(now) {
-    const t = Math.min(1, (now - t0) / dur);
+    const t = Math.min(1, (now - t0) / Math.max(dur, 1));
     const ease = 1 - Math.pow(1 - t, 3);
     setProgress(start + (target - start) * ease);
-    if (t < 1) requestAnimationFrame(frame);
-    else onDone();
+    if (t < 1) {
+      animFrame = requestAnimationFrame(frame);
+    } else {
+      animFrame = null;
+      onDone();
+    }
   }
-  requestAnimationFrame(frame);
+  animFrame = requestAnimationFrame(frame);
 }
 
 function settle() {
   if (settling || mode === 'idle') return;
-  const projected = progress + velocity * 4;
-  const shouldCommit = projected >= COMMIT || progress >= COMMIT;
+  const shouldCommit = progress >= COMMIT || (progress + velocity * 5) >= COMMIT;
 
   if (mode === 'advance') {
     if (shouldCommit) animateTo(1, finishAdvanceCommit);
-    else finishAdvanceCancel(); /* reverse / cancel = instant */
+    else finishAdvanceCancel();
   } else if (mode === 'retreat') {
     if (shouldCommit) animateTo(1, finishRetreatCommit);
-    else finishRetreatCancel(); /* instant */
+    else finishRetreatCancel();
   }
 }
 
@@ -454,23 +414,43 @@ function scheduleSettle() {
 }
 
 function onDelta(rawDelta, dtMs) {
-  if (settling) return;
+  if (!rawDelta) return;
 
   const now = performance.now();
+  const gap = lastInputAt ? now - lastInputAt : Infinity;
+  lastInputAt = now;
+
+  /*
+   * One continuous scroll stream → at most one page.
+   * Same-direction leftover flick is ignored.
+   * Opposite direction = intentional reverse → unlock immediately
+   * (no need to move the mouse).
+   * Same direction after a short pause = new scroll → unlock.
+   */
+  const dir = rawDelta > 0 ? 1 : -1;
+  if (pageLocked) {
+    const opposite = lockDir && dir !== lockDir;
+    const fresh = gap >= NEW_GESTURE_MS;
+    if (!opposite && !fresh) return;
+    pageLocked = false;
+    lockDir = 0;
+  }
+
+  if (settling) return;
+
   const dt = Math.max(8, dtMs || (now - lastT) || 16);
   lastT = now;
 
+  /* Lock mode for the whole gesture — never flip advance↔retreat mid-way */
   if (mode === 'idle') {
     if (rawDelta > 0) {
-      if (order[0] >= TOTAL - 1) return;
+      if (!canAdvance()) return;
       mode = 'advance';
       progress = 0;
-    } else if (rawDelta < 0) {
-      if (order[0] <= 0) return;
+    } else {
+      if (!canRetreat()) return;
       mode = 'retreat';
       progress = 0;
-    } else {
-      return;
     }
   }
 
@@ -487,20 +467,26 @@ function onDelta(rawDelta, dtMs) {
     return;
   }
 
+  if (progress >= 0.999) {
+    if (mode === 'advance') finishAdvanceCommit();
+    else finishRetreatCommit();
+    return;
+  }
+
   scheduleSettle();
 }
 
 function nudge(dir) {
-  if (settling) return;
+  if (settling || pageLocked) return;
   if (dir > 0) {
-    if (order[0] >= TOTAL - 1) return;
+    if (!canAdvance()) return;
+    if (mode === 'retreat') return;
     if (mode === 'idle') { mode = 'advance'; progress = 0; }
-    if (mode !== 'advance') return;
     animateTo(1, finishAdvanceCommit);
   } else {
-    if (order[0] <= 0) return;
+    if (!canRetreat()) return;
+    if (mode === 'advance') return;
     if (mode === 'idle') { mode = 'retreat'; progress = 0; }
-    if (mode !== 'retreat') return;
     animateTo(1, finishRetreatCommit);
   }
 }
@@ -533,10 +519,13 @@ setTimeout(() => triggerReveals(cards[order[0]]), 400);
 window.addEventListener('wheel', e => {
   if (e.target.closest && e.target.closest('input, textarea, select')) return;
   e.preventDefault();
-  onDelta(e.deltaY * WHEEL_SCALE, 16);
+  let dy = e.deltaY;
+  /* Normalize line/page deltas so mice aren't almost no-ops */
+  if (e.deltaMode === 1) dy *= 16;
+  else if (e.deltaMode === 2) dy *= window.innerHeight;
+  onDelta(dy * WHEEL_SCALE, 16);
 }, { passive: false });
 
-let touchX0 = null;
 let touchLastX = null;
 let touchLastY = null;
 let touchLastT = 0;
@@ -580,6 +569,8 @@ window.addEventListener('touchend', () => {
   if (touchX0 === null) return;
   touchX0 = touchLastX = touchLastY = null;
   scheduleSettle();
+  /* Finger up ends the gesture — next swipe needs a new touchstart */
+  releasePageLock();
 }, { passive: true });
 
 window.addEventListener('keydown', e => {
@@ -589,6 +580,12 @@ window.addEventListener('keydown', e => {
   } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
     e.preventDefault();
     nudge(-1);
+  }
+});
+
+window.addEventListener('keyup', e => {
+  if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', ' ', 'PageDown', 'PageUp'].includes(e.key)) {
+    releasePageLock();
   }
 });
 
