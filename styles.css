@@ -692,12 +692,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 
 /* ════════════════════════════════════════════════════
-   CARD 3 — SAVE THE DATE  ·  Near-black + gold reveal
+   CARD 3 — SAVE THE DATE  ·  Dark wine + gold reveal
    ════════════════════════════════════════════════════ */
 [data-theme="date"] {
   background:
-    radial-gradient(ellipse 70% 60% at 50% 60%, rgba(180,140,40,0.05) 0%, transparent 70%),
-    #0d0b09;
+    radial-gradient(ellipse 75% 55% at 50% 45%, rgba(90, 28, 42, 0.45) 0%, transparent 68%),
+    radial-gradient(ellipse 50% 40% at 50% 80%, rgba(201, 168, 76, 0.04) 0%, transparent 70%),
+    linear-gradient(165deg, #1c0a10 0%, #14060c 45%, #0f0509 100%);
 }
 .cs-body {
   justify-content: flex-start;
@@ -705,21 +706,59 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .cs-label {
   font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
+  font-size: clamp(0.58rem, 1.25vw, 0.72rem);
   font-weight: 300;
-  letter-spacing: 0.65em;
+  letter-spacing: 0.55em;
   text-transform: uppercase;
-  color: rgba(201,168,76,0.4);
-  margin-bottom: clamp(16px, 4vh, 40px);
+  color: rgba(232, 210, 150, 0.82);
+  margin-bottom: clamp(10px, 2vh, 18px);
+  text-shadow: 0 0 18px rgba(201, 168, 76, 0.18);
 }
+
+/* Quiet hairline between label and date — fills the gap without stealing focus */
+.cs-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: clamp(72px, 16vw, 120px);
+  margin: 0 auto clamp(14px, 3.2vh, 28px);
+  transform-origin: center;
+}
+.cs-rule__arm {
+  flex: 1;
+  height: 1px;
+  font-style: normal;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(201, 168, 76, 0.18) 40%,
+    rgba(201, 168, 76, 0.32) 100%);
+}
+.cs-rule__arm:last-child {
+  background: linear-gradient(90deg,
+    rgba(201, 168, 76, 0.32) 0%,
+    rgba(201, 168, 76, 0.18) 60%,
+    transparent 100%);
+}
+.cs-rule__dot {
+  width: 3px;
+  height: 3px;
+  flex-shrink: 0;
+  font-style: normal;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  transform: rotate(45deg);
+  background: transparent;
+}
+
 .cs-date {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: clamp(0px, 0.8vh, 8px);
 }
-/* The enormous "20" — outline only, very editorial */
+/* The enormous "20" — outline with soft traveling glow */
 .cs-day {
+  position: relative;
   display: block;
   font-family: var(--ff-serif);
   font-weight: 300;
@@ -727,7 +766,69 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   line-height: 0.82;
   letter-spacing: -0.04em;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(201,168,76,0.55);
+  -webkit-text-stroke: 1.15px rgba(201, 168, 76, 0.62);
+  filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.22));
+  animation: dayStrokePulse 4.5s ease-in-out infinite;
+}
+.cs-day::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  color: transparent;
+  -webkit-text-stroke: 1.6px rgba(255, 236, 190, 0.95);
+  pointer-events: none;
+  /* Moving highlight along the outline */
+  -webkit-mask-image: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 38%,
+    #000 48%,
+    #000 52%,
+    transparent 62%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 38%,
+    #000 48%,
+    #000 52%,
+    transparent 62%,
+    transparent 100%
+  );
+  -webkit-mask-size: 220% 100%;
+  mask-size: 220% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: dayStrokeShine 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(255, 230, 170, 0.55));
+}
+@keyframes dayStrokePulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(201, 168, 76, 0.16));
+    -webkit-text-stroke-color: rgba(201, 168, 76, 0.55);
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(232, 210, 150, 0.38));
+    -webkit-text-stroke-color: rgba(232, 210, 150, 0.78);
+  }
+}
+@keyframes dayStrokeShine {
+  0%, 100% {
+    -webkit-mask-position: 120% 0;
+    mask-position: 120% 0;
+    opacity: 0.35;
+  }
+  45%, 55% {
+    opacity: 0.95;
+  }
+  50% {
+    -webkit-mask-position: -20% 0;
+    mask-position: -20% 0;
+  }
 }
 .cs-month {
   font-family: var(--ff-serif);
@@ -736,16 +837,16 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   font-weight: 300;
   color: var(--gold-lt);
   letter-spacing: 0.06em;
-  /* clip-path wipe needs inline-block */
   display: inline-block;
 }
 .cs-year {
   font-family: var(--ff-sans);
-  font-size: clamp(0.55rem, 1.3vw, 0.75rem);
-  font-weight: 200;
-  letter-spacing: 0.7em;
-  color: rgba(201,168,76,0.5);
+  font-size: clamp(0.68rem, 1.5vw, 0.88rem);
+  font-weight: 300;
+  letter-spacing: 0.55em;
+  color: rgba(232, 210, 150, 0.78);
   display: inline-block;
+  text-shadow: 0 0 14px rgba(201, 168, 76, 0.2);
 }
 
 
