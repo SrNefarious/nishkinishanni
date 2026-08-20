@@ -10,7 +10,7 @@
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Pinyon+Script&family=Jost:wght@200;300;400&family=Noto+Sans+Devanagari:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Pinyon+Script&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,154 +20,24 @@
   ══════════════════════════════════ -->
   <section id="hero">
 
-    <!-- Sky gradient (fades in as diya lights it up) -->
-    <div class="sky-layer" data-parallax="0.25"></div>
+    <!-- Sky gradient -->
+    <div class="sky-layer" data-parallax="0.22"></div>
 
-    <!-- Stars (top 60% of hero) -->
-    <div class="stars-layer" data-parallax="0.4"></div>
+    <!-- Stars -->
+    <div class="stars-layer" data-parallax="0.38"></div>
 
-    <!-- Palace SVG silhouette -->
-    <div class="palace-layer" data-parallax="-0.08">
-      <svg class="palace-svg" viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax slice">
-        <defs>
-          <linearGradient id="palaceGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#1a0a0e"/>
-            <stop offset="100%" stop-color="#0a0305"/>
-          </linearGradient>
-          <linearGradient id="rimLight" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0%" stop-color="transparent"/>
-            <stop offset="100%" stop-color="rgba(201,150,80,0.15)"/>
-          </linearGradient>
-          <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#d4885e" stop-opacity="0.55"/>
-            <stop offset="30%"  stop-color="#9a5a3a" stop-opacity="0.4"/>
-            <stop offset="70%"  stop-color="#4a2510" stop-opacity="0.65"/>
-            <stop offset="100%" stop-color="#0f0408" stop-opacity="0.95"/>
-          </linearGradient>
-          <linearGradient id="reflectFade" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="rgba(200,130,80,0.3)"/>
-            <stop offset="60%"  stop-color="rgba(100,50,20,0.1)"/>
-            <stop offset="100%" stop-color="rgba(10,3,5,0)"/>
-          </linearGradient>
-          <clipPath id="waterClip">
-            <rect x="0" y="420" width="1200" height="80"/>
-          </clipPath>
-        </defs>
+    <!-- Warm atmospheric glow near horizon -->
+    <div class="horizon-glow" data-parallax="0.1"></div>
 
-        <!-- Palace silhouette -->
-        <path fill="url(#palaceGrad)" d="
-          M 0,500 L 0,420
-          L 45,420 L 45,390 L 65,390 L 65,420 L 82,420
+    <!-- Dark vignette at very bottom (ground/water feel) -->
+    <div class="ground-shadow"></div>
 
-          L 82,138
-          Q 127,88 172,138
-          L 172,420 L 190,420
-
-          L 190,272
-          L 200,272 L 200,250 L 222,250 L 222,272
-          L 258,272 L 258,250 L 280,250 L 280,272
-          L 316,272 L 316,250 L 338,250 L 338,272
-          L 374,272 L 374,250 L 396,250 L 396,272
-          L 408,272 L 408,248
-          Q 420,224 432,248
-          L 432,272
-          L 450,272 L 450,198 L 462,198 L 462,172
-
-          C 468,98 534,42 600,32
-          C 666,42 732,98 738,172
-
-          L 738,198 L 750,198 L 750,272
-          L 768,272 L 768,248
-          Q 780,224 792,248
-          L 792,272
-          L 804,272 L 804,250 L 826,250 L 826,272
-          L 862,272 L 862,250 L 884,250 L 884,272
-          L 920,272 L 920,250 L 942,250 L 942,272
-          L 978,272 L 978,250 L 1000,250 L 1000,272
-          L 1010,272 L 1010,420 L 1028,420
-
-          L 1028,138
-          Q 1073,88 1118,138
-          L 1118,420 L 1135,420 L 1135,390 L 1155,390 L 1155,420
-
-          L 1200,420 L 1200,500 Z
-        "/>
-
-        <!-- Rim light overlay on palace edges -->
-        <path fill="url(#rimLight)" d="
-          M 0,500 L 0,420
-          L 45,420 L 45,390 L 65,390 L 65,420 L 82,420
-          L 82,138 Q 127,88 172,138
-          L 172,420 L 190,420 L 190,272
-          L 200,272 L 200,250 L 222,250 L 222,272
-          L 258,272 L 258,250 L 280,250 L 280,272
-          L 316,272 L 316,250 L 338,250 L 338,272
-          L 374,272 L 374,250 L 396,250 L 396,272
-          L 408,272 L 408,248 Q 420,224 432,248 L 432,272
-          L 450,272 L 450,198 L 462,198 L 462,172
-          C 468,98 534,42 600,32
-          C 666,42 732,98 738,172
-          L 738,198 L 750,198 L 750,272
-          L 768,272 L 768,248 Q 780,224 792,248 L 792,272
-          L 804,272 L 804,250 L 826,250 L 826,272
-          L 862,272 L 862,250 L 884,250 L 884,272
-          L 920,272 L 920,250 L 942,250 L 942,272
-          L 978,272 L 978,250 L 1000,250 L 1000,272
-          L 1010,272 L 1010,420 L 1028,420
-          L 1028,138 Q 1073,88 1118,138
-          L 1118,420 L 1135,420 L 1135,390 L 1155,390 L 1155,420
-          L 1200,420 L 1200,500 Z
-        " opacity="0.6"/>
-
-        <!-- Arched windows (warm glow) -->
-        <g class="windows" opacity="0.55">
-          <ellipse cx="232" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="215" y="334" width="34" height="56" fill="#d4805a"/>
-          <ellipse cx="292" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="275" y="334" width="34" height="56" fill="#d4805a"/>
-          <ellipse cx="352" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="335" y="334" width="34" height="56" fill="#d4805a"/>
-          <ellipse cx="852" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="835" y="334" width="34" height="56" fill="#d4805a"/>
-          <ellipse cx="912" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="895" y="334" width="34" height="56" fill="#d4805a"/>
-          <ellipse cx="972" cy="334" rx="17" ry="22" fill="#d4805a"/><rect x="955" y="334" width="34" height="56" fill="#d4805a"/>
-        </g>
-
-        <!-- Reflection in water -->
-        <g clip-path="url(#waterClip)">
-          <rect x="0" y="420" width="1200" height="80" fill="url(#waterGrad)"/>
-          <g transform="translate(0,840) scale(1,-1)" opacity="0.18">
-            <path fill="#c87040" d="
-              M 0,500 L 0,420 L 45,420 L 45,390 L 65,390 L 65,420 L 82,420
-              L 82,138 Q 127,88 172,138 L 172,420 L 190,420 L 190,272
-              L 396,272 L 396,250 L 374,250 L 374,272
-              L 450,272 L 450,198 L 462,198 L 462,172
-              C 468,98 534,42 600,32 C 666,42 732,98 738,172
-              L 738,198 L 750,198 L 750,272
-              L 804,272 L 804,250 L 826,250 L 826,272 L 1010,272
-              L 1010,420 L 1028,420
-              L 1028,138 Q 1073,88 1118,138 L 1118,420 L 1135,420 L 1135,390 L 1155,390 L 1155,420
-              L 1200,420 L 1200,500 Z
-            "/>
-          </g>
-          <!-- Water shimmer lines -->
-          <line x1="0" y1="428" x2="1200" y2="428" stroke="rgba(220,160,90,0.15)" stroke-width="1"/>
-          <line x1="0" y1="438" x2="1200" y2="438" stroke="rgba(220,160,90,0.10)" stroke-width="1"/>
-          <line x1="0" y1="450" x2="1200" y2="450" stroke="rgba(220,160,90,0.07)" stroke-width="1"/>
-          <line x1="0" y1="465" x2="1200" y2="465" stroke="rgba(220,160,90,0.05)" stroke-width="1"/>
-        </g>
-
-      </svg>
-    </div>
-
-    <!-- Corner floral decorations (SVG injected via JS) -->
-    <div class="floral-corner floral-tl" aria-hidden="true"></div>
-    <div class="floral-corner floral-tr" aria-hidden="true"></div>
-    <div class="floral-corner floral-bl" aria-hidden="true"></div>
-    <div class="floral-corner floral-br" aria-hidden="true"></div>
-
-    <!-- Ornate border frame -->
+    <!-- Ornate double-border frame with corner marks -->
     <div class="hero-frame" aria-hidden="true">
-      <span class="frame-corner fc-tl">✦</span>
-      <span class="frame-corner fc-tr">✦</span>
-      <span class="frame-corner fc-bl">✦</span>
-      <span class="frame-corner fc-br">✦</span>
+      <span class="cm cm-tl">✦</span>
+      <span class="cm cm-tr">✦</span>
+      <span class="cm cm-bl">✦</span>
+      <span class="cm cm-br">✦</span>
     </div>
 
     <!-- Diya lighting animation -->
@@ -186,22 +56,15 @@
         <p class="eyebrow-label">— SAVE THE DATE —</p>
         <p class="hero-subline">for our engagement</p>
 
-        <div class="monogram" aria-label="Ni and N monogram">
-          <span class="mono-deva">नि</span>
-          <span class="mono-heart">♡</span>
-          <span class="mono-n">N</span>
-        </div>
-
-        <div class="names-row">
-          <div class="name-unit">
-            <span class="name-deva">निशिता</span>
-            <span class="name-script">Nishita</span>
+        <!-- Stacked names — the centrepiece -->
+        <div class="names-stack">
+          <span class="name-script">Nishita</span>
+          <div class="names-join" aria-hidden="true">
+            <span class="join-line"></span>
+            <span class="join-heart">♡</span>
+            <span class="join-line"></span>
           </div>
-          <div class="names-divider" aria-hidden="true">⬡</div>
-          <div class="name-unit">
-            <span class="name-deva">निशांत</span>
-            <span class="name-script">Nishant</span>
-          </div>
+          <span class="name-script">Nishant</span>
         </div>
 
         <p class="getting-engaged">ARE GETTING ENGAGED</p>

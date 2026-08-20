@@ -103,17 +103,6 @@ const EVENT_DATE = new Date('2026-10-20T18:00:00+05:30');
 
   if (!layers.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  // The palace-layer animation uses transform; once it ends we remove the
-  // animation so the JS inline style can drive parallax without conflict.
-  const palace = hero.querySelector('.palace-layer');
-  if (palace) {
-    palace.addEventListener('animationend', () => {
-      palace.style.animation = 'none';
-      palace.style.opacity   = '1';
-      palace.style.transform = 'translateX(-50%) translateY(0)';
-    }, { once: true });
-  }
-
   let ticking = false;
 
   window.addEventListener('scroll', () => {
@@ -122,9 +111,7 @@ const EVENT_DATE = new Date('2026-10-20T18:00:00+05:30');
         const scrollY = window.scrollY;
         layers.forEach(el => {
           const speed = parseFloat(el.dataset.parallax) || 0;
-          el.style.transform = el.classList.contains('palace-layer')
-            ? `translateX(-50%) translateY(${scrollY * speed}px)`
-            : `translateY(${scrollY * speed}px)`;
+          el.style.transform = `translateY(${scrollY * speed}px)`;
         });
         ticking = false;
       });
@@ -198,59 +185,7 @@ const EVENT_DATE = new Date('2026-10-20T18:00:00+05:30');
 })();
 
 
-/* ════════════════════════════════════════════════
-   FLORAL CORNER SVG
-   ════════════════════════════════════════════════ */
-(function drawFloral() {
-  const floralSVG = `
-    <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg" role="presentation">
-      <!-- Main stems -->
-      <path d="M 8,8 C 30,24 55,55 92,78" stroke="#9b4f6a" stroke-width="1.1" fill="none" opacity="0.45"/>
-      <path d="M 8,8 C 24,30 50,68 72,100" stroke="#9b4f6a" stroke-width="1.1" fill="none" opacity="0.4"/>
-      <path d="M 8,8 C 22,18 46,30 65,42"  stroke="#c9a84c" stroke-width="0.9" fill="none" opacity="0.38"/>
-      <path d="M 8,8 C 16,26 30,48 42,72"  stroke="#c9a84c" stroke-width="0.9" fill="none" opacity="0.32"/>
-      <!-- Smaller branch -->
-      <path d="M 32,30 C 42,25 58,28 68,36" stroke="#9b4f6a" stroke-width="0.7" fill="none" opacity="0.28"/>
-      <path d="M 28,48 C 22,58 30,72 38,80"  stroke="#c4849a" stroke-width="0.7" fill="none" opacity="0.25"/>
-
-      <!-- Leaves -->
-      <ellipse cx="68" cy="50" rx="10" ry="4.5" transform="rotate(-35,68,50)" fill="#6b1a33" opacity="0.22"/>
-      <ellipse cx="46" cy="74" rx="9"  ry="4"   transform="rotate(18,46,74)"  fill="#6b1a33" opacity="0.2"/>
-      <ellipse cx="80" cy="68" rx="8"  ry="3.5" transform="rotate(-55,80,68)" fill="#6b1a33" opacity="0.18"/>
-
-      <!-- Large flowers -->
-      <circle cx="92" cy="78" r="8"   fill="#9b4f6a" opacity="0.65"/>
-      <circle cx="92" cy="78" r="4"   fill="#e8c5b5" opacity="0.85"/>
-      <circle cx="72" cy="100" r="7"  fill="#9b4f6a" opacity="0.58"/>
-      <circle cx="72" cy="100" r="3.5" fill="#e8c5b5" opacity="0.8"/>
-
-      <!-- Medium flowers -->
-      <circle cx="65" cy="42" r="5.5" fill="#c9a84c" opacity="0.6"/>
-      <circle cx="65" cy="42" r="2.5" fill="#faf0e6" opacity="0.9"/>
-      <circle cx="42" cy="72" r="4.5" fill="#c9a84c" opacity="0.5"/>
-
-      <!-- Petals on large flowers -->
-      <circle cx="84" cy="72" r="3.5" fill="#c4849a" opacity="0.45"/>
-      <circle cx="100" cy="72" r="3.5" fill="#c4849a" opacity="0.4"/>
-      <circle cx="88" cy="88" r="3.5" fill="#c4849a" opacity="0.4"/>
-
-      <!-- Small buds -->
-      <circle cx="50" cy="55" r="3"   fill="#c4849a" opacity="0.38"/>
-      <circle cx="36" cy="62" r="2.5" fill="#c4849a" opacity="0.32"/>
-      <circle cx="60" cy="82" r="2.5" fill="#c4849a" opacity="0.3"/>
-      <circle cx="78" cy="58" r="2"   fill="#c9a84c" opacity="0.35"/>
-
-      <!-- Gold dots accent -->
-      <circle cx="55" cy="30" r="1.5" fill="#c9a84c" opacity="0.5"/>
-      <circle cx="28" cy="38" r="1.5" fill="#c9a84c" opacity="0.45"/>
-      <circle cx="20" cy="58" r="1.5" fill="#c9a84c" opacity="0.4"/>
-    </svg>
-  `;
-
-  document.querySelectorAll('.floral-corner').forEach(el => {
-    el.innerHTML = floralSVG;
-  });
-})();
+/* Corner marks are pure CSS — no JS needed */
 
 
 /* ════════════════════════════════════════════════
