@@ -348,6 +348,8 @@ function finishAdvanceCommit() {
   goIdle();
   lockAfterPage(1);
 }
+
+function finishAdvanceCancel() {
   const incoming = order[1] !== undefined ? cards[order[1]] : null;
   hardResetChrome();
   if (incoming) resetReveals(incoming);
