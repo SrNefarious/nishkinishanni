@@ -7,7 +7,7 @@
   <meta name="description" content="Nishita & Nishant are getting engaged — 20 October 2026 · Noor Us Sabah, Bhopal">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Pinyon+Script&family=DM+Sans:wght@200;300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Pinyon+Script&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -124,32 +124,50 @@
 
 
 <!-- ══════════════════════════════════════════════
-   CARD 4  Countdown  ·  Midnight blue
+   CARD 4  Countdown  ·  Parchment flip clock
 ══════════════════════════════════════════════════ -->
 <div class="card" id="c3" data-theme="count" data-pos="3">
-  <div class="cc-glow" aria-hidden="true"></div>
+  <div class="cc-pulse" aria-hidden="true">
+    <span class="cc-pulse__ring"></span>
+    <span class="cc-pulse__ring"></span>
+    <span class="cc-pulse__ring"></span>
+    <span class="cc-pulse__ring"></span>
+    <span class="cc-pulse__ring"></span>
+    <span class="cc-pulse__ring"></span>
+  </div>
 
-  <div class="c-body">
+  <div class="c-body cc-body">
     <p class="cc-pre" data-r="fd" data-d="0">The big day is in</p>
 
-    <div class="cc-units" aria-live="polite" aria-label="Countdown timer">
-      <div class="cc-unit" data-r="fu" data-d="200">
-        <span class="cc-num" id="cd-days">--</span>
+    <div class="cc-clock" aria-live="polite" aria-label="Countdown timer">
+      <div class="flip-group" data-r="fu" data-d="200">
+        <div class="flip" id="cd-days" data-val="">
+          <div class="flip__upper"><span class="flip__digit">00</span></div>
+          <div class="flip__lower"><span class="flip__digit">00</span></div>
+        </div>
         <span class="cc-uname">Days</span>
       </div>
-      <span class="cc-sep" data-r="sc" data-d="450" aria-hidden="true">:</span>
-      <div class="cc-unit" data-r="fu" data-d="350">
-        <span class="cc-num" id="cd-hours">--</span>
+
+      <span class="cc-colon" data-r="sc" data-d="350" aria-hidden="true">:</span>
+
+      <div class="flip-group" data-r="fu" data-d="350">
+        <div class="flip" id="cd-hours" data-val="">
+          <div class="flip__upper"><span class="flip__digit">00</span></div>
+          <div class="flip__lower"><span class="flip__digit">00</span></div>
+        </div>
         <span class="cc-uname">Hours</span>
       </div>
-      <span class="cc-sep" data-r="sc" data-d="600" aria-hidden="true">:</span>
-      <div class="cc-unit" data-r="fu" data-d="500">
-        <span class="cc-num" id="cd-mins">--</span>
+
+      <span class="cc-colon" data-r="sc" data-d="500" aria-hidden="true">:</span>
+
+      <div class="flip-group" data-r="fu" data-d="500">
+        <div class="flip" id="cd-mins" data-val="">
+          <div class="flip__upper"><span class="flip__digit">00</span></div>
+          <div class="flip__lower"><span class="flip__digit">00</span></div>
+        </div>
         <span class="cc-uname">Minutes</span>
       </div>
     </div>
-
-    <p class="cc-post" data-r="fu" data-d="750">until we celebrate together.</p>
   </div>
 </div>
 

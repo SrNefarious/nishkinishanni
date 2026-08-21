@@ -851,83 +851,233 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 
 /* ════════════════════════════════════════════════════
-   CARD 4 — COUNTDOWN  ·  Midnight deep blue
+   CARD 4 — COUNTDOWN  ·  Same parchment as events + soft light ripples
    ════════════════════════════════════════════════════ */
 [data-theme="count"] {
+  /* Exact match to [data-theme="events"] */
   background:
-    radial-gradient(ellipse 70% 55% at 50% 50%, rgba(30,50,130,0.20) 0%, transparent 70%),
-    #05081a;
+    radial-gradient(ellipse 80% 60% at 20% 15%, rgba(220,185,110,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 80% 85%, rgba(195,135,100,0.12) 0%, transparent 55%),
+    #f5e8d2;
 }
-.cc-glow {
+
+/* Soft 3D ripple — thin luminous crest, not thick band / not hairline */
+.cc-pulse {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 50% 40% at 50% 50%,
-    rgba(50,70,180,0.12) 0%, transparent 65%);
+  display: grid;
+  place-items: center;
   pointer-events: none;
-  animation: glowPulse 4s ease-in-out infinite;
+  z-index: 0;
+  overflow: hidden;
 }
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.6; }
-  50%       { opacity: 1; }
+
+.cc-pulse__ring {
+  position: absolute;
+  width: min(44vw, 330px);
+  height: min(44vw, 330px);
+  border-radius: 50%;
+  border: none;
+  /* Narrow crest — light gold (not white, not dark) */
+  background: radial-gradient(
+    circle,
+    transparent 66%,
+    rgba(232, 210, 150, 0.25) 69%,
+    rgba(245, 228, 180, 0.9) 71%,
+    rgba(232, 210, 150, 0.35) 73.5%,
+    transparent 77%
+  );
+  box-shadow: 0 0 12px rgba(232, 210, 150, 0.4);
+  filter: blur(0.8px);
+  opacity: 0;
+  animation: ccPulseWave 12s cubic-bezier(0.15, 0.55, 0.25, 1) infinite both;
+  will-change: transform, opacity;
+}
+
+.cc-pulse__ring:nth-child(1) { animation-delay: 0s; }
+.cc-pulse__ring:nth-child(2) { animation-delay: 2s; }
+.cc-pulse__ring:nth-child(3) { animation-delay: 4s; }
+.cc-pulse__ring:nth-child(4) { animation-delay: 6s; }
+.cc-pulse__ring:nth-child(5) { animation-delay: 8s; }
+.cc-pulse__ring:nth-child(6) { animation-delay: 10s; }
+
+@keyframes ccPulseWave {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.88;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2.7);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cc-pulse__ring { animation: none; opacity: 0; }
+}
+
+.cc-body {
+  position: relative;
+  z-index: 1;
+  gap: clamp(32px, 6vh, 56px);
 }
 .cc-pre {
-  font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
-  font-weight: 300;
-  letter-spacing: 0.5em;
+  font-family: var(--ff-sans); /* DM Sans — same as “Save the Date” */
+  font-size: clamp(0.72rem, 1.6vw, 0.88rem);
+  font-weight: 400;
+  letter-spacing: 0.42em;
   text-transform: uppercase;
-  color: rgba(201,168,76,0.35);
-  margin-bottom: clamp(28px, 6vh, 60px);
+  color: #5a3018;
+  margin: 0;
 }
-.cc-units {
+.cc-clock {
   display: flex;
-  align-items: center;
-  gap: clamp(20px, 5vw, 60px);
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(12px, 3vw, 28px);
 }
-.cc-unit {
+.flip-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(6px, 1.2vh, 14px);
-}
-.cc-num {
-  font-family: var(--ff-serif);
-  font-weight: 300;
-  font-size: clamp(3.5rem, 13vw, 9rem);
-  line-height: 1;
-  color: var(--gold);
-  font-variant-numeric: tabular-nums;
-  /* No shimmer — solid gold is more dramatic for ticking numbers */
-  min-width: 2ch;
-  text-align: center;
+  gap: clamp(12px, 2vh, 18px);
 }
 .cc-uname {
-  font-family: var(--ff-sans);
-  font-size: clamp(0.46rem, 0.9vw, 0.58rem);
-  font-weight: 300;
-  letter-spacing: 0.45em;
+  font-family: var(--ff-sans); /* DM Sans — same as page 3 labels */
+  font-size: clamp(0.62rem, 1.3vw, 0.75rem);
+  font-weight: 400;
+  letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: rgba(201,168,76,0.3);
+  color: #6b3d22;
 }
-.cc-sep {
-  font-family: var(--ff-serif);
-  font-size: clamp(2rem, 6vw, 4rem);
-  color: rgba(201,168,76,0.18);
+.cc-colon {
+  font-family: var(--ff-serif); /* Cormorant — already used on pages 1–3 */
+  font-size: clamp(1.6rem, 4.5vw, 2.6rem);
+  font-weight: 400;
+  color: #5c1a2e;
   line-height: 1;
-  /* Align with number baseline */
+  margin-top: 0;
+  /* Match flip card height so “:” sits mid-card, not mid-(card+label) */
+  height: clamp(88px, 23vw, 148px);
+  display: flex;
+  align-items: center;
   align-self: flex-start;
-  margin-top: clamp(4px, 0.8vh, 10px);
   background: none;
-  -webkit-text-fill-color: rgba(201,168,76,0.18);
+  -webkit-text-fill-color: #5c1a2e;
   animation: none;
+  opacity: 0.55;
 }
-.cc-post {
-  font-family: var(--ff-serif);
-  font-style: italic;
-  font-size: clamp(0.82rem, 2vw, 1.1rem);
-  font-weight: 300;
-  color: rgba(201,168,76,0.3);
-  margin-top: clamp(28px, 6vh, 60px);
+
+/* Clean split-flap — flat panels, no decorative chrome */
+.flip {
+  --flip-w: clamp(76px, 20vw, 128px);
+  --flip-h: clamp(88px, 23vw, 148px);
+  --flip-r: 8px;
+  position: relative;
+  width: var(--flip-w);
+  height: var(--flip-h);
+  /* Digits: same family as labels, but bolder */
+  font-family: var(--ff-sans);
+  font-weight: 700;
+  font-size: calc(var(--flip-h) * 0.52);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: #f3e6c4;
+  perspective: 800px;
+  border-radius: var(--flip-r);
+  background: #4a1526;
+  border: 1px solid rgba(74, 21, 38, 0.9);
+  overflow: hidden;
+}
+.flip__digit {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: var(--flip-h);
+  line-height: var(--flip-h);
+  text-align: center;
+  top: 0;
+}
+.flip__upper,
+.flip__lower {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  background: #4a1526;
+}
+.flip__upper {
+  top: 0;
+  z-index: 1;
+  border-radius: var(--flip-r) var(--flip-r) 0 0;
+}
+.flip__lower {
+  bottom: 0;
+  z-index: 1;
+  border-radius: 0 0 var(--flip-r) var(--flip-r);
+  border-top: 1px solid rgba(20, 8, 12, 0.35);
+}
+.flip__lower .flip__digit {
+  top: calc(var(--flip-h) / -2);
+}
+
+/* Flap — only visible while flipping */
+.flip__flap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 50%;
+  transform-origin: bottom center;
+  transform-style: preserve-3d;
+  z-index: 3;
+  pointer-events: none;
+}
+.flip__flap-top,
+.flip__flap-bot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #4a1526;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip__flap-top {
+  border-radius: var(--flip-r) var(--flip-r) 0 0;
+  border-bottom: 1px solid rgba(20, 8, 12, 0.35);
+}
+.flip__flap-bot {
+  border-radius: 0 0 var(--flip-r) var(--flip-r);
+  transform: rotateX(180deg);
+  border-top: 1px solid rgba(20, 8, 12, 0.35);
+}
+.flip__flap-bot .flip__digit {
+  top: calc(var(--flip-h) / -2);
+}
+.flip.is-flipping .flip__flap {
+  display: block;
+  animation: flipDown 0.48s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+}
+/* Flap must never linger over static halves after the flip */
+.flip:not(.is-flipping) > .flip__flap {
+  display: none;
+}
+@keyframes flipDown {
+  from { transform: rotateX(0deg); }
+  to   { transform: rotateX(-180deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip.is-flipping .flip__flap { animation: none; }
 }
 
 
@@ -1316,14 +1466,20 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cn-fl--tl-h, .cn-fl--br-h { width: min(210px, 58vw); }
   .cn-fl--tl-v, .cn-fl--br-v { height: min(190px, 32vh); }
   .cs-day   { font-size: clamp(52vw, 56vw, 360px); }
-  .cc-units { gap: clamp(14px, 4vw, 28px); }
-  .cc-num   { font-size: clamp(3rem, 14vw, 6rem); }
+  .cc-clock { gap: clamp(10px, 2.5vw, 18px); }
+  .flip {
+    --flip-w: clamp(64px, 18vw, 96px);
+    --flip-h: clamp(76px, 21vw, 112px);
+  }
+  .cc-colon { height: clamp(76px, 21vw, 112px); }
+  .cc-pre { font-size: clamp(0.65rem, 3.2vw, 0.8rem); }
+  .cc-uname { font-size: clamp(0.55rem, 2.8vw, 0.68rem); }
   .rf-radios { flex-direction: column; gap: 12px; }
   .ce-time  { font-size: clamp(1rem, 5vw, 1.5rem); }
 }
 @media (max-height: 640px) {
   .c-body   { padding: 20px 24px; }
-  .cc-pre, .cc-post { display: none; }
+  .cc-pre { font-size: 0.5rem; letter-spacing: 0.4em; }
   .cn-post  { margin-top: 0; }
   .cn-corner { width: min(160px, 40vw); }
 }

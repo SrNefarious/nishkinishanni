@@ -42,7 +42,7 @@ const SHEETS_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
   else img.addEventListener('load', process, { once: true });
 })();
 
-const EVENT = new Date('2026-10-20T17:00:00+05:30');
+const EVENT = new Date('2026-10-20T18:30:00+05:30'); /* 20 Oct 2026, 6:30 PM IST */
 const TOTAL = 7;
 const cards = Array.from(document.querySelectorAll('.card'));
 let order = cards.map((_, i) => i);
@@ -662,7 +662,7 @@ window.addEventListener('keyup', e => {
 
 
 /* ════════════════════════════════════════════════════
-   COUNTDOWN
+   COUNTDOWN — parchment flip clock
    ════════════════════════════════════════════════════ */
 (function countdown() {
   const elD = document.getElementById('cd-days');
@@ -670,18 +670,101 @@ window.addEventListener('keyup', e => {
   const elM = document.getElementById('cd-mins');
   if (!elD || !elH || !elM) return;
 
+  function setDigits(root, value) {
+    const u = root.querySelector('.flip__upper .flip__digit');
+    const l = root.querySelector('.flip__lower .flip__digit');
+    if (u) u.textContent = value;
+    if (l) l.textContent = value;
+  }
+
+  function clearFlap(root) {
+    if (root._flipTimer) {
+      clearTimeout(root._flipTimer);
+      root._flipTimer = null;
+    }
+    if (root._flipOnEnd) {
+      root._flipOnEnd = null;
+    }
+    root.classList.remove('is-flipping');
+    root.querySelectorAll('.flip__flap').forEach(el => el.remove());
+  }
+
+  function flipTo(root, nextRaw) {
+    const next = pad(nextRaw);
+
+    /* Always finish any in-flight flip cleanly first */
+    if (root.classList.contains('is-flipping') || root.querySelector('.flip__flap')) {
+      const committed = root.dataset.val || next;
+      clearFlap(root);
+      setDigits(root, committed);
+    }
+
+    const prev = root.dataset.val;
+
+    if (prev === next) {
+      setDigits(root, next);
+      return;
+    }
+
+    if (prev === undefined || prev === '') {
+      root.dataset.val = next;
+      setDigits(root, next);
+      return;
+    }
+
+    root.dataset.val = next;
+
+    /* Fresh flap every flip — avoids stale transform / fill-mode leftovers */
+    const flap = document.createElement('div');
+    flap.className = 'flip__flap';
+    flap.innerHTML =
+      '<div class="flip__flap-top"><span class="flip__digit"></span></div>' +
+      '<div class="flip__flap-bot"><span class="flip__digit"></span></div>';
+    flap.querySelector('.flip__flap-top .flip__digit').textContent = prev;
+    flap.querySelector('.flip__flap-bot .flip__digit').textContent = next;
+    root.appendChild(flap);
+
+    /* Static halves: top already shows next (revealed as flap leaves);
+       bottom stays on prev until flap lands, then both sync to next */
+    setDigits(root, prev);
+    root.querySelector('.flip__upper .flip__digit').textContent = next;
+
+    void flap.offsetWidth;
+    root.classList.add('is-flipping');
+
+    let finished = false;
+    const done = () => {
+      if (finished) return;
+      finished = true;
+      root._flipTimer = null;
+      setDigits(root, root.dataset.val);
+      root.classList.remove('is-flipping');
+      flap.remove();
+    };
+
+    root._flipOnEnd = e => {
+      if (e.target !== flap) return;
+      done();
+    };
+    flap.addEventListener('animationend', root._flipOnEnd);
+    root._flipTimer = setTimeout(done, 520);
+  }
+
   function tick() {
     const diff = EVENT - Date.now();
     if (diff <= 0) {
-      elD.textContent = elH.textContent = elM.textContent = '00';
+      flipTo(elD, 0);
+      flipTo(elH, 0);
+      flipTo(elM, 0);
       return;
     }
-    elD.textContent = pad(Math.floor(diff / 86400000));
-    elH.textContent = pad(Math.floor((diff % 86400000) / 3600000));
-    elM.textContent = pad(Math.floor((diff % 3600000) / 60000));
+    flipTo(elD, Math.floor(diff / 86400000));
+    flipTo(elH, Math.floor((diff % 86400000) / 3600000));
+    flipTo(elM, Math.floor((diff % 3600000) / 60000));
   }
+
   tick();
-  setInterval(tick, 30_000);
+  setInterval(tick, 1000);
 })();
 
 
