@@ -208,21 +208,21 @@
 
 
 <!-- ══════════════════════════════════════════════
-   CARD 6  Venue  ·  Forest night
+   CARD 6  Venue  ·  Palace lake artwork
 ══════════════════════════════════════════════════ -->
 <div class="card" id="c5" data-theme="venue" data-pos="5">
-  <div class="cv-shimmer" aria-hidden="true"></div>
-
-  <div class="c-body">
-    <p  class="cv-label"  data-r="fd" data-d="0">Where</p>
-    <p  class="cv-name"   data-r="fu" data-d="180">Noor Us Sabah</p>
-    <p  class="cv-sub"    data-r="fu" data-d="380">Bhopal</p>
-    <div class="cv-rule"  data-r="dh" data-d="560" aria-hidden="true"></div>
-    <a  class="cv-map"    data-r="fu" data-d="680"
-        href="https://maps.google.com/?q=Noor+Us+Sabah+Palace+Hotel+Bhopal"
-        target="_blank" rel="noopener">
-      Get Directions &nbsp;→
-    </a>
+  <div class="c-body cv-body">
+    <div class="cv-glass">
+      <p  class="cv-label"  data-r="fd" data-d="0">Where</p>
+      <p  class="cv-name"   data-r="fu" data-d="180">Noor Us Sabah</p>
+      <p  class="cv-sub"    data-r="fu" data-d="380">Bhopal</p>
+      <div class="cv-rule"  data-r="dh" data-d="560" aria-hidden="true"></div>
+      <a  class="cv-map"    data-r="fu" data-d="680"
+          href="https://maps.app.goo.gl/ZpYmNK9b9y5AgQAt8"
+          target="_blank" rel="noopener">
+        Get Directions &nbsp;→
+      </a>
+    </div>
   </div>
 </div>
 
@@ -231,12 +231,15 @@
    CARD 7  Send a message  ·  Blush rose
 ══════════════════════════════════════════════════ -->
 <div class="card" id="c6" data-theme="msg" data-pos="6">
+  <div class="ci-frame" aria-hidden="true"></div>
+
   <div class="c-body cmsg-body">
-    <p  class="cmsg-label"  data-r="fd" data-d="0">Say something</p>
-    <p  class="cmsg-title"  data-r="fu" data-d="150">Send us a message</p>
-    <p  class="cmsg-by"     data-r="fu" data-d="250">
-      Kindly respond by <em>10 October 2026</em>
-    </p>
+    <img src="monogram.png"
+         class="ci-monogram cmsg-monogram"
+         data-r="sc" data-d="0"
+         alt="N — Nishant & Nishita monogram">
+
+    <p class="cmsg-title" data-r="fu" data-d="200">Send us a message</p>
 
     <form id="rsvp-form" novalidate data-r="fu" data-d="360">
 
@@ -278,12 +281,14 @@
       </p>
 
     </form>
-
-    <p class="cmsg-hash" data-r="fu" data-d="500">#NishKiNishaani</p>
   </div>
+
+  <p class="ci-tag" data-r="fu" data-d="500">#NishKiNishaani</p>
 </div>
 
 
+<!-- Soft petals shared across countdown → events → venue -->
+<div class="fx-petals" id="fx-petals" aria-hidden="true"></div>
 
 <script src="script.js"></script>
 </body>

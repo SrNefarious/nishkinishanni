@@ -690,15 +690,36 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   }
 }
 
+/* Shared soft petals — countdown / events / venue (same fall, lighter density) */
+.fx-petals {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 20; /* above front card (z-index 10) */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+.fx-petals.is-on {
+  opacity: 1;
+  visibility: visible;
+}
+.fx-petals .cn-petal {
+  width:  var(--ps, 12px);
+  height: calc(var(--ps, 12px) * 1.45);
+  box-shadow: 0 0 5px rgba(255,140,130,0.28);
+}
+
 
 /* ════════════════════════════════════════════════════
    CARD 3 — SAVE THE DATE  ·  Dark wine + gold reveal
    ════════════════════════════════════════════════════ */
 [data-theme="date"] {
   background:
-    radial-gradient(ellipse 75% 55% at 50% 45%, rgba(90, 28, 42, 0.45) 0%, transparent 68%),
-    radial-gradient(ellipse 50% 40% at 50% 80%, rgba(201, 168, 76, 0.04) 0%, transparent 70%),
-    linear-gradient(165deg, #1c0a10 0%, #14060c 45%, #0f0509 100%);
+    radial-gradient(ellipse 75% 55% at 50% 45%, rgba(110, 38, 55, 0.42) 0%, transparent 68%),
+    radial-gradient(ellipse 50% 40% at 50% 80%, rgba(201, 168, 76, 0.05) 0%, transparent 70%),
+    linear-gradient(165deg, #2a1218 0%, #1e0c12 45%, #180910 100%);
 }
 .cs-body {
   justify-content: flex-start;
@@ -878,16 +899,16 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   height: min(44vw, 330px);
   border-radius: 50%;
   border: none;
-  /* Narrow crest — light gold (not white, not dark) */
+  /* Narrow crest — softer near birth so center stays quiet */
   background: radial-gradient(
     circle,
     transparent 66%,
-    rgba(232, 210, 150, 0.25) 69%,
-    rgba(245, 228, 180, 0.9) 71%,
-    rgba(232, 210, 150, 0.35) 73.5%,
+    rgba(232, 210, 150, 0.14) 69%,
+    rgba(245, 228, 180, 0.55) 71%,
+    rgba(232, 210, 150, 0.2) 73.5%,
     transparent 77%
   );
-  box-shadow: 0 0 12px rgba(232, 210, 150, 0.4);
+  box-shadow: 0 0 10px rgba(232, 210, 150, 0.22);
   filter: blur(0.8px);
   opacity: 0;
   animation: ccPulseWave 12s cubic-bezier(0.15, 0.55, 0.25, 1) infinite both;
@@ -903,14 +924,14 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 @keyframes ccPulseWave {
   0% {
-    transform: scale(0.3);
+    transform: scale(0.42);
     opacity: 0;
   }
-  8% {
-    opacity: 0.88;
+  10% {
+    opacity: 0.28; /* light while still near center */
   }
-  50% {
-    opacity: 0.4;
+  35% {
+    opacity: 0.52;
   }
   100% {
     transform: scale(2.7);
@@ -1239,15 +1260,103 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 
 /* ════════════════════════════════════════════════════
-   CARD 6 — VENUE  ·  Deep forest / lake night
+   CARD 6 — VENUE  ·  Lake-focused palace art + glass card
    ════════════════════════════════════════════════════ */
 [data-theme="venue"] {
-  background:
-    radial-gradient(ellipse 90% 55% at 50% 100%, rgba(15,70,45,0.35) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 50% 10%,  rgba(60,110,70,0.10) 0%, transparent 55%),
-    #080f0c;
+  background-color: #e8d5c8;
+  background-image: url("assets/venue-palace.png");
+  /* Show lake + architecture; glass card keeps text readable */
+  background-size: cover;
+  background-position: 52% 42%;
+  background-repeat: no-repeat;
 }
-/* Animated horizontal shimmer (lake reflection) — venue + events */
+
+.cv-body {
+  background: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.cv-glass {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: min(420px, 88vw);
+  padding: clamp(28px, 5vh, 44px) clamp(24px, 5vw, 40px);
+  border-radius: 18px;
+  background: rgba(255, 248, 242, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 12px 40px rgba(60, 30, 40, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+}
+
+.cv-label {
+  font-family: var(--ff-sans);
+  font-size: clamp(0.55rem, 1.2vw, 0.68rem);
+  font-weight: 500;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: rgba(90, 45, 55, 0.55);
+  margin: 0 0 clamp(12px, 2vh, 20px);
+}
+
+.cv-name {
+  font-family: var(--ff-script);
+  font-size: clamp(2.6rem, 9vw, 4.8rem);
+  line-height: 1.15;
+  color: #4a2030;
+  background: none;
+  -webkit-text-fill-color: #4a2030;
+  animation: none;
+  margin: 0 0 clamp(6px, 1.2vh, 12px);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.cv-sub {
+  font-family: var(--ff-sans);
+  font-size: clamp(0.58rem, 1.2vw, 0.72rem);
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(90, 45, 55, 0.62);
+  margin: 0 0 clamp(18px, 3.5vh, 32px);
+}
+
+.cv-rule {
+  width: min(140px, 40vw);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(154, 90, 70, 0.45), transparent);
+  margin: 0 0 clamp(18px, 3.5vh, 32px);
+}
+
+.cv-map {
+  display: inline-block;
+  font-family: var(--ff-sans);
+  font-size: clamp(0.55rem, 1.2vw, 0.68rem);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #5a2838;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(90, 45, 55, 0.28);
+  padding: 12px 28px;
+  border-radius: 999px;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+.cv-map:hover {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(90, 45, 55, 0.45);
+  color: #3a1520;
+}
+
+/* Animated horizontal shimmer (lake reflection) — events page */
 .cv-shimmer {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -1272,65 +1381,10 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   0%, 100% { opacity: 0; transform: translateX(-4%); }
   50%       { opacity: 1; transform: translateX(4%); }
 }
-.cv-label {
-  font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
-  font-weight: 300;
-  letter-spacing: 0.55em;
-  text-transform: uppercase;
-  color: rgba(80,180,130,0.4);
-  margin-bottom: clamp(14px, 3vh, 30px);
-}
-.cv-name {
-  font-family: var(--ff-script);
-  font-size: clamp(3.5rem, 12vw, 8rem);
-  line-height: 1.15;
-  /* Gold shimmer */
-  background: linear-gradient(
-    130deg,
-    #8a6218 0%, #c9a84c 22%,
-    #f0d870 44%, #fffacc 50%, #f0d870 56%,
-    #c9a84c 75%, #8a6218 100%
-  );
-  background-size: 240% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: goldFlow 8s linear infinite;
-  margin-bottom: clamp(6px, 1.2vh, 12px);
-}
-.cv-sub {
-  font-family: var(--ff-sans);
-  font-size: clamp(0.52rem, 1.1vw, 0.65rem);
-  font-weight: 300;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  color: rgba(200,230,210,0.35);
-  margin-bottom: clamp(20px, 4.5vh, 44px);
-}
-.cv-rule {
-  width: min(180px, 50vw);
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
-  margin-bottom: clamp(20px, 4.5vh, 44px);
-}
-.cv-map {
-  display: inline-block;
-  font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
-  font-weight: 300;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  color: var(--gold);
-  border: 1px solid rgba(201,168,76,0.3);
-  padding: 13px 32px;
-  transition: background 0.3s, border-color 0.3s;
-}
-.cv-map:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
 
 
 /* ════════════════════════════════════════════════════
-   CARD 7 — SEND A MESSAGE  ·  Warm blush rose
+   CARD 7 — SEND A MESSAGE  ·  Warm blush + invite frame
    ════════════════════════════════════════════════════ */
 [data-theme="msg"] {
   background:
@@ -1338,46 +1392,33 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     radial-gradient(ellipse 60% 50% at 78% 80%, rgba(190,140,150,0.10) 0%, transparent 55%),
     #faf0ec;
 }
+
 .cmsg-body {
   justify-content: center;
-  padding-top: clamp(32px, 6vh, 60px);
-  padding-bottom: clamp(32px, 6vh, 60px);
-  gap: 0;
+  padding-top: clamp(28px, 5vh, 48px);
+  padding-bottom: clamp(72px, 12vh, 110px);
+  gap: clamp(10px, 1.8vh, 18px);
 }
-.cmsg-label {
-  font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
-  font-weight: 300;
-  letter-spacing: 0.55em;
-  text-transform: uppercase;
-  color: rgba(160,90,110,0.5);
-  margin-bottom: 6px;
+
+.cmsg-monogram {
+  width: min(140px, 32vmin);
+  height: min(140px, 32vmin);
+  margin-bottom: clamp(2px, 0.6vh, 8px);
 }
+
 .cmsg-title {
   font-family: var(--ff-serif);
   font-style: italic;
-  font-size: clamp(1.5rem, 4.5vw, 2.6rem);
+  font-size: clamp(1.45rem, 4.2vw, 2.4rem);
   font-weight: 300;
   color: #2a1015;
-  margin-bottom: clamp(4px, 0.8vh, 8px);
+  margin: 0 0 clamp(8px, 1.5vh, 16px);
 }
-.cmsg-by {
-  font-family: var(--ff-sans);
-  font-size: clamp(0.52rem, 1.1vw, 0.62rem);
-  font-weight: 300;
-  letter-spacing: 0.05em;
-  color: rgba(80,40,50,0.4);
-  margin-bottom: clamp(14px, 3vh, 28px);
-}
-.cmsg-by em {
-  font-style: normal;
-  color: #9a5030;
-}
-.cmsg-hash {
-  font-family: var(--ff-script);
-  font-size: clamp(1.2rem, 4vw, 1.9rem);
-  color: rgba(165,80,105,0.65);
-  margin-top: clamp(10px, 2vh, 18px);
+
+/* Hashtag reuses .ci-tag from page 1 — warm it slightly for blush bg */
+[data-theme="msg"] .ci-tag {
+  color: rgba(120, 78, 22, 0.88);
+  text-shadow: 0 0 18px rgba(250, 240, 236, 0.95), 0 1px 0 rgba(250, 240, 236, 0.7);
 }
 
 /* ── RSVP form ────────────────────────────────────── */
@@ -1559,6 +1600,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .ce-title { font-size: clamp(1.05rem, 5.2vw, 1.55rem); }
   .ce-evt   { font-size: clamp(0.95rem, 4vw, 1.15rem); }
   .ce-tl    { column-gap: 10px; }
+
+  /* Location — taller glass + more architecture in frame */
+  [data-theme="venue"] {
+    background-position: 70% 36%;
+    background-size: cover;
+  }
+  .cv-glass {
+    width: min(420px, 92vw);
+    min-height: 0;
+    padding: clamp(32px, 5.5vh, 48px) clamp(22px, 5vw, 32px);
+    gap: 4px;
+  }
+  .cv-label { margin-bottom: clamp(12px, 2vh, 18px); }
+  .cv-name  { margin-bottom: clamp(6px, 1.2vh, 12px); }
+  .cv-sub   { margin-bottom: clamp(18px, 3vh, 28px); }
+  .cv-rule  { margin-bottom: clamp(18px, 3vh, 28px); }
 }
 @media (max-height: 640px) {
   .c-body   { padding: 20px 24px; }

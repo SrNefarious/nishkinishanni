@@ -5,25 +5,27 @@
 
 const SHEETS_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
 
-/* ── Monogram: strip black background ─────────────── */
+/* ── Monogram: strip black bg once, apply to every instance ── */
 (function stripMonogramBlack() {
-  const img = document.querySelector('.ci-monogram');
-  if (!img) return;
+  const imgs = Array.from(document.querySelectorAll('.ci-monogram, .cmsg-monogram'));
+  if (!imgs.length) return;
 
-  function process() {
+  const src = imgs[0].getAttribute('src') || imgs[0].src;
+  const loader = new Image();
+  loader.onload = function () {
     try {
-      const W = img.naturalWidth  || img.width;
-      const H = img.naturalHeight || img.height;
+      const W = loader.naturalWidth;
+      const H = loader.naturalHeight;
       if (!W || !H) return;
 
       const canvas = document.createElement('canvas');
-      canvas.width  = W;
+      canvas.width = W;
       canvas.height = H;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(loader, 0, 0);
 
-      const id  = ctx.getImageData(0, 0, W, H);
-      const px  = id.data;
+      const id = ctx.getImageData(0, 0, W, H);
+      const px = id.data;
       const LOW = 55;
       const HIGH = 110;
 
@@ -34,12 +36,11 @@ const SHEETS_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
       }
 
       ctx.putImageData(id, 0, 0);
-      img.src = canvas.toDataURL('image/png');
+      const dataUrl = canvas.toDataURL('image/png');
+      imgs.forEach(img => { img.src = dataUrl; });
     } catch (e) { /* ignore */ }
-  }
-
-  if (img.complete && img.naturalWidth) process();
-  else img.addEventListener('load', process, { once: true });
+  };
+  loader.src = src;
 })();
 
 const EVENT = new Date('2026-10-20T18:30:00+05:30'); /* 20 Oct 2026, 6:30 PM IST */
@@ -373,6 +374,7 @@ function finishAdvanceCommit() {
   markAllRevealed(frontCard());
   goIdle();
   lockAfterPage(1);
+  if (window.syncFxPetals) syncFxPetals();
   requestAnimationFrame(() => {
     fitNameSurnames();
     setTimeout(fitNameSurnames, 350);
@@ -396,6 +398,7 @@ function finishRetreatCommit() {
   markAllRevealed(frontCard());
   goIdle();
   lockAfterPage(-1);
+  if (window.syncFxPetals) syncFxPetals();
   requestAnimationFrame(() => {
     fitNameSurnames();
     setTimeout(fitNameSurnames, 350);
@@ -581,6 +584,32 @@ setTimeout(fitNameSurnames, 1800);
     frag.appendChild(p);
   }
   layer.appendChild(frag);
+})();
+
+/* Light continuous petals across countdown (3) → events (4) → venue (5) */
+(function sharedPetals() {
+  const layer = document.getElementById('fx-petals');
+  if (!layer) return;
+
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < 11; i++) {
+    const p = document.createElement('span');
+    p.className = 'cn-petal';
+    p.style.left = `${6 + Math.random() * 88}%`;
+    p.style.setProperty('--ps', `${9 + Math.random() * 9}px`);
+    p.style.setProperty('--pd', `${8 + Math.random() * 7}s`);
+    p.style.setProperty('--pdelay', `${Math.random() * 7}s`);
+    p.style.setProperty('--px', `${(Math.random() - 0.5) * 70}px`);
+    frag.appendChild(p);
+  }
+  layer.appendChild(frag);
+
+  const PETAL_PAGES = new Set([3, 4, 5]); /* count, events, venue */
+
+  window.syncFxPetals = function syncFxPetals() {
+    layer.classList.toggle('is-on', PETAL_PAGES.has(order[0]));
+  };
+  syncFxPetals();
 })();
 
 
