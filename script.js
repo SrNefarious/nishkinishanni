@@ -54,7 +54,7 @@ let order = cards.map((_, i) => i);
    scroll only reduces progress; cancel snaps instantly.
    Scatter only on leaving card 1. All retreats roll in.
    ════════════════════════════════════════════════════ */
-const COMMIT      = 0.28;
+const COMMIT      = 0.15;
 const WHEEL_SCALE = 1 / 420;
 const SETTLE_MS   = 180;
 /* Pause between wheel events that means “new scroll”, not leftover flick */
