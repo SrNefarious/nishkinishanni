@@ -59,11 +59,14 @@ let order = cards.map((_, i) => i);
    scroll only reduces progress; cancel snaps instantly.
    Scatter only on leaving card 1. All retreats roll in.
    ════════════════════════════════════════════════════ */
-const COMMIT      = 0.05;
+const COMMIT      = 0.20;
 const WHEEL_SCALE = 1 / 420;
 const SETTLE_MS   = 60;
 /* Pause between wheel events that means “new scroll”, not leftover flick */
 const NEW_GESTURE_MS = 60;
+/* Touch: commit if dragged this far, OR flicked this hard (per 16ms frame) */
+const TOUCH_COMMIT = 0.15;
+const TOUCH_FLICK  = 0.12;
 
 let mode        = 'idle'; /* idle | advance | retreat */
 let progress    = 0;
@@ -78,6 +81,7 @@ let pageLocked  = false; /* this scroll stream already turned a page */
 let lockDir     = 0;     /* +1 advance lock, -1 retreat lock */
 let lastInputAt = 0;     /* for detecting a fresh scroll vs same flick */
 let touchX0     = null;
+let touchActive = false; /* finger down — don't auto-settle mid-swipe */
 
 function lockAfterPage(dir) {
   pageLocked = true;
@@ -441,7 +445,24 @@ function animateTo(target, onDone) {
 
 function settle() {
   if (settling || mode === 'idle') return;
+  /* Wheel: distance or leftover momentum. Touch uses settleTouch(). */
   const shouldCommit = progress >= COMMIT || (progress + velocity * 5) >= COMMIT;
+
+  if (mode === 'advance') {
+    if (shouldCommit) animateTo(1, finishAdvanceCommit);
+    else finishAdvanceCancel();
+  } else if (mode === 'retreat') {
+    if (shouldCommit) animateTo(1, finishRetreatCommit);
+    else finishRetreatCancel();
+  }
+}
+
+/* Finger-up decision: how far you dragged, OR a clear flick — not a mid-hold timer */
+function settleTouch() {
+  if (settling || mode === 'idle') return;
+  const flickedRecently = (performance.now() - touchLastT) < 100;
+  const flick = flickedRecently && Math.abs(velocity) >= TOUCH_FLICK;
+  const shouldCommit = progress >= TOUCH_COMMIT || flick;
 
   if (mode === 'advance') {
     if (shouldCommit) animateTo(1, finishAdvanceCommit);
@@ -517,7 +538,8 @@ function onDelta(rawDelta, dtMs) {
     return;
   }
 
-  scheduleSettle();
+  /* Wheel/trackpad: settle after a short pause. Touch waits for finger-up. */
+  if (!touchActive) scheduleSettle();
 }
 
 function nudge(dir) {
@@ -638,13 +660,15 @@ let touchLastT = 0;
 window.addEventListener('touchstart', e => {
   if (e.target.closest && e.target.closest('input, textarea, select, button')) {
     touchX0 = null;
+    touchActive = false;
     return;
   }
+  touchActive = true;
   touchX0 = e.touches[0].clientX;
   touchLastX = touchX0;
   touchLastY = e.touches[0].clientY;
   touchLastT = performance.now();
-  clearTimeout(settleTimer);
+  clearTimeout(settleTimer); /* never settle while finger is down */
 }, { passive: true });
 
 window.addEventListener('touchmove', e => {
@@ -672,9 +696,19 @@ window.addEventListener('touchmove', e => {
 
 window.addEventListener('touchend', () => {
   if (touchX0 === null) return;
-  touchX0 = touchLastX = touchLastY = null;
-  scheduleSettle();
-  /* Finger up ends the gesture — next swipe needs a new touchstart */
+  touchX0 = null;
+  touchActive = false;
+  clearTimeout(settleTimer);
+  settleTouch(); /* decide now: distance or flick — not a wheel-style pause timer */
+  releasePageLock();
+}, { passive: true });
+
+window.addEventListener('touchcancel', () => {
+  if (touchX0 === null) return;
+  touchX0 = null;
+  touchActive = false;
+  clearTimeout(settleTimer);
+  settleTouch();
   releasePageLock();
 }, { passive: true });
 

@@ -786,7 +786,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   display: block;
   font-family: var(--ff-serif);
   font-weight: 300;
-  font-size: clamp(46vw, 52vw, 560px);
+  /* vmin (not vw): on wide desktops width-based vw made "20" spill sideways */
+  font-size: clamp(10rem, 48vmin, 22rem);
   line-height: 0.82;
   letter-spacing: -0.04em;
   /* Stroke + glow paint outside the glyph box; card overflow:hidden
@@ -795,6 +796,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   padding: 0.06em 0.1em;
   margin-inline-end: -0.04em;
   box-sizing: content-box;
+  max-width: 92vw;
   color: transparent;
   -webkit-text-stroke: 1.15px rgba(201, 168, 76, 0.62);
   filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.22));
