@@ -3,7 +3,7 @@
    Scrub-driven motion: scroll/touch links to progress.
    ════════════════════════════════════════════════════ */
 
-const SHEETS_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby9FFiDErVagAjtDLixDCIEULznLpxtDRz0qdob9uQzzYvVqaOLiVD-FlvAn3IrvRmy/exec';
 
 /* ── Monogram: strip black bg once, apply to every instance ── */
 (function stripMonogramBlack() {
@@ -872,11 +872,15 @@ window.addEventListener('keyup', e => {
 
   form.querySelectorAll('input[name="attending"]').forEach(r => {
     r.addEventListener('change', () => {
-      guestsWrap.hidden = r.value !== 'Yes';
-      if (guestsWrap.hidden && guestsInp) {
-        guestsInp.value = '';
-        guestsInp.classList.remove('invalid');
-        showHint(guestsHint, false);
+      const yes = r.value === 'Yes' && r.checked;
+      guestsWrap.hidden = !yes;
+      if (guestsInp) {
+        guestsInp.required = yes;
+        if (!yes) {
+          guestsInp.value = '';
+          guestsInp.classList.remove('invalid');
+          showHint(guestsHint, false);
+        }
       }
     });
   });
@@ -900,12 +904,17 @@ window.addEventListener('keyup', e => {
     }
 
     if (attending === 'Yes') {
-      const g = parseInt(guestsInp?.value, 10);
-      if (!g || g < 1 || g > 10) {
+      guestsWrap.hidden = false;
+      if (guestsInp) guestsInp.required = true;
+      const raw = (guestsInp?.value || '').trim();
+      const g = parseInt(raw, 10);
+      if (!raw || !Number.isInteger(g) || g < 1 || g > 10) {
         guestsInp.classList.add('invalid');
         showHint(guestsHint, true);
         firstBad = firstBad || guestsInp;
       }
+    } else if (guestsInp) {
+      guestsInp.required = false;
     }
 
     const note = noteInput.value.trim();
@@ -944,10 +953,11 @@ window.addEventListener('keyup', e => {
       if (!SHEETS_URL || SHEETS_URL.startsWith('YOUR_')) {
         await new Promise(r => setTimeout(r, 900));
       } else {
+        /* text/plain + no-cors avoids CORS preflight; Apps Script still gets JSON body */
         await fetch(SHEETS_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload),
         });
       }
