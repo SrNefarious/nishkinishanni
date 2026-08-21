@@ -344,14 +344,14 @@ function applyScrubVisual() {
   }
 
   if (mode === 'retreat') {
-    /* Previous page rolls IN from the left (same scale + roundness as exit) */
+    /* Previous page rolls IN from the right (same path the front card exits on) */
     const prev = prevCard();
     armPrevCard(prev);
-    const t = 1 - p; /* 1 = off-screen left, 0 = settled */
+    const t = 1 - p; /* 1 = off-screen right, 0 = settled */
     const s = rollScale(t);
     prev.style.transformOrigin = 'center center';
     prev.style.transform =
-      `translateX(${-105 * t}%) rotate(${-14 * t}deg) scale(${s})`;
+      `translateX(${105 * t}%) rotate(${14 * t}deg) scale(${s})`;
     applyRollRadius(prev);
 
     if (!revealTarget) {
@@ -647,10 +647,16 @@ window.addEventListener('wheel', e => {
   if (e.target.closest && e.target.closest('input, textarea, select')) return;
   e.preventDefault();
   let dy = e.deltaY;
+  let dx = e.deltaX;
   /* Normalize line/page deltas so mice aren't almost no-ops */
-  if (e.deltaMode === 1) dy *= 16;
-  else if (e.deltaMode === 2) dy *= window.innerHeight;
-  onDelta(dy * WHEEL_SCALE, 16);
+  if (e.deltaMode === 1) { dy *= 16; dx *= 16; }
+  else if (e.deltaMode === 2) {
+    dy *= window.innerHeight;
+    dx *= window.innerWidth;
+  }
+  /* Down or left→right → next; up or right→left → previous */
+  const dominant = Math.abs(dy) >= Math.abs(dx) ? dy : dx;
+  onDelta(dominant * WHEEL_SCALE, 16);
 }, { passive: false });
 
 let touchLastX = null;
@@ -678,14 +684,15 @@ window.addEventListener('touchmove', e => {
   const now = performance.now();
   const dt = Math.max(8, now - touchLastT);
 
-  const dHoriz = touchLastX - x; /* swipe left → advance */
-  const dVert  = y - touchLastY; /* finger down → retreat */
+  /* Finger down OR left→right → next; up OR right→left → previous */
+  const dHoriz = x - touchLastX; /* finger moves right → advance */
+  const dVert  = y - touchLastY; /* finger moves down → advance */
 
   let delta;
   if (Math.abs(dHoriz) >= Math.abs(dVert)) {
     delta = dHoriz / (window.innerWidth * 0.85);
   } else {
-    delta = -dVert / (window.innerHeight * 0.85); /* swipe up → advance */
+    delta = dVert / (window.innerHeight * 0.85);
   }
 
   touchLastX = x;
