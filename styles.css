@@ -1427,7 +1427,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   text-align: left;
 }
 .rf-field { margin-bottom: clamp(8px, 1.5vh, 14px); }
-.rf-field input {
+.rf-field input,
+.rf-field textarea {
   width: 100%;
   background: transparent;
   border: none;
@@ -1439,11 +1440,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   color: #2a1015;
   outline: none;
   transition: border-color 0.3s;
+  resize: none;
 }
-.rf-field input:focus       { border-bottom-color: #9a5030; }
-.rf-field input.invalid     { border-bottom-color: #b04040; }
-.rf-field input::placeholder { color: rgba(80,40,50,0.28); }
+.rf-field input:focus,
+.rf-field textarea:focus { border-bottom-color: #9a5030; }
+.rf-field input.invalid,
+.rf-field textarea.invalid { border-bottom-color: #b04040; }
+.rf-field input::placeholder,
+.rf-field textarea::placeholder { color: rgba(80,40,50,0.28); }
 .rf-field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+.rf-hint {
+  margin: 6px 0 0;
+  font-family: var(--ff-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: #b04040;
+}
 
 .rf-radios {
   display: flex;

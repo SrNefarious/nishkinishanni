@@ -245,7 +245,9 @@
 
       <div class="rf-field">
         <input type="text" name="name" id="f-name"
-               placeholder="Your name" autocomplete="name" required>
+               placeholder="Your name" autocomplete="name"
+               maxlength="30" required inputmode="text">
+        <p class="rf-hint" id="f-name-hint" hidden>Letters and spaces only, max 30.</p>
       </div>
 
       <div class="rf-radios">
@@ -263,19 +265,19 @@
 
       <div class="rf-field" id="guests-wrap" hidden>
         <input type="number" name="guests" id="f-guests"
-               placeholder="How many guests?" min="1" max="10">
+               placeholder="How many guests?" min="1" max="10" inputmode="numeric">
+        <p class="rf-hint" id="f-guests-hint" hidden>Enter a number from 1 to 10.</p>
       </div>
 
       <div class="rf-field">
-        <input type="text" name="note" id="f-note"
-               placeholder="A note for the couple (optional)">
+        <textarea name="note" id="f-note" rows="2"
+                  placeholder="A note for the couple (optional)"></textarea>
+        <p class="rf-hint" id="f-note-hint" hidden>Letters, numbers, spaces, , + - only. Max 100 words. No $ # @.</p>
       </div>
 
       <button type="submit" id="rf-btn" class="rf-btn">Send with love</button>
 
-      <p class="rf-ok" id="rf-ok" hidden>
-        Thank you &mdash; we cannot wait to celebrate with you ♡
-      </p>
+      <p class="rf-ok" id="rf-ok" hidden></p>
       <p class="rf-err" id="rf-err" hidden>
         Something went wrong. Please try again.
       </p>

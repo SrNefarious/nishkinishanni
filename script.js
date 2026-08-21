@@ -808,39 +808,135 @@ window.addEventListener('keyup', e => {
   const noteInput  = document.getElementById('f-note');
   const guestsWrap = document.getElementById('guests-wrap');
   const guestsInp  = document.getElementById('f-guests');
+  const nameHint   = document.getElementById('f-name-hint');
+  const noteHint   = document.getElementById('f-note-hint');
+  const guestsHint = document.getElementById('f-guests-hint');
   const btn        = document.getElementById('rf-btn');
   const ok         = document.getElementById('rf-ok');
   const err        = document.getElementById('rf-err');
 
+  const MSG_YES = 'Thank you \u2014 we cannot wait to celebrate with you \u2661';
+  const MSG_NO  = 'Thank you for letting us know \u2014 you will be missed, and we hope to celebrate with you another time \u2661';
+
+  /* Letters + spaces only (incl. common name marks), max 30 */
+  const NAME_OK = /^[A-Za-z][A-Za-z\s'.-]{0,29}$/;
+  /* Letters, numbers, spaces, , + - . ' ! ? — no $ # @ */
+  const NOTE_CHAR_OK = /^[A-Za-z0-9\s,.+\-'!?]*$/;
+
+  function showHint(el, on) {
+    if (el) el.hidden = !on;
+  }
+
+  function clearFieldErrors() {
+    [nameInput, noteInput, guestsInp].forEach(el => el && el.classList.remove('invalid'));
+    showHint(nameHint, false);
+    showHint(noteHint, false);
+    showHint(guestsHint, false);
+  }
+
+  function wordCount(str) {
+    const t = str.trim();
+    if (!t) return 0;
+    return t.split(/\s+/).filter(Boolean).length;
+  }
+
+  /* Live sanitize: strip disallowed characters as they type */
+  nameInput.addEventListener('input', () => {
+    const cleaned = nameInput.value
+      .replace(/[^A-Za-z\s'.-]/g, '')
+      .slice(0, 30);
+    if (cleaned !== nameInput.value) nameInput.value = cleaned;
+    nameInput.classList.remove('invalid');
+    showHint(nameHint, false);
+  });
+
+  noteInput.addEventListener('input', () => {
+    let v = noteInput.value.replace(/[$ #@]/g, '');
+    /* also strip any other symbols outside the allow-list */
+    v = v.replace(/[^A-Za-z0-9\s,.+\-'!?]/g, '');
+    const words = v.trim() ? v.trim().split(/\s+/) : [];
+    if (words.length > 100) {
+      v = words.slice(0, 100).join(' ');
+    }
+    if (v !== noteInput.value) noteInput.value = v;
+    noteInput.classList.remove('invalid');
+    showHint(noteHint, false);
+  });
+
+  if (guestsInp) {
+    guestsInp.addEventListener('input', () => {
+      guestsInp.classList.remove('invalid');
+      showHint(guestsHint, false);
+    });
+  }
+
   form.querySelectorAll('input[name="attending"]').forEach(r => {
     r.addEventListener('change', () => {
       guestsWrap.hidden = r.value !== 'Yes';
-      if (guestsWrap.hidden && guestsInp) guestsInp.value = '';
+      if (guestsWrap.hidden && guestsInp) {
+        guestsInp.value = '';
+        guestsInp.classList.remove('invalid');
+        showHint(guestsHint, false);
+      }
     });
   });
+
+  function validate() {
+    clearFieldErrors();
+    let firstBad = null;
+
+    const name = nameInput.value.trim().replace(/\s+/g, ' ');
+    nameInput.value = name;
+
+    if (!name || !NAME_OK.test(name) || name.length > 30) {
+      nameInput.classList.add('invalid');
+      showHint(nameHint, true);
+      firstBad = firstBad || nameInput;
+    }
+
+    const attending = form.querySelector('input[name="attending"]:checked')?.value;
+    if (!attending) {
+      firstBad = firstBad || form.querySelector('.rf-radios');
+    }
+
+    if (attending === 'Yes') {
+      const g = parseInt(guestsInp?.value, 10);
+      if (!g || g < 1 || g > 10) {
+        guestsInp.classList.add('invalid');
+        showHint(guestsHint, true);
+        firstBad = firstBad || guestsInp;
+      }
+    }
+
+    const note = noteInput.value.trim();
+    if (note) {
+      if (!NOTE_CHAR_OK.test(note) || /[$ #@]/.test(note) || wordCount(note) > 100) {
+        noteInput.classList.add('invalid');
+        showHint(noteHint, true);
+        firstBad = firstBad || noteInput;
+      }
+    }
+
+    if (firstBad && firstBad.focus) firstBad.focus();
+    return { ok: !firstBad, name, attending, note };
+  }
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
     ok.hidden = err.hidden = true;
+    ok.textContent = '';
 
-    const name = nameInput.value.trim();
-    const attending = form.querySelector('input[name="attending"]:checked')?.value;
-
-    if (!name) {
-      nameInput.classList.add('invalid');
-      nameInput.focus();
-      return;
-    }
-    if (!attending) return;
+    const result = validate();
+    if (!result.ok) return;
 
     btn.disabled = true;
     btn.textContent = 'Sending\u2026';
 
     const payload = {
-      name,
-      attending,
-      guests: guestsInp?.value || '',
-      note: noteInput?.value.trim() || '',
+      name: result.name,
+      attending: result.attending,
+      guests: result.attending === 'Yes' ? (guestsInp?.value || '') : '',
+      note: result.note || '',
       ts: new Date().toISOString(),
     };
 
@@ -855,9 +951,11 @@ window.addEventListener('keyup', e => {
           body: JSON.stringify(payload),
         });
       }
+      ok.textContent = result.attending === 'Yes' ? MSG_YES : MSG_NO;
       ok.hidden = false;
       form.reset();
       guestsWrap.hidden = true;
+      clearFieldErrors();
     } catch {
       err.hidden = false;
     } finally {
@@ -865,6 +963,4 @@ window.addEventListener('keyup', e => {
       btn.textContent = 'Send with love';
     }
   });
-
-  nameInput.addEventListener('input', () => nameInput.classList.remove('invalid'));
 })();
