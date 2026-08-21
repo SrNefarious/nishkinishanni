@@ -244,8 +244,10 @@ const SETTLE_MS   = 140; /* let mouse-wheel notches accumulate before settle */
 /* Pause between wheel events that means “new scroll”, not leftover flick */
 const NEW_GESTURE_MS = 60;
 /* Touch: commit if dragged this far, OR flicked this hard (per 16ms frame) */
-const TOUCH_COMMIT = 0.15;
-const TOUCH_FLICK  = 0.12;
+/* Touch: easier swipes — more travel per finger-move, lower commit */
+const TOUCH_COMMIT = 0.08;
+const TOUCH_FLICK  = 0.06;
+const TOUCH_DIST   = 0.42; /* fraction of screen = full page (was 0.85; lower = looser) */
 
 let mode        = 'idle'; /* idle | advance | retreat */
 let progress    = 0;
@@ -636,7 +638,7 @@ function settle() {
 /* Finger-up decision: how far you dragged, OR a clear flick — not a mid-hold timer */
 function settleTouch() {
   if (settling || mode === 'idle') return;
-  const flickedRecently = (performance.now() - touchLastT) < 100;
+  const flickedRecently = (performance.now() - touchLastT) < 140;
   const flick = flickedRecently && Math.abs(velocity) >= TOUCH_FLICK;
   const shouldCommit = progress >= TOUCH_COMMIT || flick;
 
@@ -869,9 +871,9 @@ window.addEventListener('touchmove', e => {
 
   let delta;
   if (Math.abs(dHoriz) >= Math.abs(dVert)) {
-    delta = dHoriz / (window.innerWidth * 0.85);
+    delta = dHoriz / (window.innerWidth * TOUCH_DIST);
   } else {
-    delta = -dVert / (window.innerHeight * 0.85); /* finger up → advance */
+    delta = -dVert / (window.innerHeight * TOUCH_DIST); /* finger up → advance */
   }
 
   touchLastX = x;
