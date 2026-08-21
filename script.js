@@ -651,8 +651,9 @@ window.addEventListener('wheel', e => {
     dy *= window.innerHeight;
     dx *= window.innerWidth;
   }
-  /* Down or left→right → next; up or right→left → previous */
-  const dominant = Math.abs(dy) >= Math.abs(dx) ? dy : dx;
+  /* Down → next; up → previous.
+     Horizontal on desktop is reversed vs natural deltaX. */
+  const dominant = Math.abs(dy) >= Math.abs(dx) ? dy : -dx;
   onDelta(dominant * WHEEL_SCALE, 16);
 }, { passive: false });
 
