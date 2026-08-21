@@ -5,6 +5,11 @@
 
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby9FFiDErVagAjtDLixDCIEULznLpxtDRz0qdob9uQzzYvVqaOLiVD-FlvAn3IrvRmy/exec';
 
+/* Soften pinch-zoom on iOS Safari (best-effort; OS settings can override) */
+document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
+document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
+document.addEventListener('gestureend', e => e.preventDefault(), { passive: false });
+
 /* ── Monogram: strip black bg once, apply to every instance ── */
 (function stripMonogramBlack() {
   const imgs = Array.from(document.querySelectorAll('.ci-monogram, .cmsg-monogram'));
@@ -54,11 +59,11 @@ let order = cards.map((_, i) => i);
    scroll only reduces progress; cancel snaps instantly.
    Scatter only on leaving card 1. All retreats roll in.
    ════════════════════════════════════════════════════ */
-const COMMIT      = 0.15;
+const COMMIT      = 0.05;
 const WHEEL_SCALE = 1 / 420;
-const SETTLE_MS   = 180;
+const SETTLE_MS   = 60;
 /* Pause between wheel events that means “new scroll”, not leftover flick */
-const NEW_GESTURE_MS = 160;
+const NEW_GESTURE_MS = 60;
 
 let mode        = 'idle'; /* idle | advance | retreat */
 let progress    = 0;

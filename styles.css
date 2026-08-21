@@ -25,6 +25,9 @@ html, body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   background: #1a0c10; /* shows in gaps when rounded cards peek/slide */
+  /* Reduce pinch / double-tap zoom on mobile (not 100% enforceable) */
+  touch-action: pan-x pan-y;
+  -ms-touch-action: pan-x pan-y;
 }
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; border: none; background: none; font: inherit; padding: 0; }
