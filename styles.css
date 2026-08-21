@@ -786,6 +786,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   font-size: clamp(46vw, 52vw, 560px);
   line-height: 0.82;
   letter-spacing: -0.04em;
+  /* Stroke + glow paint outside the glyph box; card overflow:hidden
+     was clipping the right edge of the 0. Pad the box (same font size)
+     and cancel trailing letter-spacing so the outline stays on-screen. */
+  padding: 0.06em 0.1em;
+  margin-inline-end: -0.04em;
+  box-sizing: content-box;
   color: transparent;
   -webkit-text-stroke: 1.15px rgba(201, 168, 76, 0.62);
   filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.22));
@@ -794,10 +800,10 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 .cs-day::after {
   content: attr(data-text);
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  /* Match .cs-day padding so the shine tracks the glyphs */
+  inset: 0.06em 0.1em;
+  width: auto;
+  height: auto;
   color: transparent;
   -webkit-text-stroke: 1.6px rgba(255, 236, 190, 0.95);
   pointer-events: none;
@@ -1282,6 +1288,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   background-repeat: no-repeat;
 }
 
+/* Portrait phones (incl. >420px wide): pull image up so horizon sits mid-frame */
+@media (max-width: 768px) and (orientation: portrait) {
+  [data-theme="venue"] {
+    background-position: 64% 50%;
+  }
+}
+
 .cv-body {
   background: none;
   justify-content: center;
@@ -1624,9 +1637,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .ce-evt   { font-size: clamp(0.95rem, 4vw, 1.15rem); }
   .ce-timeline { --ce-gap: 10px; }
 
-  /* Location — taller glass + more architecture in frame */
+  /* Location — horizon nearer vertical center on narrow phones */
   [data-theme="venue"] {
-    background-position: 70% 36%;
+    background-position: 68% 52%;
     background-size: cover;
   }
   .cv-glass {
