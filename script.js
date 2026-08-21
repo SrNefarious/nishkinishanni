@@ -59,9 +59,9 @@ let order = cards.map((_, i) => i);
    scroll only reduces progress; cancel snaps instantly.
    Scatter only on leaving card 1. All retreats roll in.
    ════════════════════════════════════════════════════ */
-const COMMIT      = 0.20;
-const WHEEL_SCALE = 1 / 420;
-const SETTLE_MS   = 60;
+const COMMIT      = 0.30; /* laptop / wheel commit threshold */
+const WHEEL_SCALE = 1 / 560; /* gentler scrub so the exit reads on desktop */
+const SETTLE_MS   = 140; /* let mouse-wheel notches accumulate before settle */
 /* Pause between wheel events that means “new scroll”, not leftover flick */
 const NEW_GESTURE_MS = 60;
 /* Touch: commit if dragged this far, OR flicked this hard (per 16ms frame) */
@@ -327,11 +327,8 @@ function applyScrubVisual() {
     }
     scrubReveals(revealTarget, p);
 
-    if (order[0] === 0) {
-      if (!dissolve) ensureDissolve(frontCard());
-      applyDissolveProgress(p);
-      return;
-    }
+    /* Same roll-away for every page (incl. invite). Diamond dissolve was
+       too heavy on desktop and often skipped the visible scrub. */
     const f = frontCard();
     const s = rollScale(p);
     f.classList.add('is-scrubbing');
@@ -375,7 +372,7 @@ function goIdle() {
 }
 
 function finishAdvanceCommit() {
-  const departed = order[0] === 0 && dissolve ? dissolve.departing : frontCard();
+  const departed = frontCard();
   hardResetChrome();
   order.push(order.shift());
   applyPositions();
@@ -684,15 +681,17 @@ window.addEventListener('touchmove', e => {
   const now = performance.now();
   const dt = Math.max(8, now - touchLastT);
 
-  /* Finger down OR left→right → next; up OR right→left → previous */
+  /* Horizontal: left→right → next (same as desktop).
+     Vertical touch only: swipe up → next, swipe down → previous
+     (opposite of desktop wheel, which stays scroll-down → next). */
   const dHoriz = x - touchLastX; /* finger moves right → advance */
-  const dVert  = y - touchLastY; /* finger moves down → advance */
+  const dVert  = y - touchLastY;
 
   let delta;
   if (Math.abs(dHoriz) >= Math.abs(dVert)) {
     delta = dHoriz / (window.innerWidth * 0.85);
   } else {
-    delta = dVert / (window.innerHeight * 0.85);
+    delta = -dVert / (window.innerHeight * 0.85); /* finger up → advance */
   }
 
   touchLastX = x;
