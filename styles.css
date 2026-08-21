@@ -1082,79 +1082,159 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 
 /* ════════════════════════════════════════════════════
-   CARD 5 — EVENTS  ·  Warm amber parchment
+   CARD 5 — EVENTS  ·  Light sage + timeline
    ════════════════════════════════════════════════════ */
 [data-theme="events"] {
+  --ce-sage: #c8d2c0;
+  --ce-ink: #2a3428;
+  --ce-muted: #5a6b56;
+  --ce-gold: rgba(154, 114, 50, 0.9);
   background:
-    radial-gradient(ellipse 80% 60% at 20% 15%, rgba(220,185,110,0.25) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 80% 85%, rgba(195,135,100,0.12) 0%, transparent 55%),
-    #f5e8d2;
+    radial-gradient(ellipse 90% 50% at 50% 100%, rgba(90, 130, 100, 0.28) 0%, transparent 58%),
+    radial-gradient(ellipse 70% 45% at 50% 8%, rgba(210, 220, 200, 0.55) 0%, transparent 55%),
+    var(--ce-sage);
 }
-.ce-label {
-  font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
-  font-weight: 300;
-  letter-spacing: 0.55em;
-  text-transform: uppercase;
-  color: rgba(160,110,50,0.6);
-  margin-bottom: 6px;
+
+.ce-body {
+  gap: clamp(12px, 2vh, 20px);
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: clamp(48px, 10vh, 88px);
+  padding-bottom: calc(13% + 3.25rem);
 }
-.ce-date {
+
+.ce-title {
   font-family: var(--ff-serif);
   font-style: italic;
-  font-size: clamp(0.8rem, 1.9vw, 1rem);
+  font-size: clamp(1.25rem, 4vw, 2.2rem);
   font-weight: 300;
-  color: rgba(80,45,15,0.4);
-  margin-bottom: clamp(28px, 6vh, 60px);
-}
-.ce-list {
-  width: min(520px, 90vw);
-}
-.ce-item {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: clamp(12px, 2.5vw, 24px);
-  padding: clamp(12px, 2.5vh, 22px) 0;
-}
-.ce-time {
-  font-family: var(--ff-serif);
-  font-size: clamp(1.2rem, 3.5vw, 2.2rem);
-  font-weight: 300;
-  color: #2a1608;
+  color: var(--ce-ink);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-align: center;
+  margin: 0;
   white-space: nowrap;
-  text-align: right;
-  min-width: max-content;
+  flex-shrink: 0;
 }
-.ce-time em {
-  font-size: 0.62em;
-  color: rgba(80,45,15,0.45);
-  vertical-align: super;
-  font-style: normal;
-  letter-spacing: 0.05em;
-}
-/* Dot-line connector */
-.ce-dot-line {
+
+.ce-rule {
+  width: min(160px, 42vw);
   height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ce-gold), transparent);
+  margin: 0 0 clamp(4px, 1vh, 10px);
+  flex-shrink: 0;
+}
+
+.ce-timeline {
+  --ce-time-col: 6.5rem;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
   position: relative;
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  flex: 1 1 auto;
+  gap: clamp(40px, 8.5vh, 72px);
+  width: max-content;
+  max-width: min(560px, 94vw);
 }
-.ce-dot-line span {
+
+.ce-timeline::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--ce-time-col) + 14px + 5.5px);
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    rgba(58, 74, 54, 0.08),
+    rgba(58, 74, 54, 0.35) 18%,
+    rgba(58, 74, 54, 0.35) 82%,
+    rgba(58, 74, 54, 0.08)
+  );
+}
+
+.ce-tl {
+  display: grid;
+  grid-template-columns: var(--ce-time-col) 11px auto;
+  align-items: center;
+  column-gap: 14px;
+  position: relative;
+}
+
+.ce-tl__dot {
   display: block;
-  height: 1px;
-  background: rgba(160,110,50,0.2);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ce-gold);
+  background: var(--ce-sage);
+  box-shadow: 0 0 0 3px var(--ce-sage);
+  position: relative;
+  z-index: 1;
+  justify-self: center;
 }
+
+.ce-time {
+  font-family: var(--ff-sans);
+  font-size: clamp(0.68rem, 1.5vw, 0.8rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ce-muted);
+  white-space: nowrap;
+  justify-self: end;
+  text-align: right;
+  margin: 0;
+}
+
+.ce-time em {
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: rgba(90, 107, 86, 0.55);
+}
+
 .ce-evt {
   font-family: var(--ff-serif);
   font-style: italic;
-  font-size: clamp(0.85rem, 2.1vw, 1.15rem);
+  font-size: clamp(1rem, 2.4vw, 1.3rem);
   font-weight: 300;
-  color: rgba(50,28,8,0.55);
+  color: var(--ce-ink);
+  line-height: 1.25;
   text-align: left;
+  justify-self: start;
+  white-space: nowrap;
+  margin: 0;
 }
-.ce-sep {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(160,110,50,0.18), transparent);
+
+.ce-date {
+  position: absolute;
+  bottom: 13%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  translate: 0 -50%;
+  font-family: var(--ff-serif);
+  font-style: italic;
+  font-size: clamp(1.2rem, 3.4vw, 1.75rem);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--ce-gold);
+  text-align: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Shimmer lines tuned for light sage */
+[data-theme="events"] .cv-shimmer::before,
+[data-theme="events"] .cv-shimmer::after {
+  background: linear-gradient(90deg,
+    transparent 5%, rgba(58, 100, 72, 0.35) 50%, transparent 95%);
 }
 
 
@@ -1167,13 +1247,14 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     radial-gradient(ellipse 60% 40% at 50% 10%,  rgba(60,110,70,0.10) 0%, transparent 55%),
     #080f0c;
 }
-/* Animated horizontal shimmer (lake reflection) */
+/* Animated horizontal shimmer (lake reflection) — venue + events */
 .cv-shimmer {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 40%;
   pointer-events: none;
   overflow: hidden;
+  z-index: 0;
 }
 .cv-shimmer::before,
 .cv-shimmer::after {
@@ -1475,7 +1556,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cc-pre { font-size: clamp(0.65rem, 3.2vw, 0.8rem); }
   .cc-uname { font-size: clamp(0.55rem, 2.8vw, 0.68rem); }
   .rf-radios { flex-direction: column; gap: 12px; }
-  .ce-time  { font-size: clamp(1rem, 5vw, 1.5rem); }
+  .ce-title { font-size: clamp(1.05rem, 5.2vw, 1.55rem); }
+  .ce-evt   { font-size: clamp(0.95rem, 4vw, 1.15rem); }
+  .ce-tl    { column-gap: 10px; }
 }
 @media (max-height: 640px) {
   .c-body   { padding: 20px 24px; }
