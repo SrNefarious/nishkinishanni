@@ -10,11 +10,25 @@
   --gold-dk:     #9a7232;
   --gold-pale:   rgba(201,168,76,0.22);
 
+  --ff-display:  'Pinyon Script', cursive;
   --ff-serif:    'Cormorant Garamond', Georgia, serif;
-  --ff-script:   'Pinyon Script', cursive;
-  --ff-tag:      'Cormorant Garamond', Georgia, serif;
-  --msg-ink:     #2c1508;
   --ff-sans:     'DM Sans', 'Helvetica Neue', sans-serif;
+  --msg-ink:     #2c1508;
+
+  /* Typography roles — 3 families, 4 jobs:
+     Display  → Pinyon: couple names + venue name only
+     Headline → Cormorant italic 300: titles & poetic lines
+     Body     → Cormorant italic 400: form fields & choices
+     UI       → DM Sans caps: labels, metadata, buttons, digits */
+  --t-headline-weight:  300;
+  --t-headline-style:   italic;
+  --t-headline-spacing: 0.04em;
+  --t-body-weight:      400;
+  --t-label-weight:     400;
+  --t-label-spacing:    0.38em;
+  --t-label-size:       clamp(0.58rem, 1.25vw, 0.72rem);
+  --t-meta-weight:      300;
+  --t-meta-spacing:     0.28em;
 
   /* Nav dot accent follows card theme — updated via JS */
   --dot-active:  #c9a84c;
@@ -27,6 +41,7 @@ html, body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   background: #1a0c10;
+  font-family: var(--ff-sans);
   touch-action: pan-x pan-y;
   -ms-touch-action: pan-x pan-y;
 }
@@ -114,12 +129,59 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   padding: clamp(48px, 8vh, 96px) clamp(28px, 6vw, 80px);
 }
 
-/* Shared label (eyebrow caps) */
-.c-label-shared {
+/* ── Typography roles (shared) ───────────────────── */
+.t-headline,
+.ci-hero,
+.cmsg-title,
+.ce-title,
+.cn-post__txt,
+.ce-evt,
+.ci-tag {
+  font-family: var(--ff-serif);
+  font-style: var(--t-headline-style);
+  font-weight: var(--t-headline-weight);
+  letter-spacing: var(--t-headline-spacing);
+}
+
+.t-display,
+.cn-name__txt,
+.cv-name {
+  font-family: var(--ff-display);
+}
+
+.t-ui-label,
+.cs-label,
+.cc-pre,
+.cv-label {
   font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
-  font-weight: 300;
-  letter-spacing: 0.55em;
+  font-size: var(--t-label-size);
+  font-weight: var(--t-label-weight);
+  letter-spacing: var(--t-label-spacing);
+  text-transform: uppercase;
+}
+
+.t-body,
+.rf-group__label,
+.rf-field input,
+.rf-field textarea,
+.rf-opt,
+.rf-btn,
+.rf-ok,
+.rf-err {
+  font-family: var(--ff-serif);
+  font-style: italic;
+  font-weight: var(--t-body-weight);
+}
+
+.t-ui-meta,
+.cs-year,
+.cs-time,
+.cc-uname,
+.cv-sub,
+.ce-time {
+  font-family: var(--ff-sans);
+  font-weight: var(--t-meta-weight);
+  letter-spacing: var(--t-meta-spacing);
   text-transform: uppercase;
 }
 
@@ -202,12 +264,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .ci-hero {
-  font-family: var(--ff-serif);
-  font-style: italic;
   font-size: clamp(1.5rem, 4.5vw, 2.8rem);
-  font-weight: 300;
   color: #2c1508;
-  letter-spacing: 0.04em;
 }
 
 /* ── Hashtag pinned to bottom of invite card ── */
@@ -218,12 +276,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   right: 0;
   text-align: center;
   z-index: 3;
-  font-family: var(--ff-tag);
-  font-style: italic;
-  font-weight: 300;
   font-size: clamp(1.05rem, 3vw, 1.52rem);
-  color: rgba(96, 54, 28, 0.78);
   letter-spacing: 0.07em;
+  color: rgba(96, 54, 28, 0.78);
   text-shadow: none;
   white-space: nowrap;
 }
@@ -478,7 +533,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .cn-name__txt {
   display: block;
-  font-family: var(--ff-script);
   font-size: clamp(2.2rem, 8.5vw, 5.4rem);
   line-height: normal;
   padding: 0.4em 0.1em 0;
@@ -499,8 +553,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   margin: -0.22em 0 0;
   padding: 0 0 0.2em;
   font-family: var(--ff-serif);
-  font-style: italic;
-  font-weight: 300;
+  font-style: var(--t-headline-style);
+  font-weight: var(--t-headline-weight);
   font-size: clamp(1.05rem, 2.8vw, 1.45rem);
   line-height: 1.3;
   color: rgba(240, 210, 160, 0.85);
@@ -519,11 +573,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .cn-and {
   font-family: var(--ff-serif);
-  font-style: italic;
+  font-style: var(--t-headline-style);
+  font-weight: var(--t-headline-weight);
+  letter-spacing: var(--t-headline-spacing);
   font-size: clamp(0.95rem, 2.4vw, 1.35rem);
-  font-weight: 300;
   color: rgba(240, 210, 160, 0.7);
-  letter-spacing: 0.04em;
   flex-shrink: 0;
   padding-bottom: 0.15em;
 }
@@ -603,10 +657,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .cn-post__txt {
   margin: 0;
-  font-family: var(--ff-serif);
-  font-style: italic;
   font-size: clamp(1.05rem, 2.8vw, 1.45rem);
-  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: none;
   color: rgba(240, 220, 175, 0.92);
@@ -728,11 +779,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   padding-top: clamp(52px, 12vh, 110px);
 }
 .cs-label {
-  font-family: var(--ff-sans);
-  font-size: clamp(0.58rem, 1.25vw, 0.72rem);
-  font-weight: 300;
-  letter-spacing: 0.55em;
-  text-transform: uppercase;
   color: rgba(232, 210, 150, 0.82);
   margin-bottom: clamp(10px, 2vh, 18px);
   text-shadow: 0 0 18px rgba(201, 168, 76, 0.18);
@@ -871,20 +917,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   display: inline-block;
 }
 .cs-year {
-  font-family: var(--ff-sans);
   font-size: clamp(0.68rem, 1.5vw, 0.88rem);
-  font-weight: 300;
-  letter-spacing: 0.55em;
   color: rgba(232, 210, 150, 0.78);
   display: inline-block;
   text-shadow: 0 0 14px rgba(201, 168, 76, 0.2);
 }
 .cs-time {
-  font-family: var(--ff-sans);
   font-size: clamp(0.72rem, 1.6vw, 0.92rem);
-  font-weight: 300;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
   color: rgba(232, 210, 150, 0.85);
   display: inline-block;
   margin-top: clamp(24px, 5vh, 48px);
@@ -977,11 +1016,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   gap: clamp(20px, 4vh, 36px);
 }
 .cc-pre {
-  font-family: var(--ff-sans); /* DM Sans — same as “Save the Date” */
   font-size: clamp(0.72rem, 1.6vw, 0.88rem);
-  font-weight: 400;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
   color: #5a3018;
   margin: 0;
 }
@@ -1017,17 +1052,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   gap: clamp(12px, 2vh, 18px);
 }
 .cc-uname {
-  font-family: var(--ff-sans); /* DM Sans — same as page 3 labels */
   font-size: clamp(0.62rem, 1.3vw, 0.75rem);
-  font-weight: 400;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
   color: #6b3d22;
 }
 .cc-colon {
-  font-family: var(--ff-serif); /* Cormorant — already used on pages 1–3 */
+  font-family: var(--ff-serif);
   font-size: clamp(1.6rem, 4.5vw, 2.6rem);
-  font-weight: 400;
+  font-weight: var(--t-headline-weight);
   color: #5c1a2e;
   line-height: 1;
   margin-top: 0;
@@ -1050,9 +1081,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   position: relative;
   width: var(--flip-w);
   height: var(--flip-h);
-  /* Digits: same family as labels, but bolder */
+  /* Digits: UI sans — tabular, bold */
   font-family: var(--ff-sans);
-  font-weight: 700;
+  font-weight: 600;
   font-size: calc(var(--flip-h) * 0.52);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
@@ -1203,12 +1234,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .ce-title {
-  font-family: var(--ff-serif);
-  font-style: italic;
   font-size: clamp(1.25rem, 4vw, 2.2rem);
-  font-weight: 300;
   color: var(--ce-ink);
-  letter-spacing: 0.04em;
   line-height: 1.2;
   text-align: center;
   margin: clamp(6px, 1.2vh, 14px) 0 0;
@@ -1288,11 +1315,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .ce-time {
-  font-family: var(--ff-sans);
   font-size: clamp(0.68rem, 1.5vw, 0.8rem);
-  font-weight: 500;
   letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--ce-muted);
   white-space: nowrap;
   justify-self: end;
@@ -1308,10 +1332,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .ce-evt {
-  font-family: var(--ff-serif);
-  font-style: italic;
   font-size: clamp(0.95rem, 2.4vw, 1.3rem);
-  font-weight: 300;
   color: var(--ce-ink);
   line-height: 1.25;
   text-align: left;
@@ -1489,11 +1510,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: var(--ff-sans);
-  font-size: clamp(0.55rem, 1.2vw, 0.68rem);
-  font-weight: 500;
-  letter-spacing: 0.45em;
-  text-transform: uppercase;
   color: rgba(90, 45, 55, 0.55);
   margin: 0 0 clamp(12px, 2vh, 20px);
 }
@@ -1505,7 +1521,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .cv-name {
-  font-family: var(--ff-script);
   font-size: clamp(2.6rem, 9vw, 4.8rem);
   line-height: 1.15;
   color: #4a2030;
@@ -1530,11 +1545,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .cv-sub {
-  font-family: var(--ff-sans);
   font-size: clamp(0.58rem, 1.2vw, 0.72rem);
-  font-weight: 400;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
   color: rgba(90, 45, 55, 0.62);
   margin: 0 0 clamp(18px, 3.5vh, 32px);
 }
@@ -1554,8 +1565,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   justify-content: center;
   gap: 8px;
   font-family: var(--ff-sans);
-  font-size: clamp(0.55rem, 1.2vw, 0.68rem);
-  font-weight: 500;
+  font-size: var(--t-label-size);
+  font-weight: var(--t-label-weight);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #5a2838;
@@ -1661,10 +1672,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .cmsg-title {
-  font-family: var(--ff-serif);
-  font-style: italic;
   font-size: clamp(1.45rem, 4.2vw, 2.4rem);
-  font-weight: 300;
   color: var(--msg-ink);
   margin: 0 0 clamp(8px, 1.5vh, 16px);
 }
@@ -1691,11 +1699,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .rf-group__label {
   margin: 0;
-  font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.05vw, 0.6rem);
-  font-weight: 500;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
+  font-size: clamp(0.95rem, 2.2vw, 1.08rem);
   color: var(--msg-ink);
 }
 
@@ -1708,9 +1712,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   border: none;
   border-bottom: 1px solid rgba(155, 110, 50, 0.22);
   padding: 9px 0;
-  font-family: var(--ff-serif);
-  font-style: italic;
-  font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+  font-size: clamp(0.95rem, 2.2vw, 1.05rem);
   color: var(--msg-ink);
   outline: none;
   transition: border-color 0.3s;
@@ -1747,9 +1749,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--ff-serif);
-  font-style: italic;
-  font-size: clamp(0.85rem, 2.1vw, 1rem);
+  font-size: clamp(0.95rem, 2.2vw, 1.05rem);
   color: var(--msg-ink);
   cursor: pointer;
   user-select: none;
@@ -1788,11 +1788,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   width: 100%;
   margin-top: clamp(2px, 0.5vh, 6px);
   padding: 12px 0;
-  font-family: var(--ff-sans);
-  font-size: clamp(0.5rem, 1.1vw, 0.62rem);
-  font-weight: 300;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
+  font-size: clamp(0.9rem, 2.2vw, 1.05rem);
+  letter-spacing: 0.02em;
+  text-transform: none;
   color: #f4e8d4;
   background: #2c1508;
   border: none;
@@ -1806,8 +1804,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 .rf-ok, .rf-err {
   margin-top: 12px;
   text-align: center;
-  font-family: var(--ff-serif);
-  font-style: italic;
   font-size: 0.92rem;
 }
 .rf-ok  { color: #9a5030; }
