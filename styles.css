@@ -1453,8 +1453,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 .cv-hero-icon {
   position: relative;
-  width: clamp(52px, 12vw, 64px);
-  height: clamp(52px, 12vw, 64px);
+  width: clamp(76px, 17vw, 96px);
+  height: clamp(76px, 17vw, 96px);
   display: grid;
   place-items: center;
   margin: 0 0 clamp(10px, 2vh, 16px);
@@ -1465,6 +1465,17 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   border-radius: 50%;
   border: 1px solid rgba(201, 168, 76, 0.35);
   animation: cvIconRing 3.2s ease-out infinite;
+}
+.cv-hero-icon__img {
+  position: relative;
+  z-index: 1;
+  width: 118%;
+  height: 118%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 2px 6px rgba(60, 30, 40, 0.12));
+  pointer-events: none;
+  user-select: none;
 }
 .cv-hero-icon__glyph {
   font-size: clamp(30px, 7vw, 38px);
