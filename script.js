@@ -239,9 +239,7 @@ let order = cards.map((_, i) => i);
 
 /* ════════════════════════════════════════════════════
    SCRUB MOTION ENGINE
-   One gesture = one mode (advance OR retreat). Opposite
-   scroll only reduces progress; cancel snaps instantly.
-   Scatter only on leaving card 1. All retreats roll in.
+   Same roll/scrub — vertical peel only (no stack).
    ════════════════════════════════════════════════════ */
 const COMMIT      = 0.30; /* laptop / wheel commit threshold */
 const WHEEL_SCALE = 1 / 560; /* gentler scrub so the exit reads on desktop */
@@ -261,7 +259,6 @@ let lastT       = 0;
 let settling    = false;
 let settleTimer = null;
 let animFrame   = null;
-let dissolve    = null;
 let revealTarget = null;
 let pageLocked  = false; /* this scroll stream already turned a page */
 let lockDir     = 0;     /* +1 advance lock, -1 retreat lock */
@@ -326,12 +323,7 @@ function hardResetChrome() {
   }
   clearTimeout(settleTimer);
   settleTimer = null;
-
-  if (dissolve) {
-    dissolve.tiles.forEach(({ el }) => el.parentNode && el.parentNode.removeChild(el));
-    dissolve = null;
-  }
-  document.querySelectorAll('.scrub-tile').forEach(el => el.remove());
+  revealTarget = null;
 
   cards.forEach(card => {
     card.classList.remove('is-scrubbing', 'no-transition');
@@ -342,144 +334,21 @@ function hardResetChrome() {
     card.style.zIndex = '';
     card.style.pointerEvents = '';
     card.style.visibility = '';
+    card.style.boxShadow = '';
   });
 
-  revealTarget = null;
   applyPositions();
 }
 
-/* ── Rasterize (advance from card 1 only) ─────────── */
-function rasterizeCard(card) {
-  const W = window.innerWidth;
-  const H = window.innerHeight;
-  const dpr = Math.min(1, window.devicePixelRatio || 1);
-  const canvas = document.createElement('canvas');
-  canvas.width  = Math.floor(W * dpr);
-  canvas.height = Math.floor(H * dpr);
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
-
-  const theme = card.dataset.theme;
-  if (theme === 'invite') {
-    ctx.fillStyle = '#f4e8d4';
-    ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = 'rgba(155,110,50,0.09)';
-    for (let y = 0; y < H; y += 22)
-      for (let x = 0; x < W; x += 22) {
-        ctx.beginPath();
-        ctx.arc(x, y, 1, 0, Math.PI * 2);
-        ctx.fill();
-      }
-  } else if (theme === 'names') {
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#5c1a2e');
-    g.addColorStop(0.45, '#4a1526');
-    g.addColorStop(1, '#3d1220');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, W, H);
-  } else {
-    ctx.fillStyle = getComputedStyle(card).backgroundColor || '#1a0c10';
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  card.querySelectorAll('img').forEach(img => {
-    if (!img.naturalWidth) return;
-    const r = img.getBoundingClientRect();
-    try { ctx.drawImage(img, r.left, r.top, r.width, r.height); }
-    catch (e) { /* tainted */ }
-  });
-
-  const textSel = 'p, .ci-hero, .ci-tag, .cn-name__txt, .cn-surname, .cn-and, .cn-post__txt, .cs-label, .cs-day, .cs-month, .cs-year, .cc-num, .cc-uname, .ce-time, .ce-name, .cv-name, .cv-place, .cm-title';
-  card.querySelectorAll(textSel).forEach(el => {
-    const style = getComputedStyle(el);
-    if (style.display === 'none' || style.visibility === 'hidden') return;
-    const r = el.getBoundingClientRect();
-    if (r.width < 2 || r.height < 2) return;
-    const text = (el.textContent || '').trim();
-    if (!text) return;
-    ctx.save();
-    ctx.font = style.font;
-    let color = style.color;
-    if (el.classList.contains('cn-name__txt') || style.webkitTextFillColor === 'rgba(0, 0, 0, 0)') {
-      color = '#e8d090';
-    }
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, r.left + r.width / 2, r.top + r.height / 2);
-    ctx.restore();
-  });
-
-  return { canvas, W, H };
+function rollScale(p) {
+  const t = 1 - Math.pow(1 - p, 1.55);
+  return 1 - t * 0.30;
 }
 
-function ensureDissolve(sourceCard) {
-  if (dissolve) return;
-  const departing = sourceCard || frontCard();
-  /* Rasterize WHILE still visible, then cover with tiles, then hide */
-  const { canvas, W, H } = rasterizeCard(departing);
-  const url = canvas.toDataURL('image/jpeg', 0.72);
-  const TILE = 80;
-  const cols = Math.ceil(W / TILE) + 1;
-  const rows = Math.ceil(H / TILE) + 1;
-  const cx = W / 2;
-  const cy = H / 2;
-  const tiles = [];
-  const frag = document.createDocumentFragment();
-  const diamond = 'polygon(50% 0%,100% 50%,50% 100%,0% 50%)';
+const ROLL_RADIUS = 42;
 
-  function addTile(tx, ty) {
-    const el = document.createElement('div');
-    const midX = tx + TILE / 2;
-    const midY = ty + TILE / 2;
-    const dx = midX - cx;
-    const dy = midY - cy;
-    const dist = Math.hypot(dx, dy) || 1;
-    const speed = 100 + Math.random() * 160;
-    el.className = 'scrub-tile scrub-tile--diamond';
-    el.style.cssText =
-      `position:fixed;left:${tx}px;top:${ty}px;` +
-      `width:${TILE}px;height:${TILE}px;` +
-      `background-image:url(${url});` +
-      `background-size:${W}px ${H}px;` +
-      `background-position:-${tx}px -${ty}px;` +
-      `clip-path:${diamond};` +
-      `-webkit-clip-path:${diamond};` +
-      `z-index:1000;pointer-events:none;` +
-      `will-change:transform,opacity;` +
-      `transform:translate(0px,0px) rotate(0deg) scale(1);opacity:1;`;
-    frag.appendChild(el);
-    tiles.push({
-      el,
-      bx: (dx / dist) * speed,
-      by: (dy / dist) * speed,
-      br: (Math.random() - 0.5) * 140,
-    });
-  }
-
-  /* Dual grid: base diamonds + offset diamonds → full cover, no square look */
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      addTile(c * TILE, r * TILE);
-      addTile(c * TILE + TILE / 2, r * TILE + TILE / 2);
-    }
-  }
-  document.body.appendChild(frag);
-
-  departing.classList.add('is-scrubbing');
-  departing.style.visibility = 'hidden';
-  departing.style.pointerEvents = 'none';
-
-  dissolve = { tiles, departing };
-}
-
-function applyDissolveProgress(p) {
-  if (!dissolve) return;
-  dissolve.tiles.forEach(({ el, bx, by, br }) => {
-    el.style.transform =
-      `translate(${bx * p}px,${by * p}px) rotate(${br * p}deg) scale(${1 - 0.96 * p})`;
-    el.style.opacity = String(1 - p);
-  });
+function applyRollRadius(el) {
+  el.style.setProperty('border-radius', `${ROLL_RADIUS}px`, 'important');
 }
 
 function armPrevCard(prev) {
@@ -488,19 +357,6 @@ function armPrevCard(prev) {
   prev.style.opacity = '1';
   prev.style.pointerEvents = 'none';
   prev.style.zIndex = '12';
-}
-
-/* Ease-out scale: shrink reads early, then softens */
-function rollScale(p) {
-  const t = 1 - Math.pow(1 - p, 1.55);
-  return 1 - t * 0.30; /* → ~0.70 at full roll */
-}
-
-const ROLL_RADIUS = 42; /* constant for the whole roll — not ramped from 0 */
-
-function applyRollRadius(el) {
-  /* Must beat .card[data-pos] { border-radius: 0 !important } on buried cards */
-  el.style.setProperty('border-radius', `${ROLL_RADIUS}px`, 'important');
 }
 
 function applyScrubVisual() {
@@ -513,28 +369,23 @@ function applyScrubVisual() {
     }
     scrubReveals(revealTarget, p);
 
-    /* Same roll-away for every page (incl. invite). Diamond dissolve was
-       too heavy on desktop and often skipped the visible scrub. */
     const f = frontCard();
     const s = rollScale(p);
     f.classList.add('is-scrubbing');
     f.style.zIndex = '11';
     f.style.transformOrigin = 'center center';
-    f.style.transform =
-      `translateX(${p * 105}%) rotate(${p * 14}deg) scale(${s})`;
+    f.style.transform = `translateY(${-p * 105}%) scale(${s})`;
     applyRollRadius(f);
     return;
   }
 
   if (mode === 'retreat') {
-    /* Previous page rolls IN from the right (same path the front card exits on) */
     const prev = prevCard();
     armPrevCard(prev);
-    const t = 1 - p; /* 1 = off-screen right, 0 = settled */
+    const t = 1 - p;
     const s = rollScale(t);
     prev.style.transformOrigin = 'center center';
-    prev.style.transform =
-      `translateX(${105 * t}%) rotate(${14 * t}deg) scale(${s})`;
+    prev.style.transform = `translateY(${-105 * t}%) scale(${s})`;
     applyRollRadius(prev);
 
     if (!revealTarget) {
@@ -559,9 +410,8 @@ function goIdle() {
 
 function finishAdvanceCommit() {
   const departed = frontCard();
-  hardResetChrome();
   order.push(order.shift());
-  applyPositions();
+  hardResetChrome();
   resetReveals(departed);
   markAllRevealed(frontCard());
   goIdle();
@@ -583,9 +433,8 @@ function finishAdvanceCancel() {
 
 function finishRetreatCommit() {
   const departed = frontCard();
-  hardResetChrome();
   order.unshift(order.pop());
-  applyPositions();
+  hardResetChrome();
   resetReveals(departed);
   markAllRevealed(frontCard());
   goIdle();
@@ -830,20 +679,12 @@ window.addEventListener('wheel', e => {
   if (e.target.closest && e.target.closest('input, textarea, select')) return;
   e.preventDefault();
   let dy = e.deltaY;
-  let dx = e.deltaX;
-  /* Normalize line/page deltas so mice aren't almost no-ops */
-  if (e.deltaMode === 1) { dy *= 16; dx *= 16; }
-  else if (e.deltaMode === 2) {
-    dy *= window.innerHeight;
-    dx *= window.innerWidth;
-  }
-  /* Down → next; up → previous.
-     Horizontal on desktop is reversed vs natural deltaX. */
-  const dominant = Math.abs(dy) >= Math.abs(dx) ? dy : -dx;
-  onDelta(dominant * WHEEL_SCALE, 16);
+  if (e.deltaMode === 1) dy *= 16;
+  else if (e.deltaMode === 2) dy *= window.innerHeight;
+  /* Vertical only — scroll down = next card */
+  onDelta(dy * WHEEL_SCALE, 16);
 }, { passive: false });
 
-let touchLastX = null;
 let touchLastY = null;
 let touchLastT = 0;
 
@@ -854,34 +695,20 @@ window.addEventListener('touchstart', e => {
     return;
   }
   touchActive = true;
-  touchX0 = e.touches[0].clientX;
-  touchLastX = touchX0;
-  touchLastY = e.touches[0].clientY;
+  touchX0 = e.touches[0].clientY;
+  touchLastY = touchX0;
   touchLastT = performance.now();
-  clearTimeout(settleTimer); /* never settle while finger is down */
+  clearTimeout(settleTimer);
 }, { passive: true });
 
 window.addEventListener('touchmove', e => {
   if (touchX0 === null || settling) return;
-  const x = e.touches[0].clientX;
   const y = e.touches[0].clientY;
   const now = performance.now();
   const dt = Math.max(8, now - touchLastT);
-
-  /* Horizontal: left→right → next (same as desktop).
-     Vertical touch only: swipe up → next, swipe down → previous
-     (opposite of desktop wheel, which stays scroll-down → next). */
-  const dHoriz = x - touchLastX; /* finger moves right → advance */
-  const dVert  = y - touchLastY;
-
-  let delta;
-  if (Math.abs(dHoriz) >= Math.abs(dVert)) {
-    delta = dHoriz / (window.innerWidth * TOUCH_DIST);
-  } else {
-    delta = -dVert / (window.innerHeight * TOUCH_DIST); /* finger up → advance */
-  }
-
-  touchLastX = x;
+  const dVert = y - touchLastY;
+  /* Vertical only — swipe up = next */
+  const delta = -dVert / (window.innerHeight * TOUCH_DIST);
   touchLastY = y;
   touchLastT = now;
   onDelta(delta, dt);
@@ -907,17 +734,18 @@ window.addEventListener('touchcancel', () => {
 
 window.addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input, textarea, select, button')) return;
-  if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) {
+  if (['ArrowDown', ' ', 'PageDown'].includes(e.key)) {
     e.preventDefault();
     nudge(1);
-  } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) {
+  } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
     e.preventDefault();
     nudge(-1);
   }
 });
 
 window.addEventListener('keyup', e => {
-  if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', ' ', 'PageDown', 'PageUp'].includes(e.key)) {
+  if (e.target.closest && e.target.closest('input, textarea, select, button')) return;
+  if (['ArrowDown', 'ArrowUp', ' ', 'PageDown', 'PageUp'].includes(e.key)) {
     releasePageLock();
   }
 });
