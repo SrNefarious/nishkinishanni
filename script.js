@@ -13,7 +13,7 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
 /* ── Ambient music + small mute control (bottom-right) ── */
 (function ambientMusic() {
   const VOLUME = 0.32;
-  const FADE_IN = 2.2;  /* seconds */
+  const FADE_IN = 0.8;  /* seconds */
   const FADE_OUT = 2.5;
 
   const audio = new Audio();
