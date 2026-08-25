@@ -293,6 +293,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
    CARD 2 — NAMES  ·  Floral corners + falling petals
    ════════════════════════════════════════════════════ */
 [data-theme="names"] {
+  --cn-portrait-bottom: clamp(36px, 6.5vmin, 58px);
+  --cn-bl-corner-x: clamp(28px, 5vmin, 44px);
+  --cn-bl-corner-y: clamp(40px, 7vmin, 60px);
   background:
     radial-gradient(ellipse 75% 60% at 50% 42%,
       rgba(160, 48, 72, 0.55) 0%,
@@ -304,7 +307,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 /* Floral corner ornaments — opposite corners */
 .cn-corner {
   position: absolute;
-  width: min(280px, 48vw);
+  width: min(200px, 36vw);
   height: auto;
   pointer-events: none;
   z-index: 1;
@@ -314,18 +317,24 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   top: 0;
   left: 0;
 }
-.cn-corner--br {
-  bottom: 0;
+.cn-corner--tr {
+  top: 0;
   right: 0;
-  transform: rotate(180deg);
+  transform: scaleX(-1);
 }
 
 .cn-body {
-  gap: clamp(8px, 1.5vh, 16px);
+  gap: clamp(10px, 1.8vh, 18px);
   position: relative;
   z-index: 2;
   padding-inline: clamp(36px, 10vw, 88px);
   padding-block: clamp(56px, 10vh, 100px);
+}
+
+[data-theme="names"] .cn-body {
+  justify-content: flex-start;
+  padding-top: clamp(56px, 33vh, 240px);
+  padding-bottom: clamp(40px, 8vh, 72px);
 }
 
 /* Clean vintage half-rules — longer, double hairline, mid ticks, end diamonds.
@@ -336,6 +345,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   pointer-events: none;
   z-index: 1;
 }
+[data-theme="names"] .cn-corner {
+  z-index: 1;
+}
+[data-theme="names"] .cn-petals {
+  z-index: 1;
+}
 .cn-fl {
   position: absolute;
   display: block;
@@ -344,7 +359,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 /* ── Horizontal arms ── */
 .cn-fl--tl-h,
-.cn-fl--br-h {
+.cn-fl--tr-h {
   height: 18px;
   width: min(300px, 52vw);
   background:
@@ -374,8 +389,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 /* End diamonds */
 .cn-fl--tl-h::before,
 .cn-fl--tl-h::after,
-.cn-fl--br-h::before,
-.cn-fl--br-h::after {
+.cn-fl--tr-h::before,
+.cn-fl--tr-h::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -386,13 +401,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   transform: translateY(-50%) rotate(45deg);
 }
 .cn-fl--tl-h::before,
-.cn-fl--br-h::before { left: 3%; }
+.cn-fl--tr-h::before { left: 3%; }
 .cn-fl--tl-h::after,
-.cn-fl--br-h::after  { right: 3%; }
+.cn-fl--tr-h::after  { right: 3%; }
 
 /* Mid ticks on horizontal */
 .cn-fl--tl-h .cn-fl__tick,
-.cn-fl--br-h .cn-fl__tick {
+.cn-fl--tr-h .cn-fl__tick {
   position: absolute;
   top: 50%;
   width: 1px;
@@ -402,7 +417,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   font-style: normal;
 }
 .cn-fl--tl-h .cn-fl__tick::after,
-.cn-fl--br-h .cn-fl__tick::after {
+.cn-fl--tr-h .cn-fl__tick::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -414,13 +429,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   transform: translate(-50%, -50%) rotate(45deg);
 }
 .cn-fl--tl-h .cn-fl__tick--a,
-.cn-fl--br-h .cn-fl__tick--a { left: 28%; }
+.cn-fl--tr-h .cn-fl__tick--a { left: 28%; }
 .cn-fl--tl-h .cn-fl__tick--b,
-.cn-fl--br-h .cn-fl__tick--b { left: 72%; }
+.cn-fl--tr-h .cn-fl__tick--b { left: 72%; }
 
 /* ── Vertical arms ── */
 .cn-fl--tl-v,
-.cn-fl--br-v {
+.cn-fl--tr-v {
   width: 18px;
   height: min(260px, 42vh);
   background:
@@ -445,8 +460,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .cn-fl--tl-v::before,
 .cn-fl--tl-v::after,
-.cn-fl--br-v::before,
-.cn-fl--br-v::after {
+.cn-fl--tr-v::before,
+.cn-fl--tr-v::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -457,12 +472,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   transform: translateX(-50%) rotate(45deg);
 }
 .cn-fl--tl-v::before,
-.cn-fl--br-v::before { top: 3%; }
+.cn-fl--tr-v::before { top: 3%; }
 .cn-fl--tl-v::after,
-.cn-fl--br-v::after  { bottom: 3%; }
+.cn-fl--tr-v::after  { bottom: 3%; }
 
 .cn-fl--tl-v .cn-fl__tick,
-.cn-fl--br-v .cn-fl__tick {
+.cn-fl--tr-v .cn-fl__tick {
   position: absolute;
   left: 50%;
   width: 9px;
@@ -472,7 +487,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   font-style: normal;
 }
 .cn-fl--tl-v .cn-fl__tick::after,
-.cn-fl--br-v .cn-fl__tick::after {
+.cn-fl--tr-v .cn-fl__tick::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -484,11 +499,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   transform: translate(-50%, -50%) rotate(45deg);
 }
 .cn-fl--tl-v .cn-fl__tick--a,
-.cn-fl--br-v .cn-fl__tick--a { top: 28%; }
+.cn-fl--tr-v .cn-fl__tick--a { top: 28%; }
 .cn-fl--tl-v .cn-fl__tick--b,
-.cn-fl--br-v .cn-fl__tick--b { top: 72%; }
+.cn-fl--tr-v .cn-fl__tick--b { top: 72%; }
 
-/* Placement — sit against floral corners */
+/* Placement — top corners (with flowers) */
 .cn-fl--tl-h {
   top: clamp(42px, 7.5vmin, 64px);
   left: clamp(68px, 14vw, 140px);
@@ -497,13 +512,118 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   top: clamp(68px, 14vmin, 140px);
   left: clamp(30px, 5.5vmin, 50px);
 }
-.cn-fl--br-h {
-  bottom: clamp(42px, 7.5vmin, 64px);
+.cn-fl--tr-h {
+  top: clamp(42px, 7.5vmin, 64px);
   right: clamp(68px, 14vw, 140px);
+  transform: scaleX(-1);
+}
+.cn-fl--tr-v {
+  top: clamp(68px, 14vmin, 140px);
+  right: clamp(30px, 5.5vmin, 50px);
+}
+
+/* Placement — bottom corners: shorter tapered L-lines + corner gem */
+.cn-fl--bl-h,
+.cn-fl--bl-v,
+.cn-fl--br-h,
+.cn-fl--br-v {
+  transform: none;
+}
+.cn-fl--bl-h .cn-fl__tick,
+.cn-fl--bl-v .cn-fl__tick,
+.cn-fl--br-h .cn-fl__tick,
+.cn-fl--br-v .cn-fl__tick,
+.cn-fl--bl-h::before,
+.cn-fl--br-h::before {
+  display: none;
+}
+.cn-fl--bl-v {
+  bottom: var(--cn-bl-corner-y);
+  left: var(--cn-bl-corner-x);
+  width: 18px;
+  height: min(110px, 18vh);
+  background: linear-gradient(to top,
+    rgba(232, 210, 150, 0.92) 0%,
+    rgba(201, 168, 76, 0.38) 52%,
+    transparent 100%) left bottom / 1.4px 100% no-repeat;
+}
+.cn-fl--bl-v::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(212, 180, 90, 0.85);
+  background: rgba(74, 21, 38, 0.95);
+  transform: translate(-0.5px, 0.5px) rotate(45deg);
+}
+.cn-fl--bl-h {
+  bottom: var(--cn-bl-corner-y);
+  left: var(--cn-bl-corner-x);
+  width: min(140px, 25vw);
+  height: 18px;
+  background: linear-gradient(to right,
+    rgba(232, 210, 150, 0.92) 0%,
+    rgba(201, 168, 76, 0.38) 52%,
+    transparent 100%) left bottom / 100% 1.4px no-repeat;
+}
+.cn-fl--bl-h::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(212, 180, 90, 0.75);
+  background: rgba(74, 21, 38, 0.95);
+  transform: translate(0.5px, 0.5px) rotate(45deg);
 }
 .cn-fl--br-v {
-  bottom: clamp(68px, 14vmin, 140px);
-  right: clamp(30px, 5.5vmin, 50px);
+  bottom: var(--cn-bl-corner-y);
+  right: var(--cn-bl-corner-x);
+  width: 18px;
+  height: min(110px, 18vh);
+  background: linear-gradient(to top,
+    rgba(232, 210, 150, 0.92) 0%,
+    rgba(201, 168, 76, 0.38) 52%,
+    transparent 100%) right bottom / 1.4px 100% no-repeat;
+}
+.cn-fl--br-v::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(212, 180, 90, 0.85);
+  background: rgba(74, 21, 38, 0.95);
+  transform: translate(0.5px, 0.5px) rotate(45deg);
+}
+.cn-fl--br-h {
+  bottom: var(--cn-bl-corner-y);
+  right: var(--cn-bl-corner-x);
+  width: min(140px, 25vw);
+  height: 18px;
+  background: linear-gradient(to left,
+    rgba(232, 210, 150, 0.92) 0%,
+    rgba(201, 168, 76, 0.38) 52%,
+    transparent 100%) right bottom / 100% 1.4px no-repeat;
+}
+.cn-fl--br-h::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(212, 180, 90, 0.75);
+  background: rgba(74, 21, 38, 0.95);
+  transform: translate(-0.5px, 0.5px) rotate(45deg);
+}
+.cn-fl--bl-v::after,
+.cn-fl--br-v::after {
+  display: none;
 }
 
 /* Names row: baseline keeps “and” locked to first names;
@@ -514,7 +634,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   flex-wrap: nowrap;
   align-items: baseline;
   justify-content: center;
-  gap: clamp(8px, 2vw, 18px);
+  gap: clamp(10px, 2.2vw, 20px);
   white-space: nowrap;
   position: relative;
   z-index: 2;
@@ -533,7 +653,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .cn-name__txt {
   display: block;
-  font-size: clamp(2.2rem, 8.5vw, 5.4rem);
+  font-size: clamp(2.45rem, 9.5vw, 6rem);
   line-height: normal;
   padding: 0.4em 0.1em 0;
   margin: 0 0 -0.06em;
@@ -555,7 +675,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   font-family: var(--ff-serif);
   font-style: var(--t-headline-style);
   font-weight: var(--t-headline-weight);
-  font-size: clamp(1.05rem, 2.8vw, 1.45rem);
+  font-size: clamp(1.15rem, 3.1vw, 1.6rem);
   line-height: 1.3;
   color: rgba(240, 210, 160, 0.85);
   -webkit-text-fill-color: rgba(240, 210, 160, 0.85);
@@ -576,10 +696,65 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   font-style: var(--t-headline-style);
   font-weight: var(--t-headline-weight);
   letter-spacing: var(--t-headline-spacing);
-  font-size: clamp(0.95rem, 2.4vw, 1.35rem);
+  font-size: clamp(1.05rem, 2.65vw, 1.5rem);
   color: rgba(240, 210, 160, 0.7);
   flex-shrink: 0;
   padding-bottom: 0.15em;
+}
+
+/* Couple portrait — bottom-center, soft fade on left / right / bottom */
+[data-theme="names"] .cn-portrait {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--cn-portrait-bottom);
+  z-index: 0;
+  margin-inline: auto;
+  width: fit-content;
+  max-width: min(88vw, 640px);
+  height: clamp(280px, 50vh, 520px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.cn-portrait__img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.22));
+  -webkit-mask-image:
+    linear-gradient(to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.35) 7%,
+      #000 16%,
+      #000 84%,
+      rgba(0, 0, 0, 0.35) 93%,
+      transparent 100%),
+    linear-gradient(to top,
+      transparent 0%,
+      rgba(0, 0, 0, 0.4) 10%,
+      #000 22%,
+      #000 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.35) 7%,
+      #000 16%,
+      #000 84%,
+      rgba(0, 0, 0, 0.35) 93%,
+      transparent 100%),
+    linear-gradient(to top,
+      transparent 0%,
+      rgba(0, 0, 0, 0.4) 10%,
+      #000 22%,
+      #000 100%);
+  mask-composite: intersect;
 }
 
 /* Subtitle — tight under names; elegant serif italic */
@@ -587,7 +762,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(8px, 1.4vh, 12px);
+  gap: clamp(10px, 1.6vh, 14px);
   margin-top: 0;
   position: relative;
   z-index: 1;
@@ -597,8 +772,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  width: clamp(168px, 38vw, 260px);
+  gap: 12px;
+  width: clamp(184px, 42vw, 286px);
 }
 .cn-post__arm {
   flex: 1;
@@ -657,7 +832,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .cn-post__txt {
   margin: 0;
-  font-size: clamp(1.05rem, 2.8vw, 1.45rem);
+  font-size: clamp(1.15rem, 3.1vw, 1.6rem);
   letter-spacing: 0.08em;
   text-transform: none;
   color: rgba(240, 220, 175, 0.92);
@@ -1107,7 +1282,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   filter: drop-shadow(0 6px 18px rgba(90, 45, 55, 0.12));
 }
 .cc-pre {
-  font-size: clamp(0.72rem, 1.6vw, 0.88rem);
   color: #5a3018;
   margin: 0;
 }
@@ -1661,7 +1835,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .cv-sub {
-  font-size: clamp(1.05rem, 2.8vw, 1.45rem);
+  font-size: clamp(1.15rem, 3.1vw, 1.6rem);
   letter-spacing: 0.08em;
   text-transform: none;
   color: rgba(74, 32, 48, 0.88);
@@ -2009,13 +2183,15 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
    RESPONSIVE
    ════════════════════════════════════════════════════ */
 @media (max-width: 420px) {
-  .cn-name__txt  { font-size: clamp(1.75rem, 10vw, 2.6rem); }
-  .cn-and   { font-size: 0.85rem; }
-  .cn-post__txt  { font-size: clamp(0.95rem, 4vw, 1.2rem); letter-spacing: 0.06em; }
-  .cn-surname    { font-size: clamp(0.95rem, 4vw, 1.2rem); }
-  .cn-corner { width: min(180px, 52vw); }
-  .cn-fl--tl-h, .cn-fl--br-h { width: min(210px, 58vw); }
-  .cn-fl--tl-v, .cn-fl--br-v { height: min(190px, 32vh); }
+  .cn-name__txt  { font-size: clamp(1.95rem, 11vw, 2.9rem); }
+  .cn-and   { font-size: 0.95rem; }
+  .cn-post__txt  { font-size: clamp(1.05rem, 4.4vw, 1.32rem); letter-spacing: 0.06em; }
+  .cn-surname    { font-size: clamp(1.05rem, 4.4vw, 1.32rem); }
+  .cn-corner { width: min(130px, 38vw); }
+  .cn-fl--tl-h, .cn-fl--tr-h { width: min(210px, 58vw); }
+  .cn-fl--tl-v, .cn-fl--tr-v { height: min(190px, 32vh); }
+  .cn-fl--bl-h, .cn-fl--br-h { width: min(120px, 22vw); }
+  .cn-fl--bl-v, .cn-fl--br-v { height: min(90px, 15vh); }
   .cs-day   { font-size: clamp(52vw, 56vw, 360px); }
   .cc-clock { gap: clamp(10px, 2.5vw, 18px); }
   .flip {
@@ -2023,7 +2199,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     --flip-h: clamp(76px, 21vw, 112px);
   }
   .cc-colon { height: clamp(76px, 21vw, 112px); }
-  .cc-pre { font-size: clamp(0.65rem, 3.2vw, 0.8rem); }
   .cc-uname { font-size: clamp(0.55rem, 2.8vw, 0.68rem); }
   .cc-body {
     padding-top: clamp(48px, 11vh, 80px);
@@ -2062,6 +2237,16 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cv-sub   { margin-bottom: clamp(18px, 3vh, 28px); }
   .cv-rule  { margin-bottom: clamp(18px, 3vh, 28px); }
 }
+@media (max-height: 700px) {
+  [data-theme="names"] .cn-body {
+    padding-top: clamp(40px, 26vh, 160px);
+    padding-bottom: clamp(32px, 6vh, 56px);
+    gap: clamp(4px, 1vh, 10px);
+  }
+  [data-theme="names"] .cn-portrait {
+    height: clamp(220px, 42vh, 360px);
+  }
+}
 @media (max-height: 740px) {
   [data-theme="msg"] .cmsg-body {
     padding-top: clamp(16px, 3vh, 28px);
@@ -2082,9 +2267,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 @media (max-height: 640px) {
   .c-body   { padding: 20px 24px; }
-  .cc-pre { font-size: 0.5rem; letter-spacing: 0.4em; }
   .cn-post  { margin-top: 0; }
-  .cn-corner { width: min(160px, 40vw); }
+  .cn-corner { width: min(115px, 34vw); }
 
   [data-theme="msg"] .cmsg-body {
     padding-top: clamp(12px, 2.5vh, 20px);
