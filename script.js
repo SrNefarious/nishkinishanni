@@ -316,7 +316,7 @@ function markAllRevealed(cardEl) {
 }
 
 /* Strip every scrub-related inline style so nothing can stick mid-way */
-function hardResetChrome() {
+function hardResetChrome({ forceSquare = true } = {}) {
   if (animFrame) {
     cancelAnimationFrame(animFrame);
     animFrame = null;
@@ -326,10 +326,15 @@ function hardResetChrome() {
   revealTarget = null;
 
   cards.forEach(card => {
-    card.classList.remove('is-scrubbing', 'no-transition');
+    card.classList.add('no-transition');
+    card.classList.remove('is-scrubbing');
     card.style.transform = '';
     card.style.transformOrigin = '';
-    card.style.removeProperty('border-radius');
+    if (forceSquare) {
+      card.style.setProperty('border-radius', '0', 'important');
+    } else {
+      card.style.removeProperty('border-radius');
+    }
     card.style.opacity = '';
     card.style.zIndex = '';
     card.style.pointerEvents = '';
@@ -338,6 +343,11 @@ function hardResetChrome() {
   });
 
   applyPositions();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      cards.forEach(card => card.classList.remove('no-transition'));
+    });
+  });
 }
 
 function rollScale(p) {
@@ -347,8 +357,11 @@ function rollScale(p) {
 
 const ROLL_RADIUS = 42;
 
-function applyRollRadius(el) {
-  el.style.setProperty('border-radius', `${ROLL_RADIUS}px`, 'important');
+function applyRollRadius(el, p) {
+  const peel = clamp01(p);
+  const scalePeel = (1 - rollScale(peel)) / 0.30;
+  const r = Math.round(ROLL_RADIUS * Math.max(peel, scalePeel));
+  el.style.setProperty('border-radius', `${r}px`, 'important');
 }
 
 function armPrevCard(prev) {
@@ -375,7 +388,7 @@ function applyScrubVisual() {
     f.style.zIndex = '11';
     f.style.transformOrigin = 'center center';
     f.style.transform = `translateY(${-p * 105}%) scale(${s})`;
-    applyRollRadius(f);
+    applyRollRadius(f, p);
     return;
   }
 
@@ -386,7 +399,7 @@ function applyScrubVisual() {
     const s = rollScale(t);
     prev.style.transformOrigin = 'center center';
     prev.style.transform = `translateY(${-105 * t}%) scale(${s})`;
-    applyRollRadius(prev);
+    applyRollRadius(prev, p);
 
     if (!revealTarget) {
       revealTarget = prev;
@@ -425,9 +438,9 @@ function finishAdvanceCommit() {
 
 function finishAdvanceCancel() {
   const incoming = order[1] !== undefined ? cards[order[1]] : null;
-  hardResetChrome();
   if (incoming) resetReveals(incoming);
   markAllRevealed(frontCard());
+  hardResetChrome({ forceSquare: false });
   goIdle();
 }
 
@@ -448,9 +461,9 @@ function finishRetreatCommit() {
 
 function finishRetreatCancel() {
   const incoming = canRetreat() ? prevCard() : null;
-  hardResetChrome();
   if (incoming) resetReveals(incoming);
   markAllRevealed(frontCard());
+  hardResetChrome({ forceSquare: false });
   goIdle();
 }
 
@@ -459,11 +472,12 @@ function animateTo(target, onDone) {
   clearTimeout(settleTimer);
   if (animFrame) cancelAnimationFrame(animFrame);
   const start = progress;
-  const dur = target >= 1 ? 320 : 1; /* cancel path unused — kept instant via onDone */
+  const dur = target >= 1 ? 280 : 260;
   const t0 = performance.now();
   function frame(now) {
     const t = Math.min(1, (now - t0) / Math.max(dur, 1));
-    const ease = 1 - Math.pow(1 - t, 3);
+    /* Linear return on cancel — keeps roundness in sync with position */
+    const ease = target >= 1 ? 1 - Math.pow(1 - t, 3) : t;
     setProgress(start + (target - start) * ease);
     if (t < 1) {
       animFrame = requestAnimationFrame(frame);
@@ -482,10 +496,10 @@ function settle() {
 
   if (mode === 'advance') {
     if (shouldCommit) animateTo(1, finishAdvanceCommit);
-    else finishAdvanceCancel();
+    else animateTo(0, finishAdvanceCancel);
   } else if (mode === 'retreat') {
     if (shouldCommit) animateTo(1, finishRetreatCommit);
-    else finishRetreatCancel();
+    else animateTo(0, finishRetreatCancel);
   }
 }
 
@@ -498,10 +512,10 @@ function settleTouch() {
 
   if (mode === 'advance') {
     if (shouldCommit) animateTo(1, finishAdvanceCommit);
-    else finishAdvanceCancel();
+    else animateTo(0, finishAdvanceCancel);
   } else if (mode === 'retreat') {
     if (shouldCommit) animateTo(1, finishRetreatCommit);
-    else finishRetreatCancel();
+    else animateTo(0, finishRetreatCancel);
   }
 }
 
@@ -559,8 +573,10 @@ function onDelta(rawDelta, dtMs) {
   setProgress(next);
 
   if (progress <= 0.001) {
-    if (mode === 'advance') finishAdvanceCancel();
-    else finishRetreatCancel();
+    if (!settling) {
+      if (mode === 'advance') animateTo(0, finishAdvanceCancel);
+      else animateTo(0, finishRetreatCancel);
+    }
     return;
   }
 
