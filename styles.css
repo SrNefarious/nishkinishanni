@@ -12,7 +12,7 @@
 
   --ff-serif:    'Cormorant Garamond', Georgia, serif;
   --ff-script:   'Pinyon Script', cursive;
-  --ff-tag:      'Playfair Display', Georgia, serif;
+  --ff-tag:      'Cormorant Garamond', Georgia, serif;
   --msg-ink:     #2c1508;
   --ff-sans:     'DM Sans', 'Helvetica Neue', sans-serif;
 
@@ -220,11 +220,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   z-index: 3;
   font-family: var(--ff-tag);
   font-style: italic;
-  font-weight: 400;
-  font-size: clamp(1.1rem, 3.2vw, 1.62rem);
-  color: rgba(96, 54, 28, 0.9);
-  letter-spacing: 0.06em;
-  text-shadow: 0 1px 0 rgba(244, 232, 212, 0.5);
+  font-weight: 300;
+  font-size: clamp(1.05rem, 3vw, 1.52rem);
+  color: rgba(96, 54, 28, 0.78);
+  letter-spacing: 0.07em;
+  text-shadow: none;
   white-space: nowrap;
 }
 .ci-tag__ki {
@@ -1671,8 +1671,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 /* Hashtag — same as invite card */
 [data-theme="msg"] .ci-tag {
-  color: rgba(96, 54, 28, 0.9);
-  text-shadow: 0 1px 0 rgba(244, 232, 212, 0.5);
+  color: rgba(96, 54, 28, 0.78);
+  text-shadow: none;
 }
 
 /* ── RSVP form ────────────────────────────────────── */
