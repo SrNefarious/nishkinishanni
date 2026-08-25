@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════
-   NishKiNishaani  ·  Card Deck Engine  ·  6 cards
+   NishKiNishaani  ·  Card Deck Engine  ·  7 cards
    Scrub-driven motion: scroll/touch links to progress.
    ════════════════════════════════════════════════════ */
 
@@ -21,12 +21,15 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
   audio.src = 'assets/music.mp3';
   audio.loop = false;
   audio.volume = 0;
+  audio.playsInline = true;
 
   let unlocked = false;
   let wantPlay = false;
   let muted = false;
   let phase = 'idle'; /* idle | in | play | out */
   let fadeRaf = null;
+  let primed = false;
+  let playPending = false;
 
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -84,10 +87,19 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     fadeRaf = requestAnimationFrame(frame);
   }
 
-  function tryPlay() {
-    if (!wantPlay || muted) return;
+  function playFromGesture() {
+    if (!wantPlay || muted) return Promise.resolve();
     const p = audio.play();
-    if (p && typeof p.catch === 'function') p.catch(function () {});
+    if (p && typeof p.then === 'function') return p;
+    return Promise.resolve();
+  }
+
+  function onPlaybackStarted(fresh) {
+    unlocked = true;
+    detachGestureListeners();
+    fadeTo(VOLUME, fresh ? FADE_IN : Math.min(FADE_IN, 1.2), function () {
+      if (!muted) phase = 'play';
+    });
   }
 
   function beginLoop() {
@@ -95,9 +107,11 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     phase = 'in';
     try { audio.currentTime = 0; } catch (e) {}
     audio.volume = 0;
-    tryPlay();
-    fadeTo(VOLUME, FADE_IN, function () {
-      if (!muted) phase = 'play';
+    audio.muted = false;
+    return playFromGesture().then(function () {
+      onPlaybackStarted(true);
+    }).catch(function () {
+      unlocked = false;
     });
   }
 
@@ -106,9 +120,11 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     stopFade();
     phase = 'in';
     audio.volume = 0;
-    tryPlay();
-    fadeTo(VOLUME, Math.min(FADE_IN, 1.2), function () {
-      if (!muted) phase = 'play';
+    audio.muted = false;
+    return playFromGesture().then(function () {
+      onPlaybackStarted(false);
+    }).catch(function () {
+      unlocked = false;
     });
   }
 
@@ -140,36 +156,71 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     beginLoop();
   });
 
-  function unlock() {
-    if (unlocked) {
-      if (wantPlay && !muted && audio.paused) resumePlayback();
+  function primeAudio() {
+    if (primed || unlocked) return;
+    primed = true;
+    const wasMuted = audio.muted;
+    audio.muted = true;
+    const p = audio.play();
+    if (!p || typeof p.then !== 'function') {
+      audio.pause();
+      try { audio.currentTime = 0; } catch (e) {}
+      audio.muted = wasMuted;
       return;
     }
-    unlocked = true;
+    p.then(function () {
+      audio.pause();
+      try { audio.currentTime = 0; } catch (e) {}
+      audio.muted = wasMuted;
+      audio.volume = 0;
+    }).catch(function () {
+      audio.muted = wasMuted;
+    });
+  }
+
+  function unlock() {
     wantPlay = true;
-    beginLoop();
+    muted = false;
+    audio.muted = false;
+    syncMuteUi();
+
+    if (!audio.paused && unlocked) return;
+    if (playPending) return;
+
+    if (unlocked && audio.paused) {
+      playPending = true;
+      resumePlayback().finally(function () { playPending = false; });
+      return;
+    }
+
+    playPending = true;
+    beginLoop().finally(function () { playPending = false; });
   }
 
-  function onFirstGesture() {
-    unlock();
-    window.removeEventListener('pointerdown', onFirstGesture, true);
-    window.removeEventListener('touchstart', onFirstGesture, true);
-    window.removeEventListener('wheel', onFirstGesture, true);
-    window.removeEventListener('keydown', onFirstGesture, true);
+  function onUserGesture(e) {
+    if (muted) return;
+    if (e.target.closest && e.target.closest('#music-toggle')) return;
+    if (!unlocked || audio.paused) unlock();
   }
 
-  window.addEventListener('pointerdown', onFirstGesture, true);
-  window.addEventListener('touchstart', onFirstGesture, true);
-  window.addEventListener('wheel', onFirstGesture, true);
-  window.addEventListener('keydown', onFirstGesture, true);
+  function detachGestureListeners() {
+    window.removeEventListener('pointerdown', onUserGesture, true);
+    window.removeEventListener('touchstart', onUserGesture, true);
+    window.removeEventListener('wheel', onUserGesture, true);
+    window.removeEventListener('keydown', onUserGesture, true);
+  }
+
+  window.addEventListener('pointerdown', onUserGesture, true);
+  window.addEventListener('touchstart', onUserGesture, true);
+  window.addEventListener('wheel', onUserGesture, true);
+  window.addEventListener('keydown', onUserGesture, true);
+
+  audio.addEventListener('canplaythrough', primeAudio, { once: true });
 
   btn.addEventListener('click', function (e) {
     e.stopPropagation();
     if (!unlocked) {
-      muted = false;
-      audio.muted = false;
       unlock();
-      syncMuteUi();
       return;
     }
     muted = !muted;
@@ -189,70 +240,135 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
   try { audio.load(); } catch (e) {}
 })();
 
-/* ── Monogram: strip black bg once, apply to every instance ── */
-(function stripMonogramBlack() {
-  const imgs = Array.from(document.querySelectorAll('.ci-monogram, .cmsg-monogram'));
+/* ── Strip near-black backgrounds from line-art images ── */
+(function stripImageBlack(selectors) {
+  const imgs = Array.from(document.querySelectorAll(selectors)).filter(img => {
+    const src = img.getAttribute('src') || img.src || '';
+    return !img.classList.contains('ci-ganesha') && !src.includes('ganesha');
+  });
   if (!imgs.length) return;
 
-  const src = imgs[0].getAttribute('src') || imgs[0].src;
-  const loader = new Image();
-  loader.onload = function () {
-    try {
-      const W = loader.naturalWidth;
-      const H = loader.naturalHeight;
-      if (!W || !H) return;
+  const bySrc = new Map();
+  imgs.forEach(img => {
+    const src = img.getAttribute('src') || img.src;
+    if (!bySrc.has(src)) bySrc.set(src, []);
+    bySrc.get(src).push(img);
+  });
 
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(loader, 0, 0);
+  bySrc.forEach((group, src) => {
+    const loader = new Image();
+    loader.onload = function () {
+      try {
+        const W = loader.naturalWidth;
+        const H = loader.naturalHeight;
+        if (!W || !H) return;
 
-      const id = ctx.getImageData(0, 0, W, H);
-      const px = id.data;
-      const LOW = 42;
-      const HIGH = 88;
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(loader, 0, 0);
 
-      for (let i = 0; i < px.length; i += 4) {
-        const r = px[i], g = px[i + 1], b = px[i + 2];
-        const chroma = Math.max(r, g, b) - Math.min(r, g, b);
-        const lum = r * 0.299 + g * 0.587 + b * 0.114;
-        /* Only strip near-black / grey — keep dark gold & pink */
-        if (lum <= LOW && chroma <= 22) px[i + 3] = 0;
-        else if (lum < HIGH && chroma <= 26) {
-          px[i + 3] = Math.round((lum - LOW) / (HIGH - LOW) * 255);
+        const id = ctx.getImageData(0, 0, W, H);
+        const px = id.data;
+        const LOW = 42;
+        const HIGH = 88;
+
+        for (let i = 0; i < px.length; i += 4) {
+          const r = px[i], g = px[i + 1], b = px[i + 2];
+          const chroma = Math.max(r, g, b) - Math.min(r, g, b);
+          const lum = r * 0.299 + g * 0.587 + b * 0.114;
+          if (lum <= LOW && chroma <= 22) px[i + 3] = 0;
+          else if (lum < HIGH && chroma <= 26) {
+            px[i + 3] = Math.round((lum - LOW) / (HIGH - LOW) * 255);
+          }
         }
-      }
 
-      ctx.putImageData(id, 0, 0);
-      const dataUrl = canvas.toDataURL('image/png');
-      imgs.forEach(img => { img.src = dataUrl; });
-    } catch (e) { /* ignore */ }
-  };
-  loader.src = src;
-})();
+        ctx.putImageData(id, 0, 0);
+        const dataUrl = canvas.toDataURL('image/png');
+        group.forEach(img => { img.src = dataUrl; });
+      } catch (e) { /* ignore */ }
+    };
+    loader.src = src;
+  });
+})('.ci-monogram, .cmsg-monogram');
 
-const EVENT = new Date('2026-10-20T18:30:00+05:30'); /* 20 Oct 2026, 6:30 PM IST */
-const TOTAL = 6;
+const EVENT = new Date('2026-10-20T17:00:00+05:30'); /* 20 Oct 2026, 5:00 PM IST */
+
+const CALENDAR_EVENT = {
+  title: 'Nishita & Nishant — Engagement',
+  start: '20261020T170000',
+  end: '20261020T230000',
+  timezone: 'Asia/Kolkata',
+  location: 'Noor Us Sabah, Bhopal',
+  description: 'Nishita & Nishant are getting engaged!\n\nhttps://nishkinishaani.com',
+};
+
+function buildGoogleCalendarUrl() {
+  const p = CALENDAR_EVENT;
+  const q = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: p.title,
+    dates: `${p.start}/${p.end}`,
+    ctz: p.timezone,
+    location: p.location,
+    details: p.description,
+  });
+  return `https://calendar.google.com/calendar/render?${q.toString()}`;
+}
+
+function initAddToCalendar() {
+  const link = document.getElementById('cs-cal-link');
+  if (link) link.href = buildGoogleCalendarUrl();
+}
+
+const TOTAL = 7;
 const cards = Array.from(document.querySelectorAll('.card'));
 let order = cards.map((_, i) => i);
 
 const PAGE_KEY = 'nishkinishaani-page';
+const RELOAD_PAGE_KEY = 'nishkinishaani-reload-page';
+const RELOAD_FLAG_KEY = 'nishkinishaani-reload-flag';
 
 function savePageState() {
   try {
-    sessionStorage.setItem(PAGE_KEY, String(order[0]));
+    const page = String(order[0]);
+    sessionStorage.setItem(PAGE_KEY, page);
+    sessionStorage.setItem(RELOAD_PAGE_KEY, page);
+    sessionStorage.setItem(RELOAD_FLAG_KEY, '0');
   } catch (e) { /* ignore */ }
 }
 
 function restorePageState() {
   try {
     const raw = sessionStorage.getItem(PAGE_KEY);
-    if (raw == null) return false;
-    const target = parseInt(raw, 10);
-    if (!Number.isFinite(target) || target < 0 || target >= TOTAL) return false;
+    if (raw == null) {
+      sessionStorage.setItem(RELOAD_PAGE_KEY, '0');
+      sessionStorage.setItem(RELOAD_FLAG_KEY, '0');
+      return false;
+    }
+
+    const savedPage = parseInt(raw, 10);
+    if (!Number.isFinite(savedPage) || savedPage < 0 || savedPage >= TOTAL) return false;
+
+    const lastReloadPage = parseInt(sessionStorage.getItem(RELOAD_PAGE_KEY) ?? '0', 10);
+    const reloadFlag = sessionStorage.getItem(RELOAD_FLAG_KEY) === '1';
+
+    let target = savedPage;
+    if (reloadFlag && savedPage > 0 && savedPage === lastReloadPage) {
+      target = 0;
+      sessionStorage.setItem(RELOAD_FLAG_KEY, '0');
+    } else if (savedPage > 0 && savedPage === lastReloadPage) {
+      sessionStorage.setItem(RELOAD_FLAG_KEY, '1');
+    } else {
+      sessionStorage.setItem(RELOAD_FLAG_KEY, '0');
+    }
+
+    sessionStorage.setItem(PAGE_KEY, String(target));
+    sessionStorage.setItem(RELOAD_PAGE_KEY, String(target));
+
     while (order[0] !== target) order.push(order.shift());
-    return true;
+    return target !== 0;
   } catch (e) {
     return false;
   }
@@ -707,7 +823,7 @@ setTimeout(fitNameSurnames, 1800);
   }
   layer.appendChild(frag);
 
-  const PETAL_PAGES = new Set([3, 4]); /* count, venue */
+  const PETAL_PAGES = new Set([4, 5]); /* count, venue */
 
   window.syncFxPetals = function syncFxPetals() {
     layer.classList.toggle('is-on', PETAL_PAGES.has(order[0]));
@@ -733,7 +849,7 @@ let touchLastY = null;
 let touchLastT = 0;
 
 window.addEventListener('touchstart', e => {
-  if (e.target.closest && e.target.closest('input, textarea, select, button')) {
+  if (e.target.closest && e.target.closest('input, textarea, select, button, a')) {
     touchX0 = null;
     touchActive = false;
     return;
@@ -777,7 +893,7 @@ window.addEventListener('touchcancel', () => {
 }, { passive: true });
 
 window.addEventListener('keydown', e => {
-  if (e.target.closest && e.target.closest('input, textarea, select, button')) return;
+  if (e.target.closest && e.target.closest('input, textarea, select, button, a')) return;
   if (['ArrowDown', ' ', 'PageDown'].includes(e.key)) {
     e.preventDefault();
     nudge(1);
@@ -788,7 +904,7 @@ window.addEventListener('keydown', e => {
 });
 
 window.addEventListener('keyup', e => {
-  if (e.target.closest && e.target.closest('input, textarea, select, button')) return;
+  if (e.target.closest && e.target.closest('input, textarea, select, button, a')) return;
   if (['ArrowDown', 'ArrowUp', ' ', 'PageDown', 'PageUp'].includes(e.key)) {
     releasePageLock();
   }
@@ -1086,3 +1202,9 @@ window.addEventListener('keyup', e => {
     }
   });
 })();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAddToCalendar);
+} else {
+  initAddToCalendar();
+}

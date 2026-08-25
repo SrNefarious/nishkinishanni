@@ -206,10 +206,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 
 /* ════════════════════════════════════════════════════
-   CARD 1 — YOU ARE INVITED
-   Warm parchment with subtle dot texture.
-   Decorative frame corners + gold rule + hashtag.
+   CARD 1 — SHRI GANESH  ·  Same parchment as invite
    ════════════════════════════════════════════════════ */
+[data-theme="ganesh"],
 [data-theme="invite"] {
   /* Very subtle gold dot grid — like fine stationery paper */
   background:
@@ -217,6 +216,42 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     #f4e8d4;
 }
 
+.ci-ganesha {
+  width: min(260px, 54vmin);
+  height: min(300px, 62vmin);
+  object-fit: contain;
+  display: block;
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+.ci-hero--ganesh {
+  font-size: clamp(1.35rem, 4.2vw, 2.5rem);
+  letter-spacing: 0.06em;
+}
+
+.ci-shloka {
+  position: absolute;
+  bottom: clamp(24px, 5vh, 48px);
+  left: clamp(20px, 5vw, 48px);
+  right: clamp(20px, 5vw, 48px);
+  text-align: center;
+  z-index: 3;
+  font-family: var(--ff-serif);
+  font-size: clamp(0.82rem, 2.35vw, 1.08rem);
+  font-weight: var(--t-headline-weight);
+  font-style: var(--t-headline-style);
+  line-height: 1.65;
+  letter-spacing: 0.02em;
+  color: rgba(96, 54, 28, 0.82);
+  white-space: normal;
+}
+
+
+/* ════════════════════════════════════════════════════
+   CARD 2 — YOU ARE INVITED
+   Decorative frame corners + gold rule + hashtag.
+   ════════════════════════════════════════════════════ */
 /* ── Inset decorative frame with corner L-brackets ── */
 .ci-frame {
   position: absolute;
@@ -285,8 +320,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 .ci-tag__ki {
   color: #8a3a4c;
 }
-
-/* Swipe hint removed */
 
 
 /* ════════════════════════════════════════════════════
@@ -943,6 +976,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 /* ════════════════════════════════════════════════════
    CARD 3 — SAVE THE DATE  ·  Dark wine + gold reveal
    ════════════════════════════════════════════════════ */
+.card[data-theme="date"] {
+  overflow: visible !important;
+}
 [data-theme="date"] {
   background:
     radial-gradient(ellipse 48% 44% at 50% 44%, rgba(255, 255, 255, 0.08) 0%, transparent 72%),
@@ -953,6 +989,16 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 .cs-body {
   justify-content: flex-start;
   padding-top: clamp(52px, 12vh, 110px);
+}
+[data-theme="date"] .cs-body {
+  overflow: visible;
+}
+[data-theme="date"] .cs-date {
+  position: relative;
+  overflow: visible;
+}
+[data-theme="date"] .cs-day {
+  z-index: 0;
 }
 .cs-label {
   color: rgba(232, 210, 150, 0.82);
@@ -1104,6 +1150,63 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   display: inline-block;
   margin-top: clamp(24px, 5vh, 48px);
   text-shadow: 0 0 14px rgba(201, 168, 76, 0.18);
+}
+
+.cs-cal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: clamp(40px, 8.5vh, 76px);
+  z-index: 12;
+  pointer-events: auto;
+  overflow: visible;
+  isolation: isolate;
+}
+.cs-cal__trigger {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--ff-sans);
+  font-size: clamp(0.62rem, 1.35vw, 0.72rem);
+  font-weight: var(--t-label-weight);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(232, 210, 150, 0.72);
+  background: transparent;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  padding: 13px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  pointer-events: auto;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+.cs-cal__trigger:visited {
+  color: rgba(232, 210, 150, 0.72);
+}
+.cs-cal__trigger:hover {
+  background: rgba(201, 168, 76, 0.18);
+  border-color: rgba(201, 168, 76, 0.52);
+  color: var(--gold-lt);
+}
+.cs-cal__trigger:active,
+.cs-cal__trigger:focus,
+.cs-cal__trigger:focus-visible {
+  background: transparent;
+  border-color: rgba(201, 168, 76, 0.2);
+  color: rgba(232, 210, 150, 0.72);
+  outline: none;
+}
+.cs-cal__ico {
+  font-size: 1.15em;
+  letter-spacing: 0;
+  opacity: 0.88;
 }
 
 
