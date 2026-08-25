@@ -924,17 +924,18 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   height: min(44vw, 330px);
   border-radius: 50%;
   border: none;
-  /* Narrow crest — softer near birth so center stays quiet */
+  /* Crest on outer rim only — center stays clear */
   background: radial-gradient(
     circle,
-    transparent 66%,
-    rgba(232, 210, 150, 0.14) 69%,
-    rgba(245, 228, 180, 0.55) 71%,
-    rgba(232, 210, 150, 0.2) 73.5%,
-    transparent 77%
+    transparent 67%,
+    rgba(232, 210, 150, 0.16) 70.5%,
+    rgba(245, 228, 180, 0.62) 72.5%,
+    rgba(201, 168, 76, 0.55) 75.5%,
+    rgba(232, 210, 150, 0.34) 78.5%,
+    transparent 82%
   );
-  box-shadow: 0 0 10px rgba(232, 210, 150, 0.22);
-  filter: blur(0.8px);
+  box-shadow: 0 0 22px rgba(201, 168, 76, 0.28);
+  filter: blur(0.6px);
   opacity: 0;
   animation: ccPulseWave 12s cubic-bezier(0.15, 0.55, 0.25, 1) infinite both;
   will-change: transform, opacity;
@@ -952,11 +953,17 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     transform: scale(0.42);
     opacity: 0;
   }
-  10% {
-    opacity: 0.28; /* light while still near center */
+  8% {
+    opacity: 0.18;
   }
-  35% {
-    opacity: 0.52;
+  28% {
+    opacity: 0.42;
+  }
+  55% {
+    opacity: 0.72;
+  }
+  78% {
+    opacity: 0.55;
   }
   100% {
     transform: scale(2.7);
@@ -971,7 +978,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 .cc-body {
   position: relative;
   z-index: 1;
-  gap: clamp(32px, 6vh, 56px);
+  gap: clamp(20px, 4vh, 36px);
 }
 .cc-pre {
   font-family: var(--ff-sans); /* DM Sans — same as “Save the Date” */
@@ -981,6 +988,25 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   text-transform: uppercase;
   color: #5a3018;
   margin: 0;
+}
+.cc-rule {
+  width: clamp(88px, 20vw, 140px);
+  margin: clamp(-6px, -1vh, 0) auto clamp(-4px, -0.8vh, 4px);
+}
+.cc-rule .cs-rule__arm {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(154, 90, 70, 0.22) 40%,
+    rgba(154, 90, 70, 0.42) 100%);
+}
+.cc-rule .cs-rule__arm:last-child {
+  background: linear-gradient(90deg,
+    rgba(154, 90, 70, 0.42) 0%,
+    rgba(154, 90, 70, 0.22) 60%,
+    transparent 100%);
+}
+.cc-rule .cs-rule__dot {
+  border-color: rgba(154, 90, 70, 0.45);
 }
 .cc-clock {
   display: flex;
@@ -1020,7 +1046,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   opacity: 0.55;
 }
 
-/* Clean split-flap — flat panels, no decorative chrome */
+/* Clean split-flap — golden frame drawn on top so it stays visible */
 .flip {
   --flip-w: clamp(76px, 20vw, 128px);
   --flip-h: clamp(88px, 23vw, 148px);
@@ -1038,8 +1064,39 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   perspective: 800px;
   border-radius: var(--flip-r);
   background: #4a1526;
-  border: 1px solid rgba(74, 21, 38, 0.9);
+  border: none;
   overflow: hidden;
+}
+.flip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 12;
+  box-sizing: border-box;
+  border: 2px solid rgba(232, 210, 150, 0.82);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 236, 190, 0.35),
+    0 0 14px rgba(201, 168, 76, 0.35);
+  animation: flipGoldBorder 3.8s ease-in-out infinite;
+}
+@keyframes flipGoldBorder {
+  0%, 100% {
+    border-color: rgba(201, 168, 76, 0.55);
+    box-shadow:
+      inset 0 0 0 1px rgba(201, 168, 76, 0.2),
+      0 0 8px rgba(201, 168, 76, 0.18);
+  }
+  50% {
+    border-color: rgba(255, 236, 190, 0.95);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 244, 210, 0.5),
+      0 0 22px rgba(232, 210, 150, 0.55);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip::after { animation: none; }
 }
 .flip__digit {
   position: absolute;
