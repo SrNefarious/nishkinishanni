@@ -4,7 +4,7 @@
  * Setup:
  * 1. Create a Google Sheet
  * 2. Row 1 headers exactly:
- *      Timestamp | Name | Attending | Guests | Note
+ *      Timestamp | Name | Side | Attending | Guests | Note
  * 3. Extensions → Apps Script → paste this file → Save
  * 4. Deploy → New deployment → Type: Web app
  *      Execute as: Me
@@ -12,7 +12,7 @@
  * 5. Copy the Web app URL into script.js → SHEETS_URL
  *
  * Payload from the site:
- *   { ts, name, attending, guests, note }
+ *   { ts, name, side, attending, guests, note }
  */
 
 function doPost(e) {
@@ -23,6 +23,7 @@ function doPost(e) {
     sheet.appendRow([
       data.ts || new Date().toISOString(),
       data.name || '',
+      data.side || '',
       data.attending || '',
       data.guests || '',
       data.note || '',

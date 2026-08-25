@@ -1,6 +1,6 @@
 /* ════════════════════════════════════════════════════
    NishKiNishaani · Full-Screen Card Deck
-   7 cards · Distinct palettes · Cinematic reveals
+   6 cards · Distinct palettes · Cinematic reveals
    ════════════════════════════════════════════════════ */
 
 /* ── Tokens ───────────────────────────────────────── */
@@ -230,6 +230,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   letter-spacing: 0.01em;
   text-shadow: 0 0 18px rgba(244,232,212,0.9), 0 1px 0 rgba(244,232,212,0.6);
   white-space: nowrap;
+}
+.ci-tag__ki {
+  color: #a84858;
 }
 
 /* Swipe hint removed */
@@ -880,6 +883,17 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   display: inline-block;
   text-shadow: 0 0 14px rgba(201, 168, 76, 0.2);
 }
+.cs-time {
+  font-family: var(--ff-sans);
+  font-size: clamp(0.72rem, 1.6vw, 0.92rem);
+  font-weight: 300;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(232, 210, 150, 0.85);
+  display: inline-block;
+  margin-top: clamp(24px, 5vh, 48px);
+  text-shadow: 0 0 14px rgba(201, 168, 76, 0.18);
+}
 
 
 /* ════════════════════════════════════════════════════
@@ -1304,6 +1318,20 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   background: none;
   justify-content: center;
   align-items: center;
+  padding-top: clamp(20px, 4vh, 40px);
+  padding-bottom: clamp(20px, 4vh, 40px);
+}
+
+.cv-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: clamp(14px, 2.4vh, 20px);
+  width: min(420px, 88vw);
+}
+
+.cv-stack .cv-glass {
+  width: 100%;
 }
 
 .cv-glass {
@@ -1324,9 +1352,79 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   backdrop-filter: blur(16px) saturate(1.2);
+  overflow: hidden;
+}
+.cv-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.42) 50%,
+    transparent 62%
+  );
+  background-size: 220% 100%;
+  animation: cvGlassShine 7s ease-in-out infinite;
+  opacity: 0.45;
+}
+
+/* Google Material Symbols — font icons, not inline SVG */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+.cv-spark {
+  position: absolute;
+  font-size: clamp(14px, 3.2vw, 18px);
+  color: rgba(201, 168, 76, 0.55);
+  pointer-events: none;
+  z-index: 2;
+  animation: cvSparkle 3.5s ease-in-out infinite;
+}
+.cv-spark--tl { top: 14px; left: 16px; animation-delay: 0s; }
+.cv-spark--br { bottom: 14px; right: 16px; animation-delay: 1.4s; }
+
+.cv-hero-icon {
+  position: relative;
+  width: clamp(52px, 12vw, 64px);
+  height: clamp(52px, 12vw, 64px);
+  display: grid;
+  place-items: center;
+  margin: 0 0 clamp(10px, 2vh, 16px);
+}
+.cv-hero-icon__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  animation: cvIconRing 3.2s ease-out infinite;
+}
+.cv-hero-icon__glyph {
+  font-size: clamp(30px, 7vw, 38px);
+  color: rgba(90, 45, 55, 0.72);
+  animation: cvIconFloat 4s ease-in-out infinite;
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 32;
 }
 
 .cv-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-family: var(--ff-sans);
   font-size: clamp(0.55rem, 1.2vw, 0.68rem);
   font-weight: 500;
@@ -1334,6 +1432,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   text-transform: uppercase;
   color: rgba(90, 45, 55, 0.55);
   margin: 0 0 clamp(12px, 2vh, 20px);
+}
+.cv-label__ico {
+  font-size: 1.35em;
+  letter-spacing: 0;
+  color: rgba(154, 90, 70, 0.65);
+  animation: cvMapNudge 2.8s ease-in-out infinite;
 }
 
 .cv-name {
@@ -1346,6 +1450,19 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   animation: none;
   margin: 0 0 clamp(6px, 1.2vh, 12px);
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Laptop / desktop — venue name on one line, roomier glass cards */
+@media (min-width: 769px) {
+  .cv-stack,
+  .cv-stack .cv-glass,
+  .cv-glass {
+    width: min(540px, 72vw);
+  }
+  .cv-name {
+    white-space: nowrap;
+    font-size: clamp(2.75rem, 4.2vw, 4.4rem);
+  }
 }
 
 .cv-sub {
@@ -1366,23 +1483,139 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .cv-map {
-  display: inline-block;
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-family: var(--ff-sans);
   font-size: clamp(0.55rem, 1.2vw, 0.68rem);
   font-weight: 500;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #5a2838;
   background: rgba(255, 255, 255, 0.45);
   border: 1px solid rgba(90, 45, 55, 0.28);
-  padding: 12px 28px;
+  padding: 12px 22px;
   border-radius: 999px;
-  transition: background 0.3s, border-color 0.3s, color 0.3s;
+  transition: background 0.3s, border-color 0.3s, color 0.3s, transform 0.25s;
+}
+.cv-map__ico {
+  font-size: 1.15em;
+  letter-spacing: 0;
+  animation: cvMapNudge 2.4s ease-in-out infinite;
 }
 .cv-map:hover {
   background: rgba(255, 255, 255, 0.7);
   border-color: rgba(90, 45, 55, 0.45);
   color: #3a1520;
+  transform: translateY(-1px);
+}
+.cv-glass > * { position: relative; z-index: 1; }
+.cv-spark { z-index: 2; }
+
+.cv-glass--stay .cv-label {
+  margin-bottom: clamp(10px, 1.8vh, 16px);
+}
+.cv-glass--stay .cv-rule {
+  margin-bottom: clamp(16px, 2.8vh, 24px);
+}
+
+.cv-stays-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  width: 100%;
+  gap: 0;
+}
+.cv-stays-vline {
+  width: 1px;
+  align-self: stretch;
+  min-height: 72px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(154, 90, 70, 0.35) 18%,
+    rgba(154, 90, 70, 0.35) 82%,
+    transparent
+  );
+  margin: 0 clamp(10px, 2.5vw, 16px);
+}
+.cv-stay-col {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.5vh, 12px);
+  text-align: center;
+  min-width: 0;
+}
+.cv-stay-ico {
+  font-size: clamp(28px, 6.5vw, 34px);
+  line-height: 1;
+  animation: cvIconFloat 4.5s ease-in-out infinite;
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 28;
+}
+.cv-stay-ico--groom {
+  color: rgba(74, 52, 88, 0.78);
+  animation-delay: 0.2s;
+}
+.cv-stay-ico--bride {
+  color: rgba(154, 72, 88, 0.78);
+  animation-delay: 0.9s;
+}
+.cv-stay__side {
+  font-family: var(--ff-serif);
+  font-style: italic;
+  font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+  font-weight: 300;
+  color: #4a2030;
+  line-height: 1.2;
+}
+.cv-map--sm {
+  padding: 9px 12px;
+  font-size: clamp(0.46rem, 0.95vw, 0.56rem);
+  letter-spacing: 0.1em;
+  gap: 5px;
+}
+.cv-map--sm .cv-map__ico {
+  font-size: 1.05em;
+}
+
+@keyframes cvGlassShine {
+  0%, 100% { background-position: 120% 0; opacity: 0.2; }
+  50%      { background-position: -20% 0; opacity: 0.55; }
+}
+@keyframes cvIconFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+@keyframes cvIconRing {
+  0%   { transform: scale(0.82); opacity: 0.55; }
+  70%  { transform: scale(1.18); opacity: 0; }
+  100% { transform: scale(1.18); opacity: 0; }
+}
+@keyframes cvMapNudge {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(2px, -2px); }
+}
+@keyframes cvSparkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.9) rotate(0deg); }
+  50%      { opacity: 1; transform: scale(1.15) rotate(18deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cv-glass::after,
+  .cv-hero-icon__ring,
+  .cv-hero-icon__glyph,
+  .cv-label__ico,
+  .cv-map__ico,
+  .cv-stay-ico,
+  .cv-spark {
+    animation: none !important;
+  }
 }
 
 /* Animated horizontal shimmer (lake reflection) — events page */
@@ -1413,13 +1646,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 
 /* ════════════════════════════════════════════════════
-   CARD 7 — SEND A MESSAGE  ·  Warm blush + invite frame
+   CARD 6 — SEND A MESSAGE  ·  Parchment (matches invite)
    ════════════════════════════════════════════════════ */
 [data-theme="msg"] {
   background:
-    radial-gradient(ellipse 80% 55% at 22% 20%, rgba(220,180,170,0.22) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 78% 80%, rgba(190,140,150,0.10) 0%, transparent 55%),
-    #faf0ec;
+    radial-gradient(circle, rgba(155,110,50,0.09) 1px, transparent 1px) 0 0 / 22px 22px,
+    #f4e8d4;
 }
 
 .cmsg-body {
@@ -1440,43 +1672,63 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   font-style: italic;
   font-size: clamp(1.45rem, 4.2vw, 2.4rem);
   font-weight: 300;
-  color: #2a1015;
+  color: #2c1508;
   margin: 0 0 clamp(8px, 1.5vh, 16px);
 }
 
-/* Hashtag reuses .ci-tag from page 1 — warm it slightly for blush bg */
+/* Hashtag — same as invite card */
 [data-theme="msg"] .ci-tag {
   color: rgba(120, 78, 22, 0.88);
-  text-shadow: 0 0 18px rgba(250, 240, 236, 0.95), 0 1px 0 rgba(250, 240, 236, 0.7);
+  text-shadow: 0 0 18px rgba(244,232,212,0.9), 0 1px 0 rgba(244,232,212,0.6);
 }
 
 /* ── RSVP form ────────────────────────────────────── */
 #rsvp-form {
   width: min(420px, 90vw);
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.4vh, 20px);
 }
-.rf-field { margin-bottom: clamp(8px, 1.5vh, 14px); }
+
+.rf-group {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.4vh, 10px);
+}
+.rf-group__label {
+  margin: 0;
+  font-family: var(--ff-sans);
+  font-size: clamp(0.5rem, 1.05vw, 0.6rem);
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(44, 21, 8, 0.42);
+}
+
+.rf-field { margin: 0; }
+
 .rf-field input,
 .rf-field textarea {
   width: 100%;
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(80,40,50,0.18);
+  border-bottom: 1px solid rgba(155, 110, 50, 0.22);
   padding: 9px 0;
   font-family: var(--ff-serif);
   font-style: italic;
   font-size: clamp(0.9rem, 2.2vw, 1.05rem);
-  color: #2a1015;
+  color: #2c1508;
   outline: none;
   transition: border-color 0.3s;
   resize: none;
 }
 .rf-field input:focus,
-.rf-field textarea:focus { border-bottom-color: #9a5030; }
+.rf-field textarea:focus { border-bottom-color: rgba(155, 110, 50, 0.7); }
 .rf-field input.invalid,
 .rf-field textarea.invalid { border-bottom-color: #b04040; }
 .rf-field input::placeholder,
-.rf-field textarea::placeholder { color: rgba(80,40,50,0.28); }
+.rf-field textarea::placeholder { color: rgba(44, 21, 8, 0.28); }
 .rf-field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
 .rf-hint {
   margin: 6px 0 0;
@@ -1487,52 +1739,71 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 .rf-radios {
-  display: flex;
-  gap: clamp(16px, 4vw, 32px);
-  flex-wrap: wrap;
-  margin-bottom: clamp(10px, 2vh, 18px);
+  display: grid;
+  gap: 10px;
+  margin: 0;
 }
+.rf-radios--side {
+  grid-template-columns: 1fr 1fr;
+}
+.rf-radios--attend {
+  grid-template-columns: 1fr;
+}
+
 .rf-opt {
   display: flex;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
   font-family: var(--ff-serif);
   font-style: italic;
   font-size: clamp(0.85rem, 2.1vw, 1rem);
-  color: rgba(60,25,30,0.7);
+  color: rgba(44, 21, 8, 0.65);
   cursor: pointer;
   user-select: none;
 }
-.rf-opt input[type="radio"] { display: none; }
-.rfr-pip {
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  border: 1px solid rgba(154,80,48,0.35);
-  flex-shrink: 0;
-  position: relative;
-  transition: border-color 0.2s, background 0.2s;
+.rf-opt--card {
+  text-align: center;
+  min-height: 52px;
+  padding: clamp(12px, 2vh, 16px) clamp(10px, 2.5vw, 14px);
+  border: 1px solid rgba(155, 110, 50, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.28);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, color 0.2s;
 }
-.rf-opt input:checked + .rfr-pip { border-color: #9a5030; background: #9a5030; }
-.rf-opt input:checked + .rfr-pip::after {
-  content: '';
+.rf-opt--card:hover {
+  border-color: rgba(155, 110, 50, 0.4);
+  background: rgba(255, 255, 255, 0.45);
+}
+.rf-opt--card:has(input:checked) {
+  border-color: rgba(155, 110, 50, 0.75);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(155, 110, 50, 0.35);
+  color: rgba(44, 21, 8, 0.95);
+}
+.rf-opt__txt {
+  line-height: 1.3;
+}
+.rf-opt input[type="radio"] {
   position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  background: #faf0ec;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 .rf-btn {
   width: 100%;
-  margin-top: clamp(10px, 2vh, 18px);
+  margin-top: clamp(2px, 0.5vh, 6px);
   padding: 12px 0;
   font-family: var(--ff-sans);
   font-size: clamp(0.5rem, 1.1vw, 0.62rem);
   font-weight: 300;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: #faf0ec;
-  background: #2a1015;
+  color: #f4e8d4;
+  background: #2c1508;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
   transition: background 0.3s;
 }
@@ -1637,7 +1908,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cc-colon { height: clamp(76px, 21vw, 112px); }
   .cc-pre { font-size: clamp(0.65rem, 3.2vw, 0.8rem); }
   .cc-uname { font-size: clamp(0.55rem, 2.8vw, 0.68rem); }
-  .rf-radios { flex-direction: column; gap: 12px; }
+  .rf-radios { gap: 10px; }
   .ce-title { font-size: clamp(1.05rem, 5.2vw, 1.55rem); }
   .ce-evt   { font-size: clamp(0.95rem, 4vw, 1.15rem); }
   .ce-timeline { --ce-gap: 10px; }
@@ -1647,11 +1918,21 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     background-position: 68% 52%;
     background-size: cover;
   }
-  .cv-glass {
+  .cv-stack {
     width: min(420px, 92vw);
+    gap: 12px;
+  }
+  .cv-glass {
+    width: 100%;
     min-height: 0;
-    padding: clamp(32px, 5.5vh, 48px) clamp(22px, 5vw, 32px);
+    max-height: none;
+    overflow: visible;
+    padding: clamp(24px, 4.5vh, 36px) clamp(20px, 4.5vw, 28px);
     gap: 4px;
+  }
+  .cv-stays-vline {
+    min-height: 64px;
+    margin: 0 8px;
   }
   .cv-label { margin-bottom: clamp(12px, 2vh, 18px); }
   .cv-name  { margin-bottom: clamp(6px, 1.2vh, 12px); }

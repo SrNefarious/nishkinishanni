@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════
-   NishKiNishaani  ·  Card Deck Engine  ·  7 cards
+   NishKiNishaani  ·  Card Deck Engine  ·  6 cards
    Scrub-driven motion: scroll/touch links to progress.
    ════════════════════════════════════════════════════ */
 
@@ -228,7 +228,7 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
 })();
 
 const EVENT = new Date('2026-10-20T18:30:00+05:30'); /* 20 Oct 2026, 6:30 PM IST */
-const TOTAL = 7;
+const TOTAL = 6;
 const cards = Array.from(document.querySelectorAll('.card'));
 let order = cards.map((_, i) => i);
 
@@ -791,7 +791,7 @@ setTimeout(fitNameSurnames, 1800);
   layer.appendChild(frag);
 })();
 
-/* Light continuous petals across countdown (3) → events (4) → venue (5) */
+/* Light continuous petals across countdown → venue */
 (function sharedPetals() {
   const layer = document.getElementById('fx-petals');
   if (!layer) return;
@@ -809,7 +809,7 @@ setTimeout(fitNameSurnames, 1800);
   }
   layer.appendChild(frag);
 
-  const PETAL_PAGES = new Set([3, 4, 5]); /* count, events, venue */
+  const PETAL_PAGES = new Set([3, 4]); /* count, venue */
 
   window.syncFxPetals = function syncFxPetals() {
     layer.classList.toggle('is-on', PETAL_PAGES.has(order[0]));
@@ -901,6 +901,7 @@ window.addEventListener('touchcancel', () => {
 }, { passive: true });
 
 window.addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input, textarea, select, button')) return;
   if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) {
     e.preventDefault();
     nudge(1);
@@ -1078,7 +1079,8 @@ window.addEventListener('keyup', e => {
   });
 
   noteInput.addEventListener('input', () => {
-    let v = noteInput.value.replace(/[$ #@]/g, '');
+    /* Strip $ # @ only — spaces are allowed */
+    let v = noteInput.value.replace(/[$#@]/g, '');
     /* also strip any other symbols outside the allow-list */
     v = v.replace(/[^A-Za-z0-9\s,.+\-'!?]/g, '');
     const words = v.trim() ? v.trim().split(/\s+/) : [];
@@ -1127,7 +1129,12 @@ window.addEventListener('keyup', e => {
 
     const attending = form.querySelector('input[name="attending"]:checked')?.value;
     if (!attending) {
-      firstBad = firstBad || form.querySelector('.rf-radios');
+      firstBad = firstBad || form.querySelector('.rf-radios--attend');
+    }
+
+    const side = form.querySelector('input[name="side"]:checked')?.value;
+    if (!side) {
+      firstBad = firstBad || form.querySelector('.rf-radios--side');
     }
 
     if (attending === 'Yes') {
@@ -1146,7 +1153,7 @@ window.addEventListener('keyup', e => {
 
     const note = noteInput.value.trim();
     if (note) {
-      if (!NOTE_CHAR_OK.test(note) || /[$ #@]/.test(note) || wordCount(note) > 100) {
+      if (!NOTE_CHAR_OK.test(note) || /[$#@]/.test(note) || wordCount(note) > 100) {
         noteInput.classList.add('invalid');
         showHint(noteHint, true);
         firstBad = firstBad || noteInput;
@@ -1154,7 +1161,7 @@ window.addEventListener('keyup', e => {
     }
 
     if (firstBad && firstBad.focus) firstBad.focus();
-    return { ok: !firstBad, name, attending, note };
+    return { ok: !firstBad, name, side, attending, note };
   }
 
   form.addEventListener('submit', async e => {
@@ -1170,6 +1177,7 @@ window.addEventListener('keyup', e => {
 
     const payload = {
       name: result.name,
+      side: result.side,
       attending: result.attending,
       guests: result.attending === 'Yes' ? (guestsInp?.value || '') : '',
       note: result.note || '',
@@ -1197,7 +1205,7 @@ window.addEventListener('keyup', e => {
       err.hidden = false;
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Send with love';
+      btn.textContent = 'Send with love ♥';
     }
   });
 })();
