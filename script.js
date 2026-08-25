@@ -210,13 +210,18 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
 
       const id = ctx.getImageData(0, 0, W, H);
       const px = id.data;
-      const LOW = 55;
-      const HIGH = 110;
+      const LOW = 42;
+      const HIGH = 88;
 
       for (let i = 0; i < px.length; i += 4) {
-        const lum = px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114;
-        if (lum <= LOW) px[i + 3] = 0;
-        else if (lum < HIGH) px[i + 3] = Math.round((lum - LOW) / (HIGH - LOW) * 255);
+        const r = px[i], g = px[i + 1], b = px[i + 2];
+        const chroma = Math.max(r, g, b) - Math.min(r, g, b);
+        const lum = r * 0.299 + g * 0.587 + b * 0.114;
+        /* Only strip near-black / grey — keep dark gold & pink */
+        if (lum <= LOW && chroma <= 22) px[i + 3] = 0;
+        else if (lum < HIGH && chroma <= 26) {
+          px[i + 3] = Math.round((lum - LOW) / (HIGH - LOW) * 255);
+        }
       }
 
       ctx.putImageData(id, 0, 0);
