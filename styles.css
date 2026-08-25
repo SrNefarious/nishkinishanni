@@ -1760,19 +1760,27 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   background:
     radial-gradient(circle, rgba(155,110,50,0.09) 1px, transparent 1px) 0 0 / 22px 22px,
     #f4e8d4;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cmsg-body {
-  justify-content: center;
-  padding-top: clamp(28px, 5vh, 48px);
-  padding-bottom: clamp(72px, 12vh, 110px);
-  gap: clamp(10px, 1.8vh, 18px);
+  justify-content: flex-start;
+  height: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  padding-top: clamp(20px, 4vh, 48px);
+  padding-bottom: clamp(64px, 11vh, 88px);
+  gap: clamp(8px, 1.6vh, 16px);
 }
 
 .cmsg-monogram {
-  width: min(140px, 32vmin);
-  height: min(140px, 32vmin);
-  margin-bottom: clamp(2px, 0.6vh, 8px);
+  width: min(140px, 26vh, 32vmin);
+  height: min(140px, 26vh, 32vmin);
+  margin-bottom: clamp(0px, 0.4vh, 6px);
 }
 
 .cmsg-title {
@@ -1785,6 +1793,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 [data-theme="msg"] .ci-tag {
   color: rgba(96, 54, 28, 0.78);
   text-shadow: none;
+  bottom: max(54px, calc(14px + env(safe-area-inset-bottom, 0px) + 44px));
+  z-index: 3;
 }
 
 /* ── RSVP form ────────────────────────────────────── */
@@ -1793,13 +1803,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 2.4vh, 20px);
+  gap: clamp(12px, 2vh, 16px);
 }
 
 .rf-group {
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 1.4vh, 10px);
+  gap: clamp(6px, 1.1vh, 8px);
 }
 .rf-group__label {
   margin: 0;
@@ -1839,7 +1849,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 .rf-radios {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   margin: 0;
 }
 .rf-radios--side {
@@ -1860,10 +1870,10 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .rf-opt--card {
   text-align: center;
-  min-height: 52px;
-  padding: clamp(12px, 2vh, 16px) clamp(10px, 2.5vw, 14px);
+  min-height: 40px;
+  padding: 8px 12px;
   border: 1px solid rgba(155, 110, 50, 0.22);
-  border-radius: 10px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.28);
   transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, color 0.2s;
 }
@@ -1878,7 +1888,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   color: var(--msg-ink);
 }
 .rf-opt__txt {
-  line-height: 1.3;
+  line-height: 1.2;
 }
 .rf-opt input[type="radio"] {
   position: absolute;
@@ -2038,11 +2048,86 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cv-sub   { margin-bottom: clamp(18px, 3vh, 28px); }
   .cv-rule  { margin-bottom: clamp(18px, 3vh, 28px); }
 }
+@media (max-height: 740px) {
+  [data-theme="msg"] .cmsg-body {
+    padding-top: clamp(16px, 3vh, 28px);
+    padding-bottom: clamp(60px, 10vh, 80px);
+    gap: clamp(7px, 1.4vh, 12px);
+  }
+  [data-theme="msg"] .cmsg-monogram {
+    width: min(112px, 22vh, 30vmin);
+    height: min(112px, 22vh, 30vmin);
+  }
+  [data-theme="msg"] .cmsg-title {
+    margin-bottom: clamp(6px, 1vh, 10px);
+  }
+  [data-theme="msg"] #rsvp-form {
+    gap: clamp(10px, 1.6vh, 14px);
+  }
+}
+
 @media (max-height: 640px) {
   .c-body   { padding: 20px 24px; }
   .cc-pre { font-size: 0.5rem; letter-spacing: 0.4em; }
   .cn-post  { margin-top: 0; }
   .cn-corner { width: min(160px, 40vw); }
+
+  [data-theme="msg"] .cmsg-body {
+    padding-top: clamp(12px, 2.5vh, 20px);
+    padding-bottom: clamp(56px, 10vh, 72px);
+    gap: clamp(6px, 1.2vh, 10px);
+  }
+  [data-theme="msg"] .cmsg-monogram {
+    width: min(96px, 18vh, 28vmin);
+    height: min(96px, 18vh, 28vmin);
+  }
+  [data-theme="msg"] .cmsg-title {
+    margin-bottom: clamp(4px, 0.8vh, 8px);
+  }
+  [data-theme="msg"] #rsvp-form {
+    gap: clamp(8px, 1.4vh, 12px);
+  }
+  [data-theme="msg"] .rf-group {
+    gap: 5px;
+  }
+  [data-theme="msg"] .rf-field input,
+  [data-theme="msg"] .rf-field textarea {
+    padding: 6px 0;
+  }
+  [data-theme="msg"] .rf-field textarea {
+    min-height: 2.4em;
+    height: 2.4em;
+  }
+  [data-theme="msg"] .rf-opt--card {
+    min-height: 36px;
+    padding: 6px 10px;
+  }
+  [data-theme="msg"] .rf-btn {
+    padding: 10px 0;
+    margin-top: 0;
+  }
+  [data-theme="msg"] .ci-tag {
+    font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+    bottom: max(50px, calc(12px + env(safe-area-inset-bottom, 0px) + 44px));
+  }
+}
+
+@media (max-height: 520px) {
+  [data-theme="msg"] .cmsg-monogram {
+    width: min(80px, 15vh, 24vmin);
+    height: min(80px, 15vh, 24vmin);
+  }
+  [data-theme="msg"] .cmsg-body {
+    padding-top: 10px;
+    padding-bottom: 52px;
+    gap: 5px;
+  }
+  [data-theme="msg"] #rsvp-form {
+    gap: 6px;
+  }
+  [data-theme="msg"] .rf-radios {
+    gap: 6px;
+  }
 }
 
 /* ── Music mute (bottom-right) ─────────────────────── */
