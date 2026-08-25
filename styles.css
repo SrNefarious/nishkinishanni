@@ -329,6 +329,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   --cn-portrait-bottom: clamp(36px, 6.5vmin, 58px);
   --cn-bl-corner-x: clamp(28px, 5vmin, 44px);
   --cn-bl-corner-y: clamp(40px, 7vmin, 60px);
+  --cn-rule-top: calc(100vh / 3);
+  --cn-content-inset: clamp(56px, 12vw, 88px);
   background:
     radial-gradient(ellipse 75% 60% at 50% 42%,
       rgba(160, 48, 72, 0.55) 0%,
@@ -364,10 +366,41 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   padding-block: clamp(56px, 10vh, 100px);
 }
 
-[data-theme="names"] .cn-body {
-  justify-content: flex-start;
-  padding-top: clamp(56px, 33vh, 240px);
-  padding-bottom: clamp(40px, 8vh, 72px);
+[data-theme="names"] .c-body.cn-body {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+[data-theme="names"] .c-body.cn-body > * {
+  pointer-events: auto;
+}
+
+/* Separator rule sits on the 1/3 line; names sit directly above */
+[data-theme="names"] .cn-names {
+  position: absolute;
+  left: var(--cn-content-inset);
+  right: var(--cn-content-inset);
+  bottom: calc(100% - var(--cn-rule-top) + clamp(6px, 1vh, 10px));
+  width: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+[data-theme="names"] .cn-post {
+  position: absolute;
+  top: var(--cn-rule-top);
+  left: var(--cn-content-inset);
+  right: var(--cn-content-inset);
+  width: auto;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 /* Clean vintage half-rules — longer, double hairline, mid ticks, end diamonds.
@@ -806,7 +839,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   align-items: center;
   justify-content: center;
   gap: 12px;
-  width: clamp(184px, 42vw, 286px);
+  width: min(100%, clamp(184px, 42vw, 286px));
 }
 .cn-post__arm {
   flex: 1;
@@ -2285,11 +2318,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 /* ════════════════════════════════════════════════════
    RESPONSIVE
    ════════════════════════════════════════════════════ */
+@media (max-width: 520px) {
+  [data-theme="names"] {
+    --cn-content-inset: clamp(62px, 17vw, 96px);
+  }
+  .cn-names { gap: clamp(6px, 1.8vw, 12px); }
+}
+
 @media (max-width: 420px) {
-  .cn-name__txt  { font-size: clamp(1.95rem, 11vw, 2.9rem); }
-  .cn-and   { font-size: 0.95rem; }
+  [data-theme="names"] {
+    --cn-content-inset: clamp(58px, 19vw, 88px);
+  }
+  .cn-name__txt  { font-size: clamp(1.75rem, 10vw, 2.6rem); }
+  .cn-and   { font-size: 0.9rem; }
   .cn-post__txt  { font-size: clamp(1.05rem, 4.4vw, 1.32rem); letter-spacing: 0.06em; }
-  .cn-surname    { font-size: clamp(1.05rem, 4.4vw, 1.32rem); }
+  .cn-surname    { font-size: clamp(1rem, 4vw, 1.28rem); }
+  .cn-names { gap: clamp(5px, 1.5vw, 10px); }
   .cn-corner { width: min(130px, 38vw); }
   .cn-fl--tl-h, .cn-fl--tr-h { width: min(210px, 58vw); }
   .cn-fl--tl-v, .cn-fl--tr-v { height: min(190px, 32vh); }
@@ -2340,11 +2384,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cv-sub   { margin-bottom: clamp(18px, 3vh, 28px); }
   .cv-rule  { margin-bottom: clamp(18px, 3vh, 28px); }
 }
+
+@media (max-width: 360px) {
+  [data-theme="names"] {
+    --cn-content-inset: clamp(54px, 20vw, 76px);
+  }
+  .cn-name__txt  { font-size: clamp(1.5rem, 9.2vw, 2.15rem); }
+  .cn-surname    { font-size: clamp(0.92rem, 3.8vw, 1.15rem); }
+  .cn-and        { font-size: 0.82rem; }
+  .cn-names      { gap: clamp(4px, 1.2vw, 8px); }
+  .cn-name       { padding-inline: 0.08em; }
+  .cn-post__rule { width: min(100%, clamp(148px, 38vw, 220px)); }
+}
+
 @media (max-height: 700px) {
-  [data-theme="names"] .cn-body {
-    padding-top: clamp(40px, 26vh, 160px);
-    padding-bottom: clamp(32px, 6vh, 56px);
-    gap: clamp(4px, 1vh, 10px);
+  [data-theme="names"] .cn-names {
+    bottom: calc(100% - var(--cn-rule-top) + clamp(4px, 0.8vh, 8px));
   }
   [data-theme="names"] .cn-portrait {
     height: clamp(220px, 42vh, 360px);

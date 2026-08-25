@@ -13,23 +13,20 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
 /* ── Ambient music + small mute control (bottom-right) ── */
 (function ambientMusic() {
   const VOLUME = 0.32;
-  const FADE_IN = 0.8;  /* seconds */
+  const FADE_IN = 0.8;
   const FADE_OUT = 2.5;
 
-  const audio = new Audio();
+  const audio = new Audio('assets/music.mp3');
   audio.preload = 'auto';
-  audio.src = 'assets/music.mp3';
   audio.loop = false;
   audio.volume = 0;
   audio.playsInline = true;
 
-  let unlocked = false;
-  let wantPlay = false;
+  let started = false;   /* playback has been unlocked at least once */
   let muted = false;
-  let phase = 'idle'; /* idle | in | play | out */
+  let phase = 'idle';    /* idle | in | play | out */
   let fadeRaf = null;
-  let primed = false;
-  let playPending = false;
+  let startLock = false;
 
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -87,152 +84,138 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     fadeRaf = requestAnimationFrame(frame);
   }
 
-  function playFromGesture() {
-    if (!wantPlay || muted) return Promise.resolve();
-    const p = audio.play();
-    if (p && typeof p.then === 'function') return p;
-    return Promise.resolve();
+  function isAudible() {
+    return !audio.paused && !audio.ended && audio.currentTime > 0.03;
   }
 
-  function onPlaybackStarted(fresh) {
-    unlocked = true;
-    detachGestureListeners();
-    fadeTo(VOLUME, fresh ? FADE_IN : Math.min(FADE_IN, 1.2), function () {
+  function fadeIn() {
+    phase = 'in';
+    fadeTo(VOLUME, FADE_IN, function () {
       if (!muted) phase = 'play';
     });
   }
 
-  function beginLoop() {
+  /* Start or continue — only rewind when explicitly requested (first start / loop) */
+  function startPlayback(opts) {
+    const rewind = opts && opts.rewind;
+    if (muted || startLock) return Promise.resolve();
+
+    if (!rewind && isAudible()) {
+      started = true;
+      audio.muted = false;
+      detachGestures();
+      if (audio.volume < VOLUME * 0.08) fadeIn();
+      else phase = 'play';
+      return Promise.resolve();
+    }
+
+    startLock = true;
     stopFade();
-    phase = 'in';
-    try { audio.currentTime = 0; } catch (e) {}
-    audio.volume = 0;
     audio.muted = false;
-    return playFromGesture().then(function () {
-      onPlaybackStarted(true);
-    }).catch(function () {
-      unlocked = false;
-    });
+    if (rewind) {
+      try { audio.currentTime = 0; } catch (e) {}
+    }
+    audio.volume = 0;
+    phase = 'in';
+
+    const p = audio.play();
+    const done = function () {
+      started = true;
+      startLock = false;
+      detachGestures();
+      fadeIn();
+    };
+    const fail = function () {
+      startLock = false;
+    };
+
+    if (p && typeof p.then === 'function') {
+      return p.then(done, fail);
+    }
+    done();
+    return Promise.resolve();
   }
 
-  /* Resume where we left off — do not restart the track */
-  function resumePlayback() {
-    stopFade();
-    phase = 'in';
-    audio.volume = 0;
-    audio.muted = false;
-    return playFromGesture().then(function () {
-      onPlaybackStarted(false);
-    }).catch(function () {
-      unlocked = false;
-    });
+  function restartLoop() {
+    if (muted) return;
+    startPlayback({ rewind: true });
   }
 
   function startFadeOutAndLoop() {
     if (phase === 'out') return;
     phase = 'out';
     const left = Math.max(0.35, (audio.duration || FADE_OUT) - audio.currentTime);
-    const dur = Math.min(FADE_OUT, left);
-    fadeTo(0, dur, function () {
-      if (muted || !wantPlay) {
+    fadeTo(0, Math.min(FADE_OUT, left), function () {
+      if (muted) {
         phase = 'idle';
         return;
       }
-      beginLoop();
+      restartLoop();
     });
   }
 
   audio.addEventListener('timeupdate', function () {
-    if (!unlocked || muted || !wantPlay) return;
+    if (!started || muted || phase !== 'play') return;
     if (!audio.duration || !isFinite(audio.duration)) return;
-    if (phase === 'out' || phase === 'in') return;
     if (audio.currentTime >= audio.duration - FADE_OUT) {
       startFadeOutAndLoop();
     }
   });
 
   audio.addEventListener('ended', function () {
-    if (muted || !wantPlay) return;
-    beginLoop();
+    if (muted) return;
+    restartLoop();
   });
-
-  function primeAudio() {
-    if (primed || unlocked) return;
-    primed = true;
-    const wasMuted = audio.muted;
-    audio.muted = true;
-    const p = audio.play();
-    if (!p || typeof p.then !== 'function') {
-      audio.pause();
-      try { audio.currentTime = 0; } catch (e) {}
-      audio.muted = wasMuted;
-      return;
-    }
-    p.then(function () {
-      audio.pause();
-      try { audio.currentTime = 0; } catch (e) {}
-      audio.muted = wasMuted;
-      audio.volume = 0;
-    }).catch(function () {
-      audio.muted = wasMuted;
-    });
-  }
-
-  function unlock() {
-    wantPlay = true;
-    muted = false;
-    audio.muted = false;
-    syncMuteUi();
-
-    if (!audio.paused && unlocked) return;
-    if (playPending) return;
-
-    if (unlocked && audio.paused) {
-      playPending = true;
-      resumePlayback().finally(function () { playPending = false; });
-      return;
-    }
-
-    playPending = true;
-    beginLoop().finally(function () { playPending = false; });
-  }
 
   function onUserGesture(e) {
     if (muted) return;
-    if (e.target.closest && e.target.closest('#music-toggle')) return;
-    if (!unlocked || audio.paused) unlock();
+    if (e && e.target && e.target.closest && e.target.closest('#music-toggle')) return;
+    const atStart = audio.currentTime < 0.05;
+    startPlayback({ rewind: !started && atStart });
   }
 
-  function detachGestureListeners() {
+  function detachGestures() {
     window.removeEventListener('pointerdown', onUserGesture, true);
     window.removeEventListener('touchstart', onUserGesture, true);
-    window.removeEventListener('wheel', onUserGesture, true);
     window.removeEventListener('keydown', onUserGesture, true);
   }
 
   window.addEventListener('pointerdown', onUserGesture, true);
   window.addEventListener('touchstart', onUserGesture, true);
-  window.addEventListener('wheel', onUserGesture, true);
   window.addEventListener('keydown', onUserGesture, true);
 
-  audio.addEventListener('canplaythrough', primeAudio, { once: true });
+  /* Autoplay where allowed (some mobile browsers) — never rewind if already audible */
+  audio.addEventListener('canplaythrough', function () {
+    if (muted) return;
+    audio.volume = 0;
+    audio.muted = false;
+    const p = audio.play();
+    if (!p || typeof p.then !== 'function') return;
+    p.then(function () {
+      if (muted) return;
+      started = true;
+      detachGestures();
+      fadeIn();
+    }).catch(function () {
+      try { audio.pause(); } catch (e) {}
+      audio.volume = 0;
+    });
+  }, { once: true });
 
   btn.addEventListener('click', function (e) {
     e.stopPropagation();
-    if (!unlocked) {
-      unlock();
+    if (!started) {
+      startPlayback({ rewind: true });
       return;
     }
     muted = !muted;
     if (muted) {
       stopFade();
       audio.volume = 0;
-      audio.pause(); /* keeps currentTime — unmute resumes from here */
+      audio.pause();
       phase = 'idle';
     } else {
-      audio.muted = false;
-      wantPlay = true;
-      resumePlayback();
+      startPlayback({ rewind: false });
     }
     syncMuteUi();
   });
