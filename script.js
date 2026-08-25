@@ -237,6 +237,27 @@ const TOTAL = 6;
 const cards = Array.from(document.querySelectorAll('.card'));
 let order = cards.map((_, i) => i);
 
+const PAGE_KEY = 'nishkinishaani-page';
+
+function savePageState() {
+  try {
+    sessionStorage.setItem(PAGE_KEY, String(order[0]));
+  } catch (e) { /* ignore */ }
+}
+
+function restorePageState() {
+  try {
+    const raw = sessionStorage.getItem(PAGE_KEY);
+    if (raw == null) return false;
+    const target = parseInt(raw, 10);
+    if (!Number.isFinite(target) || target < 0 || target >= TOTAL) return false;
+    while (order[0] !== target) order.push(order.shift());
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 /* ════════════════════════════════════════════════════
    SCRUB MOTION ENGINE
    Same roll/scrub — vertical peel only (no stack).
@@ -429,6 +450,7 @@ function finishAdvanceCommit() {
   markAllRevealed(frontCard());
   goIdle();
   lockAfterPage(1);
+  savePageState();
   if (window.syncFxPetals) syncFxPetals();
   requestAnimationFrame(() => {
     fitNameSurnames();
@@ -452,6 +474,7 @@ function finishRetreatCommit() {
   markAllRevealed(frontCard());
   goIdle();
   lockAfterPage(-1);
+  savePageState();
   if (window.syncFxPetals) syncFxPetals();
   requestAnimationFrame(() => {
     fitNameSurnames();
@@ -606,8 +629,13 @@ function nudge(dir) {
 }
 
 /* ── Bootstrap ───────────────────────────────────── */
+const restoredPage = restorePageState();
 applyPositions();
-setTimeout(() => triggerReveals(cards[order[0]]), 400);
+if (restoredPage) {
+  markAllRevealed(frontCard());
+} else {
+  setTimeout(() => triggerReveals(cards[order[0]]), 400);
+}
 
 /* Stretch each surname end-to-end under its first name via letter-spacing */
 function fitNameSurnames() {
