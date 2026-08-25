@@ -936,45 +936,84 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
    CARD 4 — COUNTDOWN  ·  Same parchment as events + soft light ripples
    ════════════════════════════════════════════════════ */
 [data-theme="count"] {
-  /* Exact match to [data-theme="events"] */
   background:
-    radial-gradient(ellipse 80% 60% at 20% 15%, rgba(220,185,110,0.25) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 50% at 80% 85%, rgba(195,135,100,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 72% 52% at 50% 82%, rgba(220,185,110,0.28) 0%, transparent 58%),
+    radial-gradient(ellipse 48% 40% at 50% 86%, rgba(195,135,100,0.14) 0%, transparent 62%),
     #f5e8d2;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: visible;
+  --cc-gap: clamp(52px, 12vh, 84px);
 }
 
-/* Soft 3D ripple — thin luminous crest, not thick band / not hairline */
-.cc-pulse {
+/* Soft 3D ripple — centered on image, expands outside without clipping */
+.cc-illustration-stage {
+  position: relative;
+  display: inline-block;
+  overflow: visible;
+}
+
+[data-theme="count"] .cc-body {
+  position: relative;
+  z-index: 3;
+}
+
+[data-theme="count"] .cc-illustration-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="count"] .cc-pulse {
   position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  display: block;
   pointer-events: none;
   z-index: 0;
-  overflow: hidden;
+  overflow: visible;
+}
+
+[data-theme="count"] .cc-illustration {
+  position: relative;
+  z-index: 2;
 }
 
 .cc-pulse__ring {
   position: absolute;
+  left: 50%;
+  top: 50%;
   width: min(44vw, 330px);
   height: min(44vw, 330px);
+  margin-left: calc(min(44vw, 330px) / -2);
+  margin-top: calc(min(44vw, 330px) / -2);
   border-radius: 50%;
-  border: none;
+  border: 1px solid rgba(201, 168, 76, 0.22);
   /* Crest on outer rim only — center stays clear */
   background: radial-gradient(
     circle,
-    transparent 67%,
-    rgba(232, 210, 150, 0.16) 70.5%,
-    rgba(245, 228, 180, 0.62) 72.5%,
-    rgba(201, 168, 76, 0.55) 75.5%,
-    rgba(232, 210, 150, 0.34) 78.5%,
-    transparent 82%
+    transparent 64%,
+    rgba(232, 210, 150, 0.28) 69%,
+    rgba(245, 228, 180, 0.88) 72%,
+    rgba(201, 168, 76, 0.78) 74.5%,
+    rgba(232, 210, 150, 0.52) 77.5%,
+    transparent 83%
   );
-  box-shadow: 0 0 22px rgba(201, 168, 76, 0.28);
-  filter: blur(0.6px);
+  box-shadow:
+    0 0 28px rgba(201, 168, 76, 0.42),
+    0 0 56px rgba(232, 210, 150, 0.18);
+  filter: blur(0.35px);
   opacity: 0;
   animation: ccPulseWave 12s cubic-bezier(0.15, 0.55, 0.25, 1) infinite both;
   will-change: transform, opacity;
+}
+
+[data-theme="count"] .cc-pulse__ring {
+  width: min(72vw, 400px);
+  height: min(72vw, 400px);
+  margin-left: calc(min(72vw, 400px) / -2);
+  margin-top: calc(min(72vw, 400px) / -2);
 }
 
 .cc-pulse__ring:nth-child(1) { animation-delay: 0s; }
@@ -990,21 +1029,27 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
     opacity: 0;
   }
   8% {
-    opacity: 0.18;
+    opacity: 0.32;
   }
   28% {
-    opacity: 0.42;
+    opacity: 0.62;
   }
   55% {
-    opacity: 0.72;
+    opacity: 0.92;
   }
   78% {
-    opacity: 0.55;
+    opacity: 0.68;
   }
   100% {
     transform: scale(2.7);
     opacity: 0;
   }
+}
+
+[data-theme="count"] .cc-body,
+[data-theme="count"] .cc-illustration-wrap,
+[data-theme="count"] .cc-illustration-stage {
+  overflow: visible;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1014,7 +1059,38 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 .cc-body {
   position: relative;
   z-index: 1;
-  gap: clamp(20px, 4vh, 36px);
+  justify-content: flex-start;
+  height: auto;
+  flex: 0 0 auto;
+  padding-top: clamp(56px, 12vh, 96px);
+  padding-bottom: 0;
+  gap: clamp(12px, 2.5vh, 18px);
+}
+
+.cc-illustration-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin: var(--cc-gap) auto 0;
+  padding: 0 clamp(12px, 4vw, 24px) clamp(24px, 5vh, 40px);
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.cc-illustration {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(92vw, 520px);
+  max-height: clamp(190px, 34vh, 320px);
+  object-fit: contain;
+  object-position: bottom center;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 6px 18px rgba(90, 45, 55, 0.12));
 }
 .cc-pre {
   font-size: clamp(0.72rem, 1.6vw, 0.88rem);
@@ -1023,7 +1099,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 .cc-rule {
   width: clamp(88px, 20vw, 140px);
-  margin: clamp(-6px, -1vh, 0) auto clamp(-4px, -0.8vh, 4px);
+  margin: 0 auto;
 }
 .cc-rule .cs-rule__arm {
   background: linear-gradient(90deg,
@@ -1045,6 +1121,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   align-items: flex-start;
   justify-content: center;
   gap: clamp(12px, 3vw, 28px);
+  margin-top: var(--cc-gap);
 }
 .flip-group {
   display: flex;
@@ -1924,6 +2001,16 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cc-colon { height: clamp(76px, 21vw, 112px); }
   .cc-pre { font-size: clamp(0.65rem, 3.2vw, 0.8rem); }
   .cc-uname { font-size: clamp(0.55rem, 2.8vw, 0.68rem); }
+  .cc-body {
+    padding-top: clamp(48px, 11vh, 80px);
+  }
+  [data-theme="count"] {
+    --cc-gap: clamp(44px, 11vh, 72px);
+  }
+  .cc-illustration {
+    width: min(96vw, 480px);
+    max-height: clamp(170px, 30vh, 260px);
+  }
   .rf-radios { gap: 10px; }
   .ce-title { font-size: clamp(1.05rem, 5.2vw, 1.55rem); }
   .ce-evt   { font-size: clamp(0.95rem, 4vw, 1.15rem); }
