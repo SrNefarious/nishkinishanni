@@ -327,7 +327,7 @@ const CALENDAR_EVENT = {
   start: '20261020T170000',
   end: '20261020T230000',
   timezone: 'Asia/Kolkata',
-  location: 'Noor Us Sabah, Bhopal',
+  location: 'Noor-Us-Sabah Palace, Bhopal',
   description: 'Nishita & Nishant are getting engaged!\n\nhttps://nishkinishaani.com',
 };
 
