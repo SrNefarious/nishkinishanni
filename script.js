@@ -16,18 +16,24 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
   const FADE_IN = 0.8;
   const FADE_OUT = 2.5;
 
+  /* Safari allows unmuted autoplay; Chromium needs a real user gesture. */
+  const ua = navigator.userAgent || '';
+  const isChromium =
+    /Chrome|Chromium|CriOS|EdgA?|OPR|SamsungBrowser|Brave/i.test(ua) ||
+    !!(window.chrome && window.chrome.runtime !== undefined);
+
   const audio = new Audio('assets/music.mp3');
   audio.preload = 'auto';
   audio.loop = false;
   audio.volume = 0;
   audio.playsInline = true;
+  try { audio.setAttribute('playsinline', ''); } catch (e) {}
 
-  let started = false;   /* playback has been unlocked at least once */
+  let started = false;
   let muted = false;
-  let phase = 'idle';    /* idle | in | play | out */
+  let phase = 'idle';
   let fadeRaf = null;
-  let startLock = false;
-  let userIntent = false; /* true after a real gesture tries to start */
+  let unlocking = false;
 
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -97,15 +103,18 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
   }
 
   function markStarted() {
+    if (started) return;
     started = true;
+    unlocking = false;
     detachGestures();
   }
 
   /* Start or continue — only rewind when explicitly requested (first start / loop) */
   function startPlayback(opts) {
-    const rewind = opts && opts.rewind;
-    if (muted || startLock) return Promise.resolve();
+    const rewind = !!(opts && opts.rewind);
+    if (muted || started) return Promise.resolve();
 
+    /* Already playing — just adopt */
     if (!rewind && isAudible()) {
       markStarted();
       audio.muted = false;
@@ -114,23 +123,35 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
       return Promise.resolve();
     }
 
-    startLock = true;
+    /* A play() is already in flight from this touch — do NOT call play() again
+       (a second play() aborts the first on Chrome → feels like “need another tap”). */
+    if (unlocking) return Promise.resolve();
+
+    unlocking = true;
     stopFade();
     audio.muted = false;
     if (rewind) {
       try { audio.currentTime = 0; } catch (e) {}
     }
-    audio.volume = 0;
+    /* Tiny non-zero volume so Chromium doesn't treat unlock as silent-only. */
+    audio.volume = Math.max(audio.volume, 0.001);
     phase = 'in';
 
-    const p = audio.play();
+    let p;
+    try {
+      p = audio.play();
+    } catch (e) {
+      unlocking = false;
+      return Promise.resolve();
+    }
+
     const done = function () {
-      startLock = false;
+      unlocking = false;
       markStarted();
       fadeIn();
     };
     const fail = function () {
-      startLock = false;
+      unlocking = false;
     };
 
     if (p && typeof p.then === 'function') {
@@ -142,7 +163,18 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
 
   function restartLoop() {
     if (muted) return;
-    startPlayback({ rewind: true });
+    /* Loop restarts after already started — bypass the unlocking/started guards */
+    stopFade();
+    audio.muted = false;
+    try { audio.currentTime = 0; } catch (e) {}
+    audio.volume = 0;
+    phase = 'in';
+    const p = audio.play();
+    if (p && typeof p.then === 'function') {
+      p.then(function () { fadeIn(); }, function () {});
+    } else {
+      fadeIn();
+    }
   }
 
   function startFadeOutAndLoop() {
@@ -174,7 +206,20 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
   function onUserGesture(e) {
     if (muted || started) return;
     if (e && e.target && e.target.closest && e.target.closest('#music-toggle')) return;
-    userIntent = true;
+
+    /* One finger-down = one play(). Ignore the follow-up pointer/click from the same touch
+       so Chrome doesn't abort the touchstart play(). */
+    if (e) {
+      if (e.type === 'pointerdown' || e.type === 'pointerup') {
+        if (e.pointerType === 'touch') return;
+      }
+      if (e.type === 'click' && unlocking) return;
+      if (e.type === 'touchmove' || e.type === 'touchend' || e.type === 'wheel') {
+        /* These are weak / non-activating on Chromium; only retry if nothing in flight. */
+        if (unlocking) return;
+      }
+    }
+
     startPlayback({ rewind: audio.currentTime < 0.05 });
   }
 
@@ -182,42 +227,56 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     window.removeEventListener('pointerdown', onUserGesture, true);
     window.removeEventListener('pointerup', onUserGesture, true);
     window.removeEventListener('click', onUserGesture, true);
+    window.removeEventListener('touchstart', onUserGesture, true);
     window.removeEventListener('touchend', onUserGesture, true);
+    window.removeEventListener('touchmove', onUserGesture, true);
+    window.removeEventListener('wheel', onUserGesture, true);
     window.removeEventListener('keydown', onUserGesture, true);
   }
 
-  /* Avoid touchstart+pointerdown both calling play() — that abort race needs a 2nd tap on Chrome.
-     pointerup/click/touchend cover browsers that only unlock on those events. */
+  /* touchstart is the key unlock on phones — fire play() immediately on finger down. */
+  window.addEventListener('touchstart', onUserGesture, { capture: true, passive: true });
   window.addEventListener('pointerdown', onUserGesture, true);
   window.addEventListener('pointerup', onUserGesture, true);
   window.addEventListener('click', onUserGesture, true);
-  window.addEventListener('touchend', onUserGesture, { capture: true, passive: true });
   window.addEventListener('keydown', onUserGesture, true);
+  /* Best-effort only (often blocked on Chromium): */
+  window.addEventListener('touchmove', onUserGesture, { capture: true, passive: true });
+  window.addEventListener('touchend', onUserGesture, { capture: true, passive: true });
+  window.addEventListener('wheel', onUserGesture, { capture: true, passive: true });
 
-  /* Autoplay where allowed (Safari). Never pause over a user-started play (Chrome race). */
+  /* Deck handlers call this; safe to call often — won't re-enter while unlocking. */
+  window.unlockAmbientMusic = function unlockAmbientMusic() {
+    if (muted || started || unlocking) return;
+    startPlayback({ rewind: audio.currentTime < 0.05 });
+  };
+
+  /* Autoplay only where it works (Safari). Skipping on Chromium avoids a competing
+     play() that aborts the first real gesture. */
   function tryAutoplay() {
-    if (muted || started || userIntent) return;
+    if (isChromium || muted || started) return;
     audio.volume = 0;
     audio.muted = false;
     const p = audio.play();
     if (!p || typeof p.then !== 'function') return;
     p.then(function () {
-      if (muted || userIntent || audio.paused) return;
+      if (muted || audio.paused || isChromium) return;
       markStarted();
       fadeIn();
     }).catch(function () {
-      if (started || userIntent || isAudible()) return;
+      if (started || isAudible()) return;
       try { audio.pause(); } catch (e) {}
       audio.volume = 0;
     });
   }
 
-  audio.addEventListener('canplaythrough', tryAutoplay, { once: true });
-  audio.addEventListener('canplay', tryAutoplay, { once: true });
+  if (!isChromium) {
+    audio.addEventListener('canplaythrough', tryAutoplay, { once: true });
+    audio.addEventListener('canplay', tryAutoplay, { once: true });
+  }
 
   btn.addEventListener('click', function (e) {
     e.stopPropagation();
-    userIntent = true;
     if (!started) {
       startPlayback({ rewind: true });
       return;
@@ -229,7 +288,14 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
       audio.pause();
       phase = 'idle';
     } else {
-      startPlayback({ rewind: false });
+      stopFade();
+      audio.muted = false;
+      audio.volume = 0;
+      phase = 'in';
+      const p = audio.play();
+      const go = function () { fadeIn(); };
+      if (p && typeof p.then === 'function') p.then(go, function () {});
+      else go();
     }
     syncMuteUi();
   });
@@ -835,6 +901,7 @@ setTimeout(fitNameSurnames, 1800);
 window.addEventListener('wheel', e => {
   if (e.target.closest && e.target.closest('input, textarea, select')) return;
   e.preventDefault();
+  if (typeof window.unlockAmbientMusic === 'function') window.unlockAmbientMusic();
   let dy = e.deltaY;
   if (e.deltaMode === 1) dy *= 16;
   else if (e.deltaMode === 2) dy *= window.innerHeight;
@@ -856,6 +923,7 @@ window.addEventListener('touchstart', e => {
   touchLastY = touchX0;
   touchLastT = performance.now();
   clearTimeout(settleTimer);
+  if (typeof window.unlockAmbientMusic === 'function') window.unlockAmbientMusic();
 }, { passive: true });
 
 window.addEventListener('touchmove', e => {
@@ -893,9 +961,11 @@ window.addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input, textarea, select, button, a')) return;
   if (['ArrowDown', ' ', 'PageDown'].includes(e.key)) {
     e.preventDefault();
+    if (typeof window.unlockAmbientMusic === 'function') window.unlockAmbientMusic();
     nudge(1);
   } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
     e.preventDefault();
+    if (typeof window.unlockAmbientMusic === 'function') window.unlockAmbientMusic();
     nudge(-1);
   }
 });
