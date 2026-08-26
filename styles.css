@@ -2080,6 +2080,15 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
    CARD 6 — SEND A MESSAGE  ·  Parchment (matches invite)
    ════════════════════════════════════════════════════ */
 [data-theme="msg"] {
+  /* Frame inset matches .ci-frame; tag sits on that bottom border line */
+  --msg-frame-inset: clamp(16px, 4vmin, 32px);
+  --msg-tag-bottom: var(--msg-frame-inset);
+  --msg-tag-block: clamp(1.35rem, 3.8vw, 1.7rem);
+  /* Fixed air between form (button / status) and hashtag */
+  --msg-form-tag-gap: clamp(22px, 3.2vh, 32px);
+  --msg-body-pad-bottom: calc(
+    var(--msg-tag-bottom) + var(--msg-tag-block) + var(--msg-form-tag-gap)
+  );
   background:
     radial-gradient(circle, rgba(155,110,50,0.09) 1px, transparent 1px) 0 0 / 22px 22px,
     #f4e8d4;
@@ -2096,7 +2105,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   min-height: 0;
   flex: 1 1 auto;
   padding-top: clamp(20px, 4vh, 48px);
-  padding-bottom: clamp(64px, 11vh, 88px);
+  /* Reserve hashtag band + fixed gap so guests / status never crowd the tag */
+  padding-bottom: var(--msg-body-pad-bottom);
   gap: clamp(8px, 1.6vh, 16px);
 }
 
@@ -2112,12 +2122,18 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   margin: 0 0 clamp(8px, 1.5vh, 16px);
 }
 
-/* Hashtag — same as invite card */
+/* Hashtag — fixed on the decorative bottom border line */
 [data-theme="msg"] .ci-tag {
   color: rgba(96, 54, 28, 0.78);
   text-shadow: none;
-  bottom: max(54px, calc(14px + env(safe-area-inset-bottom, 0px) + 44px));
+  bottom: var(--msg-tag-bottom);
+  height: var(--msg-tag-block);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 3;
+  pointer-events: none;
 }
 
 /* ── RSVP form ────────────────────────────────────── */
@@ -2239,9 +2255,14 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 .rf-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .rf-ok, .rf-err {
-  margin-top: 12px;
+  margin: 0;
+  min-height: 0;
   text-align: center;
   font-size: 0.92rem;
+}
+.rf-ok:not([hidden]),
+.rf-err:not([hidden]) {
+  margin-top: 4px;
 }
 .rf-ok  { color: #9a5030; }
 .rf-err { color: #b04040; }
@@ -2405,9 +2426,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   }
 }
 @media (max-height: 740px) {
+  [data-theme="msg"] {
+    --msg-form-tag-gap: clamp(18px, 2.8vh, 26px);
+  }
   [data-theme="msg"] .cmsg-body {
     padding-top: clamp(16px, 3vh, 28px);
-    padding-bottom: clamp(60px, 10vh, 80px);
     gap: clamp(7px, 1.4vh, 12px);
   }
   [data-theme="msg"] .cmsg-monogram {
@@ -2427,9 +2450,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   .cn-post  { margin-top: 0; }
   .cn-corner { width: min(115px, 34vw); }
 
+  [data-theme="msg"] {
+    --msg-form-tag-gap: clamp(16px, 2.4vh, 22px);
+    --msg-tag-block: clamp(1.2rem, 3.2vw, 1.45rem);
+  }
   [data-theme="msg"] .cmsg-body {
     padding-top: clamp(12px, 2.5vh, 20px);
-    padding-bottom: clamp(56px, 10vh, 72px);
     gap: clamp(6px, 1.2vh, 10px);
   }
   [data-theme="msg"] .cmsg-monogram {
@@ -2463,18 +2489,19 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   }
   [data-theme="msg"] .ci-tag {
     font-size: clamp(0.95rem, 2.8vw, 1.15rem);
-    bottom: max(50px, calc(12px + env(safe-area-inset-bottom, 0px) + 44px));
   }
 }
 
 @media (max-height: 520px) {
+  [data-theme="msg"] {
+    --msg-form-tag-gap: 14px;
+  }
   [data-theme="msg"] .cmsg-monogram {
     width: min(80px, 15vh, 24vmin);
     height: min(80px, 15vh, 24vmin);
   }
   [data-theme="msg"] .cmsg-body {
     padding-top: 10px;
-    padding-bottom: 52px;
     gap: 5px;
   }
   [data-theme="msg"] #rsvp-form {

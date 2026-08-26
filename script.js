@@ -3,7 +3,7 @@
    Scrub-driven motion: scroll/touch links to progress.
    ════════════════════════════════════════════════════ */
 
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby9FFiDErVagAjtDLixDCIEULznLpxtDRz0qdob9uQzzYvVqaOLiVD-FlvAn3IrvRmy/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyaR4pvYnzGH3madeZOcNXM1HxYPOFqIY6kO3CYg8b62wap21oR9cDI9emKwq5WxsLV/exec';
 
 /* Soften pinch-zoom on iOS Safari (best-effort; OS settings can override) */
 document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
@@ -1210,15 +1210,21 @@ window.addEventListener('keyup', e => {
 
     try {
       if (!SHEETS_URL || SHEETS_URL.startsWith('YOUR_')) {
-        await new Promise(r => setTimeout(r, 900));
+        await new Promise(r => setTimeout(r, 280));
       } else {
-        /* text/plain + no-cors avoids CORS preflight; Apps Script still gets JSON body */
-        await fetch(SHEETS_URL, {
+        /*
+         * Never wait on Apps Script — cold starts can take 10–30s and no-cors
+         * cannot confirm success anyway. Hand off with keepalive and finish UI.
+         */
+        const body = JSON.stringify(payload);
+        fetch(SHEETS_URL, {
           method: 'POST',
           mode: 'no-cors',
+          keepalive: true,
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload),
-        });
+          body,
+        }).catch(() => {});
+        await new Promise(r => setTimeout(r, 280));
       }
       ok.textContent = result.attending === 'Yes' ? MSG_YES : MSG_NO;
       ok.hidden = false;
