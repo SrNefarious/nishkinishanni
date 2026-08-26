@@ -347,64 +347,73 @@
 
     <p class="cmsg-title" data-r="fu" data-d="200">Send us a message</p>
 
-    <form id="rsvp-form" novalidate data-r="fu" data-d="360">
+    <div class="rf-panel" id="rf-panel">
+      <form id="rsvp-form" novalidate data-r="fu" data-d="360">
 
-      <div class="rf-field">
-        <input type="text" name="name" id="f-name"
-               placeholder="Your name" autocomplete="name"
-               maxlength="30" required inputmode="text">
-        <p class="rf-hint" id="f-name-hint" hidden>Letters and spaces only, max 30.</p>
-      </div>
-
-      <div class="rf-group">
-        <p class="rf-group__label">You are on</p>
-        <div class="rf-radios rf-radios--side">
-          <label class="rf-opt rf-opt--card">
-            <input type="radio" name="side" value="Groom side" required>
-            <span class="rf-opt__txt">Groom side</span>
-          </label>
-          <label class="rf-opt rf-opt--card">
-            <input type="radio" name="side" value="Bride side">
-            <span class="rf-opt__txt">Bride side</span>
-          </label>
+        <div class="rf-field">
+          <input type="text" name="name" id="f-name"
+                 placeholder="Your name" autocomplete="name"
+                 maxlength="30" required inputmode="text">
+          <p class="rf-hint" id="f-name-hint" hidden>Letters and spaces only, max 30.</p>
         </div>
-      </div>
 
-      <div class="rf-group">
-        <p class="rf-group__label">Will you be joining us?</p>
-        <div class="rf-radios rf-radios--attend">
-          <label class="rf-opt rf-opt--card">
-            <input type="radio" name="attending" value="Yes" required>
-            <span class="rf-opt__txt">Joyfully attending</span>
-          </label>
-          <label class="rf-opt rf-opt--card">
-            <input type="radio" name="attending" value="No">
-            <span class="rf-opt__txt">Regretfully can't make it</span>
-          </label>
+        <div class="rf-group">
+          <p class="rf-group__label">You are on</p>
+          <div class="rf-radios rf-radios--side">
+            <label class="rf-opt rf-opt--card">
+              <input type="radio" name="side" value="Groom side" required>
+              <span class="rf-opt__txt">Groom side</span>
+            </label>
+            <label class="rf-opt rf-opt--card">
+              <input type="radio" name="side" value="Bride side">
+              <span class="rf-opt__txt">Bride side</span>
+            </label>
+          </div>
         </div>
-      </div>
 
-      <div class="rf-field" id="guests-wrap" hidden>
-        <input type="number" name="guests" id="f-guests"
-               placeholder="How many guests? (required)" min="1" max="10" inputmode="numeric">
-        <p class="rf-hint" id="f-guests-hint" hidden>Guest count is required — enter a number from 1 to 10.</p>
-      </div>
+        <div class="rf-group">
+          <p class="rf-group__label">Will you be joining us?</p>
+          <div class="rf-radios rf-radios--attend">
+            <label class="rf-opt rf-opt--card">
+              <input type="radio" name="attending" value="Yes" required>
+              <span class="rf-opt__txt">Joyfully attending</span>
+            </label>
+            <label class="rf-opt rf-opt--card">
+              <input type="radio" name="attending" value="No">
+              <span class="rf-opt__txt">Regretfully can't make it</span>
+            </label>
+          </div>
+        </div>
 
-      <div class="rf-field">
-        <textarea name="note" id="f-note" rows="2"
-                  placeholder="A note for the couple (optional)"></textarea>
-        <p class="rf-hint" id="f-note-hint" hidden>Letters, numbers, spaces, , + - only. Max 100 words. No $ # @.</p>
-      </div>
+        <div class="rf-field" id="guests-wrap" hidden>
+          <input type="number" name="guests" id="f-guests"
+                 placeholder="How many guests? (required)" min="1" max="10" inputmode="numeric">
+          <p class="rf-hint" id="f-guests-hint" hidden>Guest count is required — enter a number from 1 to 10.</p>
+        </div>
 
-      <button type="submit" id="rf-btn" class="rf-btn">Send with love ♥</button>
+        <div class="rf-field">
+          <textarea name="note" id="f-note" rows="2"
+                    placeholder="A note for the couple (optional)"></textarea>
+          <p class="rf-hint" id="f-note-hint" hidden>Letters, numbers, spaces, , + - only. Max 100 words. No $ # @.</p>
+        </div>
 
-      <p class="rf-ok" id="rf-ok" hidden></p>
-      <p class="rf-err" id="rf-err" hidden>
-        Something went wrong. Please try again.
-      </p>
+        <button type="submit" id="rf-btn" class="rf-btn">Send with love ♥</button>
 
-    </form>
+        <p class="rf-err" id="rf-err" hidden>
+          Something went wrong. Please try again.
+        </p>
+
+      </form>
+    </div>
   </div>
+
+  <div class="rf-success" id="rf-success" hidden role="status" aria-live="polite">
+    <div class="rf-success-box">
+      <p class="rf-ok" id="rf-ok"></p>
+    </div>
+  </div>
+
+  <div class="rf-celebrate" id="rf-celebrate" aria-hidden="true"></div>
 
   <p class="ci-tag" data-r="fu" data-d="500">#Nish<span class="ci-tag__ki">Ki</span>Nishaani</p>
 </div>

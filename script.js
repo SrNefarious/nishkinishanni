@@ -3,7 +3,7 @@
    Scrub-driven motion: scroll/touch links to progress.
    ════════════════════════════════════════════════════ */
 
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyaR4pvYnzGH3madeZOcNXM1HxYPOFqIY6kO3CYg8b62wap21oR9cDI9emKwq5WxsLV/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxccLCGRQbGDk8NzECexrJwQwHxwy4jlf6ejuQfpOvoPB2IL3iwIPHt6Fu-E8uktFEj/exec';
 
 /* Soften pinch-zoom on iOS Safari (best-effort; OS settings can override) */
 document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
@@ -1058,6 +1058,9 @@ window.addEventListener('keyup', e => {
   const form = document.getElementById('rsvp-form');
   if (!form) return;
 
+  const panel        = document.getElementById('rf-panel');
+  const successEl    = document.getElementById('rf-success');
+  const celebrateEl  = document.getElementById('rf-celebrate');
   const nameInput  = document.getElementById('f-name');
   const noteInput  = document.getElementById('f-note');
   const guestsWrap = document.getElementById('guests-wrap');
@@ -1071,11 +1074,10 @@ window.addEventListener('keyup', e => {
 
   const MSG_YES = 'Thank you \u2014 we cannot wait to celebrate with you \u2661';
   const MSG_NO  = 'Thank you for letting us know \u2014 you will be missed, and we hope to celebrate with you another time \u2661';
+  const SUCCESS_MS = 10000;
+  const CONFETTI_COLORS = ['#c9a84c', '#8a3a4c', '#e8c4a0', '#d4708f', '#f4e8d4', '#b8860b'];
 
-  /* Letters + spaces only (incl. common name marks), max 30 */
-  const NAME_OK = /^[A-Za-z][A-Za-z\s'.-]{0,29}$/;
-  /* Letters, numbers, spaces, , + - . ' ! ? — no $ # @ */
-  const NOTE_CHAR_OK = /^[A-Za-z0-9\s,.+\-'!?]*$/;
+  let successTimer = null;
 
   function showHint(el, on) {
     if (el) el.hidden = !on;
@@ -1088,11 +1090,73 @@ window.addEventListener('keyup', e => {
     showHint(guestsHint, false);
   }
 
+  function clearCelebration() {
+    if (!celebrateEl) return;
+    celebrateEl.innerHTML = '';
+    celebrateEl.classList.remove('is-active');
+  }
+
+  function spawnCelebration() {
+    if (!celebrateEl) return;
+    clearCelebration();
+    celebrateEl.classList.add('is-active');
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('span');
+      p.className = 'rf-confetti';
+      p.style.left = `${Math.random() * 100}%`;
+      p.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+      p.style.animationDelay = `${Math.random() * 0.55}s`;
+      p.style.setProperty('--cf-drift', `${(Math.random() - 0.5) * 140}px`);
+      p.style.setProperty('--cf-rot', `${Math.random() * 720}deg`);
+      frag.appendChild(p);
+    }
+    celebrateEl.appendChild(frag);
+  }
+
+  function dismissSuccess() {
+    if (!panel || !successEl) return;
+    clearTimeout(successTimer);
+    successTimer = null;
+    panel.classList.remove('is-success');
+    successEl.hidden = true;
+    clearCelebration();
+    ok.textContent = '';
+    form.reset();
+    guestsWrap.hidden = true;
+    clearFieldErrors();
+    err.hidden = true;
+  }
+
+  function showSuccess(message, isAttending) {
+    if (!panel || !successEl) return;
+    ok.textContent = message;
+    err.hidden = true;
+    form.reset();
+    guestsWrap.hidden = true;
+    clearFieldErrors();
+    panel.classList.add('is-success');
+    successEl.hidden = false;
+    if (isAttending) spawnCelebration();
+    else clearCelebration();
+    clearTimeout(successTimer);
+    successTimer = setTimeout(dismissSuccess, SUCCESS_MS);
+  }
+
+  if (successEl) {
+    successEl.addEventListener('click', dismissSuccess);
+  }
+
   function wordCount(str) {
     const t = str.trim();
     if (!t) return 0;
     return t.split(/\s+/).filter(Boolean).length;
   }
+
+  /* Letters + spaces only (incl. common name marks), max 30 */
+  const NAME_OK = /^[A-Za-z][A-Za-z\s'.-]{0,29}$/;
+  /* Letters, numbers, spaces, , + - . ' ! ? — no $ # @ */
+  const NOTE_CHAR_OK = /^[A-Za-z0-9\s,.+\-'!?]*$/;
 
   /* Live sanitize: strip disallowed characters as they type */
   nameInput.addEventListener('input', () => {
@@ -1192,8 +1256,8 @@ window.addEventListener('keyup', e => {
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    ok.hidden = err.hidden = true;
-    ok.textContent = '';
+    if (panel && panel.classList.contains('is-success')) return;
+    err.hidden = true;
 
     const result = validate();
     if (!result.ok) return;
@@ -1228,11 +1292,10 @@ window.addEventListener('keyup', e => {
         }).catch(() => {});
         await new Promise(r => setTimeout(r, 280));
       }
-      ok.textContent = result.attending === 'Yes' ? MSG_YES : MSG_NO;
-      ok.hidden = false;
-      form.reset();
-      guestsWrap.hidden = true;
-      clearFieldErrors();
+      showSuccess(
+        result.attending === 'Yes' ? MSG_YES : MSG_NO,
+        result.attending === 'Yes'
+      );
     } catch {
       err.hidden = false;
     } finally {

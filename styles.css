@@ -2145,12 +2145,116 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 }
 
 /* ── RSVP form ────────────────────────────────────── */
-#rsvp-form {
+.rf-panel {
   width: min(420px, 90vw);
+  position: relative;
+}
+
+#rsvp-form {
+  width: 100%;
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: clamp(12px, 2vh, 16px);
+}
+
+.rf-panel.is-success #rsvp-form {
+  display: none;
+}
+
+.rf-success {
+  position: fixed;
+  inset: 0;
+  z-index: 28;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(20px, 5vw, 40px);
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.rf-success:not([hidden]) {
+  display: flex;
+}
+
+.rf-success-box {
+  width: min(360px, 88vw);
+  padding: clamp(22px, 4vh, 32px) clamp(18px, 4vw, 24px);
+  background: linear-gradient(
+    165deg,
+    rgba(250, 236, 214, 0.96) 0%,
+    rgba(239, 218, 186, 0.94) 100%
+  );
+  border: 1px solid rgba(155, 110, 50, 0.38);
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 10px 28px rgba(90, 40, 10, 0.12);
+  pointer-events: none;
+}
+
+.rf-success .rf-ok {
+  margin: 0;
+  font-family: var(--ff-serif);
+  font-style: var(--t-headline-style);
+  font-size: clamp(1rem, 2.8vw, 1.2rem);
+  line-height: 1.55;
+  letter-spacing: 0.02em;
+  color: #9a5030;
+}
+
+/* Attending-only confetti — overlays page, never hides monogram / hashtag */
+.rf-celebrate {
+  position: fixed;
+  inset: 0;
+  z-index: 22;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.rf-celebrate.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.rf-confetti {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  opacity: 0;
+  animation: rfConfettiFall 3.4s cubic-bezier(0.25, 0.8, 0.35, 1) forwards;
+}
+
+.rf-confetti:nth-child(3n) {
+  width: 6px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+@keyframes rfConfettiFall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.6);
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--cf-drift, 0), 105vh, 0) rotate(var(--cf-rot, 360deg)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rf-confetti {
+    animation: none !important;
+  }
 }
 
 .rf-group {
@@ -2268,9 +2372,8 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   text-align: center;
   font-size: 0.92rem;
 }
-.rf-ok:not([hidden]),
-.rf-err:not([hidden]) {
-  margin-top: 4px;
+.rf-err {
+  margin-top: 12px;
 }
 .rf-ok  { color: #9a5030; }
 .rf-err { color: #b04040; }
@@ -2450,6 +2553,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   }
   [data-theme="msg"] #rsvp-form {
     gap: clamp(10px, 1.6vh, 14px);
+  }
+  [data-theme="msg"] .rf-panel {
+    width: min(420px, 90vw);
   }
 }
 
