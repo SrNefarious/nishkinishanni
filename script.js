@@ -27,6 +27,7 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
   let phase = 'idle';    /* idle | in | play | out */
   let fadeRaf = null;
   let startLock = false;
+  let userIntent = false; /* true after a real gesture tries to start */
 
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -95,15 +96,19 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     });
   }
 
+  function markStarted() {
+    started = true;
+    detachGestures();
+  }
+
   /* Start or continue — only rewind when explicitly requested (first start / loop) */
   function startPlayback(opts) {
     const rewind = opts && opts.rewind;
     if (muted || startLock) return Promise.resolve();
 
     if (!rewind && isAudible()) {
-      started = true;
+      markStarted();
       audio.muted = false;
-      detachGestures();
       if (audio.volume < VOLUME * 0.08) fadeIn();
       else phase = 'play';
       return Promise.resolve();
@@ -120,9 +125,8 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
 
     const p = audio.play();
     const done = function () {
-      started = true;
       startLock = false;
-      detachGestures();
+      markStarted();
       fadeIn();
     };
     const fail = function () {
@@ -168,42 +172,52 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
   });
 
   function onUserGesture(e) {
-    if (muted) return;
+    if (muted || started) return;
     if (e && e.target && e.target.closest && e.target.closest('#music-toggle')) return;
-    const atStart = audio.currentTime < 0.05;
-    startPlayback({ rewind: !started && atStart });
+    userIntent = true;
+    startPlayback({ rewind: audio.currentTime < 0.05 });
   }
 
   function detachGestures() {
     window.removeEventListener('pointerdown', onUserGesture, true);
-    window.removeEventListener('touchstart', onUserGesture, true);
+    window.removeEventListener('pointerup', onUserGesture, true);
+    window.removeEventListener('click', onUserGesture, true);
+    window.removeEventListener('touchend', onUserGesture, true);
     window.removeEventListener('keydown', onUserGesture, true);
   }
 
+  /* Avoid touchstart+pointerdown both calling play() — that abort race needs a 2nd tap on Chrome.
+     pointerup/click/touchend cover browsers that only unlock on those events. */
   window.addEventListener('pointerdown', onUserGesture, true);
-  window.addEventListener('touchstart', onUserGesture, true);
+  window.addEventListener('pointerup', onUserGesture, true);
+  window.addEventListener('click', onUserGesture, true);
+  window.addEventListener('touchend', onUserGesture, { capture: true, passive: true });
   window.addEventListener('keydown', onUserGesture, true);
 
-  /* Autoplay where allowed (some mobile browsers) — never rewind if already audible */
-  audio.addEventListener('canplaythrough', function () {
-    if (muted) return;
+  /* Autoplay where allowed (Safari). Never pause over a user-started play (Chrome race). */
+  function tryAutoplay() {
+    if (muted || started || userIntent) return;
     audio.volume = 0;
     audio.muted = false;
     const p = audio.play();
     if (!p || typeof p.then !== 'function') return;
     p.then(function () {
-      if (muted) return;
-      started = true;
-      detachGestures();
+      if (muted || userIntent || audio.paused) return;
+      markStarted();
       fadeIn();
     }).catch(function () {
+      if (started || userIntent || isAudible()) return;
       try { audio.pause(); } catch (e) {}
       audio.volume = 0;
     });
-  }, { once: true });
+  }
+
+  audio.addEventListener('canplaythrough', tryAutoplay, { once: true });
+  audio.addEventListener('canplay', tryAutoplay, { once: true });
 
   btn.addEventListener('click', function (e) {
     e.stopPropagation();
+    userIntent = true;
     if (!started) {
       startPlayback({ rewind: true });
       return;
