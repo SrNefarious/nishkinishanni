@@ -246,6 +246,14 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   white-space: normal;
 }
 
+/* First card — snappier text reveals without changing other pages */
+[data-theme="ganesh"] [data-r] {
+  transition-duration: 0.55s;
+}
+[data-theme="ganesh"] [data-r="wipe"] {
+  transition-duration: 0.65s;
+}
+
 
 /* ════════════════════════════════════════════════════
    CARD 2 — YOU ARE INVITED

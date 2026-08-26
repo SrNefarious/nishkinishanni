@@ -777,7 +777,9 @@ applyPositions();
 if (restoredPage) {
   markAllRevealed(frontCard());
 } else {
-  setTimeout(() => triggerReveals(cards[order[0]]), 400);
+  const first = cards[order[0]];
+  const startDelay = first.dataset.theme === 'ganesh' ? 0 : 400;
+  setTimeout(() => triggerReveals(first), startDelay);
 }
 
 /* Stretch each surname end-to-end under its first name via letter-spacing */
