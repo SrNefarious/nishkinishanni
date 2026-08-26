@@ -19,7 +19,7 @@
   <meta property="og:url" content="https://nishkinishaani.com/">
   <meta property="og:title" content="Nishita & Nishant Engagement">
   <meta property="og:description" content="Nishita & Nishant are getting engaged — 20 October 2026 · Noor Us Sabah, Bhopal · #NishKiNishaani">
-  <meta property="og:image" content="https://nishkinishaani.com/og-image.png">
+  <meta property="og:image" content="https://nishkinishaani.com/og-image.png?v=3">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -29,13 +29,15 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Nishita & Nishant Engagement">
   <meta name="twitter:description" content="Nishita & Nishant are getting engaged — 20 October 2026 · Noor Us Sabah, Bhopal · #NishKiNishaani">
-  <meta name="twitter:image" content="https://nishkinishaani.com/og-image.png">
+  <meta name="twitter:image" content="https://nishkinishaani.com/og-image.png?v=3">
 
   <link rel="canonical" href="https://nishkinishaani.com/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Pinyon+Script&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Pinyon+Script&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0&icon_names=auto_awesome,event,near_me,star&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="assets/ganesha.webp" type="image/webp">
+  <link rel="preload" as="image" href="monogram.webp" type="image/webp">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -49,9 +51,13 @@
 
   <div class="c-body ci-body">
 
-    <img src="assets/ganesha.png"
+    <img src="assets/ganesha.webp"
          class="ci-ganesha"
-         alt="Lord Ganesha">
+         alt="Lord Ganesha"
+         width="624"
+         height="640"
+         decoding="async"
+         fetchpriority="high">
 
     <div class="ci-rule" data-r="wipe" data-d="500" aria-hidden="true"></div>
 
@@ -76,10 +82,14 @@
 
   <div class="c-body ci-body">
 
-    <img src="monogram.png"
+    <img src="monogram.webp"
          class="ci-monogram"
          data-r="sc" data-d="0"
-         alt="N — Nishant & Nishita monogram">
+         alt="N — Nishant & Nishita monogram"
+         width="560"
+         height="511"
+         decoding="async"
+         fetchpriority="high">
 
     <!-- Thin gold rule divider -->
     <div class="ci-rule" data-r="wipe" data-d="500" aria-hidden="true"></div>
@@ -97,8 +107,8 @@
 ══════════════════════════════════════════════════ -->
 <div class="card" id="c2" data-theme="names" data-pos="2">
   <!-- Floral corners — top-left + top-right -->
-  <img src="floral-corner.png" class="cn-corner cn-corner--tl" alt="" aria-hidden="true">
-  <img src="floral-corner.png" class="cn-corner cn-corner--tr" alt="" aria-hidden="true">
+  <img src="floral-corner.webp" class="cn-corner cn-corner--tl" alt="" width="480" height="480" loading="lazy" decoding="async" aria-hidden="true">
+  <img src="floral-corner.webp" class="cn-corner cn-corner--tr" alt="" width="480" height="480" loading="lazy" decoding="async" aria-hidden="true">
 
   <!-- Clean vintage half-rules at floral corners — longer, lightly decorated -->
   <div class="cn-flourishes" aria-hidden="true">
@@ -171,10 +181,12 @@
 
   <figure class="cn-portrait" aria-hidden="true">
     <img class="cn-portrait__img"
-         src="assets/couple-portrait-nobg.png"
+         src="assets/couple-portrait-nobg.webp"
          alt=""
-         width="859"
-         height="1024"
+         width="754"
+         height="900"
+         loading="lazy"
+         decoding="async"
          data-r="fu"
          data-d="820">
   </figure>
@@ -270,8 +282,12 @@
         <span class="cc-pulse__ring"></span>
       </div>
       <img class="cc-illustration"
-           src="assets/countdown-proposal.png"
+           src="assets/countdown-proposal.webp"
            alt=""
+           width="900"
+           height="714"
+           loading="lazy"
+           decoding="async"
            data-r="fu"
            data-d="620">
     </div>
@@ -294,7 +310,7 @@
           <span class="cv-spark cv-spark--r cv-spark--sm material-symbols-outlined">star</span>
           <span class="cv-spark cv-spark--br material-symbols-outlined">auto_awesome</span>
           <span class="cv-hero-icon__ring"></span>
-          <img class="cv-hero-icon__img" src="assets/venue-palace-icon.png" alt="">
+          <img class="cv-hero-icon__img" src="assets/venue-palace-icon.webp" alt="" width="480" height="319" loading="lazy" decoding="async">
         </div>
 
         <p class="cv-name" data-r="fu" data-d="180">Noor Us Sabah</p>
@@ -319,10 +335,14 @@
   <div class="ci-frame" aria-hidden="true"></div>
 
   <div class="c-body cmsg-body">
-    <img src="monogram.png"
+    <img src="monogram.webp"
          class="ci-monogram cmsg-monogram"
          data-r="sc" data-d="0"
-         alt="N — Nishant & Nishita monogram">
+         alt="N — Nishant & Nishita monogram"
+         width="560"
+         height="511"
+         loading="lazy"
+         decoding="async">
 
     <p class="cmsg-title" data-r="fu" data-d="200">Send us a message</p>
 
@@ -392,6 +412,6 @@
 <!-- Soft petals shared across countdown → venue -->
 <div class="fx-petals" id="fx-petals" aria-hidden="true"></div>
 
-<script src="script.js"></script>
+<script src="script.js" defer></script>
 </body>
 </html>

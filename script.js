@@ -22,12 +22,21 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     /Chrome|Chromium|CriOS|EdgA?|OPR|SamsungBrowser|Brave/i.test(ua) ||
     !!(window.chrome && window.chrome.runtime !== undefined);
 
-  const audio = new Audio('assets/music.mp3');
-  audio.preload = 'auto';
+  const audio = new Audio();
+  audio.preload = 'none';
   audio.loop = false;
   audio.volume = 0;
   audio.playsInline = true;
   try { audio.setAttribute('playsinline', ''); } catch (e) {}
+
+  let mediaReady = false;
+  function ensureMedia() {
+    if (mediaReady) return;
+    mediaReady = true;
+    audio.src = 'assets/music.mp3';
+    audio.preload = 'auto';
+    try { audio.load(); } catch (e) {}
+  }
 
   let started = false;
   let muted = false;
@@ -128,6 +137,7 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     if (unlocking) return Promise.resolve();
 
     unlocking = true;
+    ensureMedia();
     stopFade();
     audio.muted = false;
     if (rewind) {
@@ -163,6 +173,7 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
 
   function restartLoop() {
     if (muted) return;
+    ensureMedia();
     /* Loop restarts after already started — bypass the unlocking/started guards */
     stopFade();
     audio.muted = false;
@@ -251,10 +262,9 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     startPlayback({ rewind: audio.currentTime < 0.05 });
   };
 
-  /* Autoplay only where it works (Safari). Skipping on Chromium avoids a competing
-     play() that aborts the first real gesture. */
   function tryAutoplay() {
     if (isChromium || muted || started) return;
+    ensureMedia();
     audio.volume = 0;
     audio.muted = false;
     const p = audio.play();
@@ -271,12 +281,19 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
   }
 
   if (!isChromium) {
-    audio.addEventListener('canplaythrough', tryAutoplay, { once: true });
-    audio.addEventListener('canplay', tryAutoplay, { once: true });
+    /* Warm the file after first paint; then try Safari autoplay */
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(function () { ensureMedia(); tryAutoplay(); }, { timeout: 2500 });
+    } else {
+      setTimeout(function () { ensureMedia(); tryAutoplay(); }, 800);
+    }
+  } else if ('requestIdleCallback' in window) {
+    requestIdleCallback(function () { ensureMedia(); }, { timeout: 4000 });
   }
 
   btn.addEventListener('click', function (e) {
     e.stopPropagation();
+    ensureMedia();
     if (!started) {
       startPlayback({ rewind: true });
       return;
@@ -299,62 +316,9 @@ document.addEventListener('gestureend', e => e.preventDefault(), { passive: fals
     }
     syncMuteUi();
   });
-
-  try { audio.load(); } catch (e) {}
 })();
 
-/* ── Strip near-black backgrounds from line-art images ── */
-(function stripImageBlack(selectors) {
-  const imgs = Array.from(document.querySelectorAll(selectors)).filter(img => {
-    const src = img.getAttribute('src') || img.src || '';
-    return !img.classList.contains('ci-ganesha') && !src.includes('ganesha');
-  });
-  if (!imgs.length) return;
-
-  const bySrc = new Map();
-  imgs.forEach(img => {
-    const src = img.getAttribute('src') || img.src;
-    if (!bySrc.has(src)) bySrc.set(src, []);
-    bySrc.get(src).push(img);
-  });
-
-  bySrc.forEach((group, src) => {
-    const loader = new Image();
-    loader.onload = function () {
-      try {
-        const W = loader.naturalWidth;
-        const H = loader.naturalHeight;
-        if (!W || !H) return;
-
-        const canvas = document.createElement('canvas');
-        canvas.width = W;
-        canvas.height = H;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(loader, 0, 0);
-
-        const id = ctx.getImageData(0, 0, W, H);
-        const px = id.data;
-        const LOW = 42;
-        const HIGH = 88;
-
-        for (let i = 0; i < px.length; i += 4) {
-          const r = px[i], g = px[i + 1], b = px[i + 2];
-          const chroma = Math.max(r, g, b) - Math.min(r, g, b);
-          const lum = r * 0.299 + g * 0.587 + b * 0.114;
-          if (lum <= LOW && chroma <= 22) px[i + 3] = 0;
-          else if (lum < HIGH && chroma <= 26) {
-            px[i + 3] = Math.round((lum - LOW) / (HIGH - LOW) * 255);
-          }
-        }
-
-        ctx.putImageData(id, 0, 0);
-        const dataUrl = canvas.toDataURL('image/png');
-        group.forEach(img => { img.src = dataUrl; });
-      } catch (e) { /* ignore */ }
-    };
-    loader.src = src;
-  });
-})('.ci-monogram, .cmsg-monogram');
+/* Monogram WebP already has transparency — no runtime canvas strip needed. */
 
 const EVENT = new Date('2026-10-20T17:00:00+05:30'); /* 20 Oct 2026, 5:00 PM IST */
 

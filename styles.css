@@ -3,7 +3,6 @@
    6 cards · Distinct palettes · Cinematic reveals
    ════════════════════════════════════════════════════ */
 
-/* ── Tokens ───────────────────────────────────────── */
 :root {
   --gold:        #c9a84c;
   --gold-lt:     #e0c878;
@@ -1776,7 +1775,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
    ════════════════════════════════════════════════════ */
 [data-theme="venue"] {
   background-color: #e8d5c8;
-  background-image: url("assets/venue-palace.png");
+  background-image: url("assets/venue-palace.webp");
   /* Show lake + architecture; glass card keeps text readable */
   background-size: cover;
   background-position: 52% 42%;
