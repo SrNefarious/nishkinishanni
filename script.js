@@ -585,14 +585,14 @@ function goIdle() {
   settling = false;
 }
 
-function finishAdvanceCommit() {
+function finishAdvanceCommit({ lock = true } = {}) {
   const departed = frontCard();
   order.push(order.shift());
   hardResetChrome();
   resetReveals(departed);
   markAllRevealed(frontCard());
   goIdle();
-  lockAfterPage(1);
+  if (lock) lockAfterPage(1);
   savePageState();
   if (window.syncFxPetals) syncFxPetals();
   requestAnimationFrame(() => {
@@ -609,14 +609,14 @@ function finishAdvanceCancel() {
   goIdle();
 }
 
-function finishRetreatCommit() {
+function finishRetreatCommit({ lock = true } = {}) {
   const departed = frontCard();
   order.unshift(order.pop());
   hardResetChrome();
   resetReveals(departed);
   markAllRevealed(frontCard());
   goIdle();
-  lockAfterPage(-1);
+  if (lock) lockAfterPage(-1);
   savePageState();
   if (window.syncFxPetals) syncFxPetals();
   requestAnimationFrame(() => {
@@ -757,17 +757,18 @@ function onDelta(rawDelta, dtMs) {
 }
 
 function nudge(dir) {
-  if (settling || pageLocked) return;
+  if (settling) return;
+  releasePageLock();
   if (dir > 0) {
     if (!canAdvance()) return;
     if (mode === 'retreat') return;
     if (mode === 'idle') { mode = 'advance'; progress = 0; }
-    animateTo(1, finishAdvanceCommit);
+    animateTo(1, () => finishAdvanceCommit({ lock: false }));
   } else {
     if (!canRetreat()) return;
     if (mode === 'advance') return;
     if (mode === 'idle') { mode = 'retreat'; progress = 0; }
-    animateTo(1, finishRetreatCommit);
+    animateTo(1, () => finishRetreatCommit({ lock: false }));
   }
 }
 
@@ -933,13 +934,6 @@ window.addEventListener('keydown', e => {
     e.preventDefault();
     if (typeof window.unlockAmbientMusic === 'function') window.unlockAmbientMusic();
     nudge(-1);
-  }
-});
-
-window.addEventListener('keyup', e => {
-  if (e.target.closest && e.target.closest('input, textarea, select, button, a')) return;
-  if (['ArrowDown', 'ArrowUp', ' ', 'PageDown', 'PageUp'].includes(e.key)) {
-    releasePageLock();
   }
 });
 
