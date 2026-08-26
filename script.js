@@ -3,7 +3,7 @@
    Scrub-driven motion: scroll/touch links to progress.
    ════════════════════════════════════════════════════ */
 
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxccLCGRQbGDk8NzECexrJwQwHxwy4jlf6ejuQfpOvoPB2IL3iwIPHt6Fu-E8uktFEj/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzHPVHYeUH0ShB_lq4ytQl0s6RGvkSUDjhigBANCGw9jqzQXQo3b7ZtZkSP_QY6v6M1/exec';
 
 /* Soften pinch-zoom on iOS Safari (best-effort; OS settings can override) */
 document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });

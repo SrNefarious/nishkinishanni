@@ -101,7 +101,10 @@ function buildGuestLetter_(data) {
 
   if (isYes) {
     if (count > 1) {
-      lines.push('I will be attending along with ' + count + ' guests.');
+      const others = count - 1;
+      lines.push(
+        'I will be attending along with ' + others + (others === 1 ? ' guest.' : ' guests.')
+      );
     } else {
       lines.push('I cannot wait to celebrate with you both!');
     }
