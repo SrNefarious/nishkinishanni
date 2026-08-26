@@ -2205,11 +2205,11 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   color: #9a5030;
 }
 
-/* Attending-only confetti — overlays page, never hides monogram / hashtag */
+/* Attending-only confetti — full-screen shower above the thank-you box */
 .rf-celebrate {
   position: fixed;
   inset: 0;
-  z-index: 22;
+  z-index: 29;
   overflow: hidden;
   pointer-events: none;
   opacity: 0;
@@ -2223,37 +2223,64 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 .rf-confetti {
   position: absolute;
-  top: -12px;
-  width: 8px;
-  height: 8px;
-  border-radius: 1px;
+  top: -5vh;
   opacity: 0;
-  animation: rfConfettiFall 3.4s cubic-bezier(0.25, 0.8, 0.35, 1) forwards;
+  will-change: transform, opacity;
+  animation-name: rfConfettiFall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
 }
 
-.rf-confetti:nth-child(3n) {
-  width: 6px;
-  height: 10px;
+.rf-confetti--rect {
+  width: 9px;
+  height: 6px;
+  border-radius: 1px;
+}
+
+.rf-confetti--strip {
+  width: 4px;
+  height: 14px;
+  border-radius: 1px;
+}
+
+.rf-confetti--dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
 }
 
 @keyframes rfConfettiFall {
   0% {
     opacity: 0;
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.6);
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(0.5);
   }
-  8% {
+  6% {
     opacity: 1;
+  }
+  25% {
+    transform: translate3d(calc(var(--cf-drift, 0) * 0.35), 28vh, 0)
+      rotate(calc(var(--cf-rot, 360deg) * 0.25 * var(--cf-spin, 1))) scale(1);
+  }
+  50% {
+    transform: translate3d(calc(var(--cf-drift, 0) * 0.7), 55vh, 0)
+      rotate(calc(var(--cf-rot, 360deg) * 0.55 * var(--cf-spin, 1))) scale(1);
+  }
+  75% {
+    opacity: 1;
+    transform: translate3d(calc(var(--cf-drift, 0) * 0.9), 82vh, 0)
+      rotate(calc(var(--cf-rot, 360deg) * 0.8 * var(--cf-spin, 1))) scale(0.95);
   }
   100% {
     opacity: 0;
-    transform: translate3d(var(--cf-drift, 0), 105vh, 0) rotate(var(--cf-rot, 360deg)) scale(1);
+    transform: translate3d(var(--cf-drift, 0), 112vh, 0)
+      rotate(calc(var(--cf-rot, 360deg) * var(--cf-spin, 1))) scale(0.85);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rf-confetti {
     animation: none !important;
+    display: none;
   }
 }
 

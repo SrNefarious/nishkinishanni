@@ -1100,15 +1100,18 @@ window.addEventListener('keyup', e => {
     if (!celebrateEl) return;
     clearCelebration();
     celebrateEl.classList.add('is-active');
+    const shapes = ['rf-confetti--rect', 'rf-confetti--strip', 'rf-confetti--dot'];
     const frag = document.createDocumentFragment();
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 96; i++) {
       const p = document.createElement('span');
-      p.className = 'rf-confetti';
+      p.className = 'rf-confetti ' + shapes[i % shapes.length];
       p.style.left = `${Math.random() * 100}%`;
       p.style.background = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
-      p.style.animationDelay = `${Math.random() * 0.55}s`;
-      p.style.setProperty('--cf-drift', `${(Math.random() - 0.5) * 140}px`);
-      p.style.setProperty('--cf-rot', `${Math.random() * 720}deg`);
+      p.style.animationDuration = `${2.6 + Math.random() * 2.4}s`;
+      p.style.animationDelay = `${Math.random() * 1.4}s`;
+      p.style.setProperty('--cf-drift', `${(Math.random() - 0.5) * 220}px`);
+      p.style.setProperty('--cf-rot', `${Math.random() * 1080}deg`);
+      p.style.setProperty('--cf-spin', `${Math.random() > 0.5 ? 1 : -1}`);
       frag.appendChild(p);
     }
     celebrateEl.appendChild(frag);
