@@ -1964,16 +1964,19 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
-/* Laptop / desktop — venue name on one line, roomier glass cards */
+/* Laptop / desktop — roomier glass card; name wraps if needed */
 @media (min-width: 769px) {
   .cv-stack,
   .cv-stack .cv-glass,
   .cv-glass {
-    width: min(540px, 72vw);
+    width: min(560px, 78vw);
   }
   .cv-name {
-    white-space: nowrap;
-    font-size: clamp(2.75rem, 4.2vw, 4.4rem);
+    white-space: normal;
+    text-wrap: balance;
+    font-size: clamp(2.25rem, 3.2vw, 3.65rem);
+    line-height: 1.12;
+    max-width: 100%;
   }
 }
 
