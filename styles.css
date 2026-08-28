@@ -330,7 +330,122 @@ button { cursor: pointer; border: none; background: none; font: inherit; padding
 
 
 /* ════════════════════════════════════════════════════
-   CARD 2 — NAMES  ·  Floral corners + falling petals
+   CARD 3 — GROOM / BRIDE SIDE
+   Same parchment as invite; choice unlocks the next card.
+   ════════════════════════════════════════════════════ */
+[data-theme="side"] {
+  background:
+    radial-gradient(circle, rgba(155,110,50,0.09) 1px, transparent 1px) 0 0 / 22px 22px,
+    #f4e8d4;
+}
+
+.side-body {
+  gap: clamp(10px, 2vh, 18px);
+  padding-inline: clamp(24px, 6vw, 48px);
+  overflow: visible;
+}
+
+.side-monogram {
+  width: min(200px, 42vmin);
+  height: min(200px, 42vmin);
+}
+
+.side-title {
+  margin: 0;
+}
+
+.side-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(12px, 3vw, 16px);
+  width: min(380px, 84vw);
+  margin-top: clamp(4px, 1vh, 10px);
+  padding: 8px 6px;
+  overflow: visible;
+}
+.side-choices.is-nudge .side-opt__face {
+  animation: sideNudge 0.55s ease;
+}
+@keyframes sideNudge {
+  0%, 100% { border-color: rgba(155, 110, 50, 0.28); background: rgba(255, 255, 255, 0.32); }
+  40% { border-color: rgba(138, 58, 76, 0.55); background: rgba(255, 255, 255, 0.7); }
+}
+
+.side-opt {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  display: block;
+}
+
+.side-opt input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.side-opt__face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: clamp(96px, 18vh, 128px);
+  padding: clamp(16px, 2.8vh, 24px) 12px;
+  border: 1px solid rgba(155, 110, 50, 0.28);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.32);
+  box-shadow: none;
+  transition: border-color 0.25s, background 0.25s;
+}
+
+.side-opt:hover .side-opt__face {
+  border-color: rgba(155, 110, 50, 0.48);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.side-opt:has(input:checked) .side-opt__face,
+.side-opt.is-selected .side-opt__face {
+  border-color: rgba(138, 58, 76, 0.65);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: none;
+}
+
+.side-opt__label {
+  font-family: var(--ff-serif);
+  font-style: var(--t-headline-style);
+  font-weight: var(--t-headline-weight);
+  letter-spacing: var(--t-headline-spacing);
+  font-size: clamp(1.2rem, 3.4vw, 1.55rem);
+  line-height: 1.15;
+  color: #2c1508;
+}
+
+.side-opt__who {
+  font-family: var(--ff-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: rgba(96, 54, 28, 0.62);
+}
+
+.side-opt:has(input:checked) .side-opt__label,
+.side-opt.is-selected .side-opt__label {
+  color: #4a2030;
+}
+
+.side-opt:has(input:checked) .side-opt__who,
+.side-opt.is-selected .side-opt__who {
+  color: rgba(138, 58, 76, 0.78);
+}
+
+
+/* ════════════════════════════════════════════════════
+   CARD 4 — NAMES  ·  Floral corners + falling petals
    ════════════════════════════════════════════════════ */
 [data-theme="names"] {
   --cn-portrait-bottom: clamp(36px, 6.5vmin, 58px);

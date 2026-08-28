@@ -104,9 +104,54 @@
 
 
 <!-- ══════════════════════════════════════════════
-   CARD 2  Nishant and Nishita are getting engaged
+   CARD 3  Groom side or Bride side
 ══════════════════════════════════════════════════ -->
-<div class="card" id="c2" data-theme="names" data-pos="2">
+<div class="card" id="c2" data-theme="side" data-pos="2">
+
+  <div class="ci-frame" aria-hidden="true"></div>
+
+  <div class="c-body side-body">
+
+    <img src="monogram.webp"
+         class="ci-monogram side-monogram"
+         data-r="sc" data-d="0"
+         alt="N — Nishant & Nishita monogram"
+         width="560"
+         height="511"
+         loading="lazy"
+         decoding="async">
+
+    <div class="ci-rule" data-r="wipe" data-d="400" aria-hidden="true"></div>
+
+    <p class="ci-hero side-title" data-r="fu" data-d="550">Are you from?</p>
+
+    <div class="side-choices" role="radiogroup" aria-label="Are you from the groom side or bride side?" data-r="fu" data-d="700">
+      <label class="side-opt">
+        <input type="radio" name="guest-side" value="Groom side">
+        <span class="side-opt__face">
+          <span class="side-opt__label">Groom side</span>
+          <span class="side-opt__who">Nishant</span>
+        </span>
+      </label>
+      <label class="side-opt">
+        <input type="radio" name="guest-side" value="Bride side">
+        <span class="side-opt__face">
+          <span class="side-opt__label">Bride side</span>
+          <span class="side-opt__who">Nishita</span>
+        </span>
+      </label>
+    </div>
+
+  </div>
+
+  <p class="ci-tag" data-r="fu" data-d="1000">#Nish<span class="ci-tag__ki">Ki</span>Nishaani</p>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+   CARD 4  Nishant and Nishita are getting engaged
+══════════════════════════════════════════════════ -->
+<div class="card" id="c3" data-theme="names" data-pos="3">
   <!-- Floral corners — top-left + top-right -->
   <img src="floral-corner.webp" class="cn-corner cn-corner--tl" alt="" width="480" height="480" loading="lazy" decoding="async" aria-hidden="true">
   <img src="floral-corner.webp" class="cn-corner cn-corner--tr" alt="" width="480" height="480" loading="lazy" decoding="async" aria-hidden="true">
@@ -151,8 +196,8 @@
 
   <div class="c-body cn-body">
 
-    <div class="cn-names" aria-label="Nishita Agrawal and Nishant Mishra">
-      <span class="cn-name" data-r="fu" data-d="280">
+    <div class="cn-names" id="cn-names" aria-label="Nishita Agrawal and Nishant Mishra">
+      <span class="cn-name" data-person="bride" data-r="fu" data-d="280">
         <span class="cn-name__txt">Nishita</span>
         <span class="cn-surname">Agrawal</span>
         <i class="cn-dot" style="--dx:22%;--dy:12%"></i>
@@ -160,7 +205,7 @@
         <i class="cn-dot" style="--dx:95%;--dy:55%"></i>
       </span>
       <span class="cn-and"  data-r="sc" data-d="480">and</span>
-      <span class="cn-name" data-r="fu" data-d="280">
+      <span class="cn-name" data-person="groom" data-r="fu" data-d="280">
         <span class="cn-name__txt">Nishant</span>
         <span class="cn-surname">Mishra</span>
         <i class="cn-dot" style="--dx:12%;--dy:18%"></i>
@@ -195,9 +240,9 @@
 
 
 <!-- ══════════════════════════════════════════════
-   CARD 3  Save the Date  ·  Dark + dramatic reveal
+   CARD 5  Save the Date  ·  Dark + dramatic reveal
 ══════════════════════════════════════════════════ -->
-<div class="card" id="c3" data-theme="date" data-pos="3">
+<div class="card" id="c4" data-theme="date" data-pos="4">
   <div class="c-body cs-body">
     <p class="cs-label" data-r="fd" data-d="0">Save the Date</p>
 
@@ -229,9 +274,9 @@
 
 
 <!-- ══════════════════════════════════════════════
-   CARD 4  Countdown  ·  Parchment flip clock
+   CARD 6  Countdown  ·  Parchment flip clock
 ══════════════════════════════════════════════════ -->
-<div class="card" id="c4" data-theme="count" data-pos="4">
+<div class="card" id="c5" data-theme="count" data-pos="5">
   <div class="c-body cc-body">
     <p class="cc-pre" data-r="fd" data-d="0">The big day is in</p>
 
@@ -297,9 +342,9 @@
 
 
 <!-- ══════════════════════════════════════════════
-   CARD 5  Venue  ·  Palace lake artwork
+   CARD 7  Venue  ·  Palace lake artwork
 ══════════════════════════════════════════════════ -->
-<div class="card" id="c5" data-theme="venue" data-pos="5">
+<div class="card" id="c6" data-theme="venue" data-pos="6">
   <div class="c-body cv-body">
     <div class="cv-stack">
       <div class="cv-glass cv-glass--venue">
@@ -330,9 +375,9 @@
 
 
 <!-- ══════════════════════════════════════════════
-   CARD 6  Send a message  ·  Parchment (matches invite)
+   CARD 8  Send a message  ·  Parchment (matches invite)
 ══════════════════════════════════════════════════ -->
-<div class="card" id="c6" data-theme="msg" data-pos="6">
+<div class="card" id="c7" data-theme="msg" data-pos="7">
   <div class="ci-frame" aria-hidden="true"></div>
 
   <div class="c-body cmsg-body">
@@ -357,11 +402,11 @@
           <p class="rf-hint" id="f-name-hint" hidden>Letters and spaces only, max 30.</p>
         </div>
 
-        <div class="rf-group">
+        <div class="rf-group" id="rf-side-group">
           <p class="rf-group__label">You are on</p>
           <div class="rf-radios rf-radios--side">
             <label class="rf-opt rf-opt--card">
-              <input type="radio" name="side" value="Groom side" required>
+              <input type="radio" name="side" value="Groom side">
               <span class="rf-opt__txt">Groom side</span>
             </label>
             <label class="rf-opt rf-opt--card">

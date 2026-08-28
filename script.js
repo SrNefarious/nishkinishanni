@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════
-   NishKiNishaani  ·  Card Deck Engine  ·  7 cards
+   NishKiNishaani  ·  Card Deck Engine
    Scrub-driven motion: scroll/touch links to progress.
    ════════════════════════════════════════════════════ */
 
@@ -349,13 +349,139 @@ function initAddToCalendar() {
   if (link) link.href = buildGoogleCalendarUrl();
 }
 
-const TOTAL = 7;
 const cards = Array.from(document.querySelectorAll('.card'));
+const TOTAL = cards.length;
 let order = cards.map((_, i) => i);
 
 const PAGE_KEY = 'nishkinishaani-page';
 const RELOAD_PAGE_KEY = 'nishkinishaani-reload-page';
 const RELOAD_FLAG_KEY = 'nishkinishaani-reload-flag';
+const SIDE_KEY = 'nishkinishaani-side';
+
+const SIDE_GROOM = 'Groom side';
+const SIDE_BRIDE = 'Bride side';
+let guestSide = null;
+
+function sideCardIndex() {
+  return cards.findIndex(c => c.dataset.theme === 'side');
+}
+
+function loadGuestSide() {
+  try {
+    const raw = localStorage.getItem(SIDE_KEY) || sessionStorage.getItem(SIDE_KEY);
+    if (raw === SIDE_GROOM || raw === SIDE_BRIDE) return raw;
+  } catch (e) { /* ignore */ }
+  return null;
+}
+
+function applyNameOrder(side) {
+  const wrap = document.getElementById('cn-names');
+  if (!wrap) return;
+  const bride = wrap.querySelector('[data-person="bride"]');
+  const groom = wrap.querySelector('[data-person="groom"]');
+  const andEl = wrap.querySelector('.cn-and');
+  if (!bride || !groom || !andEl) return;
+
+  if (side === SIDE_GROOM) {
+    wrap.insertBefore(groom, andEl);
+    wrap.appendChild(bride);
+    wrap.setAttribute('aria-label', 'Nishant Mishra and Nishita Agrawal');
+  } else {
+    wrap.insertBefore(bride, andEl);
+    wrap.appendChild(groom);
+    wrap.setAttribute('aria-label', 'Nishita Agrawal and Nishant Mishra');
+  }
+
+  requestAnimationFrame(() => {
+    fitNameSurnames();
+    setTimeout(fitNameSurnames, 350);
+  });
+}
+
+function syncFormSide(side) {
+  const group = document.getElementById('rf-side-group');
+  const form = document.getElementById('rsvp-form');
+  if (!form) return;
+
+  form.querySelectorAll('input[name="side"]').forEach(r => {
+    r.checked = !!(side && r.value === side);
+    r.required = !side;
+  });
+
+  if (group) {
+    group.hidden = !!side;
+    group.setAttribute('aria-hidden', side ? 'true' : 'false');
+  }
+}
+
+function syncSideCardUI(side) {
+  const card = cards.find(c => c.dataset.theme === 'side');
+  if (!card) return;
+  card.classList.toggle('is-locked', !side);
+  card.querySelectorAll('.side-opt').forEach(opt => {
+    const input = opt.querySelector('input[name="guest-side"]');
+    const selected = !!(input && input.value === side);
+    if (input) input.checked = selected;
+    opt.classList.toggle('is-selected', selected);
+  });
+}
+
+function setGuestSide(side, { persist = true } = {}) {
+  if (side !== SIDE_GROOM && side !== SIDE_BRIDE) return;
+  guestSide = side;
+  if (persist) {
+    try {
+      localStorage.setItem(SIDE_KEY, side);
+      sessionStorage.setItem(SIDE_KEY, side);
+    } catch (e) { /* ignore */ }
+  }
+  applyNameOrder(side);
+  syncFormSide(side);
+  syncSideCardUI(side);
+  releasePageLock();
+}
+
+function clearGuestSide() {
+  guestSide = null;
+  try {
+    localStorage.removeItem(SIDE_KEY);
+    sessionStorage.removeItem(SIDE_KEY);
+  } catch (e) { /* ignore */ }
+  applyNameOrder(SIDE_BRIDE);
+  syncFormSide(null);
+  syncSideCardUI(null);
+}
+
+function initGuestSide() {
+  const saved = loadGuestSide();
+  if (saved) setGuestSide(saved, { persist: true });
+  else syncSideCardUI(null);
+
+  document.querySelectorAll('.side-opt').forEach(opt => {
+    const input = opt.querySelector('input[name="guest-side"]');
+    if (!input) return;
+
+    opt.addEventListener('pointerdown', () => {
+      opt.dataset.wasSelected = (guestSide === input.value) ? '1' : '0';
+    });
+
+    opt.addEventListener('click', e => {
+      /* Tap selected again to deselect */
+      if (opt.dataset.wasSelected === '1') {
+        e.preventDefault();
+        clearGuestSide();
+      }
+    });
+
+    input.addEventListener('change', () => {
+      if (!input.checked) return;
+      setGuestSide(input.value);
+      if (frontCard()?.dataset.theme === 'side') {
+        setTimeout(() => nudge(1, { duration: 780 }), 240);
+      }
+    });
+  });
+}
 
 function savePageState() {
   try {
@@ -389,6 +515,12 @@ function restorePageState() {
       sessionStorage.setItem(RELOAD_FLAG_KEY, '1');
     } else {
       sessionStorage.setItem(RELOAD_FLAG_KEY, '0');
+    }
+
+    /* Can't skip past side selection without a choice */
+    const sideIdx = sideCardIndex();
+    if (sideIdx >= 0 && !guestSide && !loadGuestSide() && target > sideIdx) {
+      target = sideIdx;
     }
 
     sessionStorage.setItem(PAGE_KEY, String(target));
@@ -448,7 +580,23 @@ function frontCard() { return cards[order[0]]; }
 function prevCard()  { return cards[order[order.length - 1]]; }
 function nextCard()  { return cards[order[1]]; }
 function canRetreat() { return order[0] > 0; }
-function canAdvance() { return order[0] < TOTAL - 1; }
+function needsSideChoice() {
+  const card = frontCard();
+  return !!(card && card.dataset.theme === 'side' && !guestSide);
+}
+function canAdvance() {
+  if (order[0] >= TOTAL - 1) return false;
+  if (needsSideChoice()) return false;
+  return true;
+}
+function pulseSideLock() {
+  const card = frontCard();
+  if (!card || card.dataset.theme !== 'side') return;
+  const choices = card.querySelector('.side-choices');
+  if (!choices || choices.classList.contains('is-nudge')) return;
+  choices.classList.add('is-nudge');
+  setTimeout(() => choices.classList.remove('is-nudge'), 560);
+}
 
 function applyPositions() {
   order.forEach((cardIdx, pos) => { cards[cardIdx].dataset.pos = String(pos); });
@@ -633,12 +781,12 @@ function finishRetreatCancel() {
   goIdle();
 }
 
-function animateTo(target, onDone) {
+function animateTo(target, onDone, durMs) {
   settling = true;
   clearTimeout(settleTimer);
   if (animFrame) cancelAnimationFrame(animFrame);
   const start = progress;
-  const dur = target >= 1 ? 280 : 260;
+  const dur = durMs ?? (target >= 1 ? 280 : 260);
   const t0 = performance.now();
   function frame(now) {
     const t = Math.min(1, (now - t0) / Math.max(dur, 1));
@@ -721,7 +869,10 @@ function onDelta(rawDelta, dtMs) {
   /* Lock mode for the whole gesture — never flip advance↔retreat mid-way */
   if (mode === 'idle') {
     if (rawDelta > 0) {
-      if (!canAdvance()) return;
+      if (!canAdvance()) {
+        if (needsSideChoice()) pulseSideLock();
+        return;
+      }
       mode = 'advance';
       progress = 0;
     } else {
@@ -756,23 +907,27 @@ function onDelta(rawDelta, dtMs) {
   if (!touchActive) scheduleSettle();
 }
 
-function nudge(dir) {
+function nudge(dir, { duration } = {}) {
   if (settling) return;
   releasePageLock();
   if (dir > 0) {
-    if (!canAdvance()) return;
+    if (!canAdvance()) {
+      if (needsSideChoice()) pulseSideLock();
+      return;
+    }
     if (mode === 'retreat') return;
     if (mode === 'idle') { mode = 'advance'; progress = 0; }
-    animateTo(1, () => finishAdvanceCommit({ lock: false }));
+    animateTo(1, () => finishAdvanceCommit({ lock: false }), duration);
   } else {
     if (!canRetreat()) return;
     if (mode === 'advance') return;
     if (mode === 'idle') { mode = 'retreat'; progress = 0; }
-    animateTo(1, () => finishRetreatCommit({ lock: false }));
+    animateTo(1, () => finishRetreatCommit({ lock: false }), duration);
   }
 }
 
 /* ── Bootstrap ───────────────────────────────────── */
+initGuestSide();
 const restoredPage = restorePageState();
 applyPositions();
 if (restoredPage) {
@@ -853,10 +1008,11 @@ setTimeout(fitNameSurnames, 1800);
   }
   layer.appendChild(frag);
 
-  const PETAL_PAGES = new Set([4, 5]); /* count, venue */
+  const PETAL_PAGES = new Set(['count', 'venue']);
 
   window.syncFxPetals = function syncFxPetals() {
-    layer.classList.toggle('is-on', PETAL_PAGES.has(order[0]));
+    const theme = cards[order[0]]?.dataset.theme;
+    layer.classList.toggle('is-on', PETAL_PAGES.has(theme));
   };
   syncFxPetals();
 })();
@@ -880,7 +1036,7 @@ let touchLastY = null;
 let touchLastT = 0;
 
 window.addEventListener('touchstart', e => {
-  if (e.target.closest && e.target.closest('input, textarea, select, button, a')) {
+  if (e.target.closest && e.target.closest('input, textarea, select, button, a, .side-opt')) {
     touchX0 = null;
     touchActive = false;
     return;
@@ -1121,6 +1277,7 @@ window.addEventListener('keydown', e => {
     ok.textContent = '';
     form.reset();
     guestsWrap.hidden = true;
+    if (guestSide) syncFormSide(guestSide);
     clearFieldErrors();
     err.hidden = true;
   }
@@ -1131,6 +1288,7 @@ window.addEventListener('keydown', e => {
     err.hidden = true;
     form.reset();
     guestsWrap.hidden = true;
+    if (guestSide) syncFormSide(guestSide);
     clearFieldErrors();
     panel.classList.add('is-success');
     successEl.hidden = false;
@@ -1219,9 +1377,11 @@ window.addEventListener('keydown', e => {
       firstBad = firstBad || form.querySelector('.rf-radios--attend');
     }
 
-    const side = form.querySelector('input[name="side"]:checked')?.value;
+    const side = guestSide || form.querySelector('input[name="side"]:checked')?.value;
     if (!side) {
-      firstBad = firstBad || form.querySelector('.rf-radios--side');
+      firstBad = firstBad || form.querySelector('.rf-radios--side') || nameInput;
+    } else {
+      syncFormSide(side);
     }
 
     if (attending === 'Yes') {
